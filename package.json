@@ -15,7 +15,7 @@
   ],
   "scripts": {
     "build": "tsup",
-    "dev": "tsup --watch"
+    "test": "vitest"
   },
   "dependencies": {
     "@libp2p/interface-connection": "^3.0.8",

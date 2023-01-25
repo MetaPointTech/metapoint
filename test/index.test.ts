@@ -18,8 +18,8 @@ const libp2p = await createLibp2p({
 
 const { fetch } = newPRPC(libp2p);
 
-test("log handler", async () => {
-  const stream = await libp2p.dialProtocol(addr, "log");
+test("add handler", async () => {
+  const stream = await libp2p.dialProtocol(addr, "add");
   // fetch input style
   expect(await fetch<number, number>(stream, 1)).toBe(2);
 

@@ -16,7 +16,7 @@ export const startServer = async () => {
 
   const { handle } = newPRPC(libp2p);
 
-  await handle("log", (data: number) => {
+  await handle("add", (data: number) => {
     console.log("server received: " + data);
     return data + 1;
   });

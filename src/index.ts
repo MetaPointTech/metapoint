@@ -1,7 +1,7 @@
-import { Libp2p } from "libp2p";
+import type { Libp2p } from "libp2p";
+import type { Stream } from "@libp2p/interface-connection";
 import { decode, encode } from "./utils";
-import { transform } from "streaming-iterables";
-import { Stream } from "@libp2p/interface-connection";
+import { consume, transform } from "streaming-iterables";
 import { Evt } from "evt";
 
 export type IteratorFunc<I, O> = (
@@ -30,26 +30,36 @@ const fetchStream = <I, O>(
   return outputIterator;
 };
 
-const channel = <I, O>(stream: Stream) => {
-  const inputChannel = Evt.create<I>();
-  const outputChannel = Evt.create<O>();
+const fetchEvent = <I, O>(stream: Stream) => {
+  const inputChannel: Evt<I> = stream.metadata.inputChannel ??
+    (stream.metadata.inputChannel = Evt.create<I>());
+  const outputChannel: Evt<O> = stream.metadata.outputChannel ??
+    (stream.metadata.outputChannel = Evt.create<O>());
   const outputIterator = fetchStream<I, O>(stream, inputChannel);
 
-  (async () => {
-    for await (
-      const _ of transform(
-        Infinity,
-        (data) => outputChannel.post(data),
-        outputIterator,
-      )
-    ) {}
-  })();
+  consume(transform(
+    Infinity,
+    (data) => outputChannel.post(data),
+    outputIterator,
+  ));
 
   return {
     inputChannel,
     outputChannel,
   };
 };
+
+function fetch<I, O>(stream: Stream): ReturnType<typeof fetchEvent<I, O>>;
+function fetch<I, O>(stream: Stream, input: I, timeout?: number): Promise<O>;
+function fetch<I, O>(stream: Stream, input?: I, timeout?: number) {
+  if (input === undefined) {
+    return fetchEvent<I, O>(stream);
+  } else {
+    const { inputChannel, outputChannel } = fetchEvent<I, O>(stream);
+    inputChannel.post(input);
+    return outputChannel.waitFor(timeout);
+  }
+}
 
 export const newPRPC = (node: Libp2p) => {
   const handleStream = async <I, O>(name: string, func: IteratorFunc<I, O>) =>
@@ -71,14 +81,12 @@ export const newPRPC = (node: Libp2p) => {
     });
 
   return {
-    handleStream,
-    fetchStream,
     handle: async <I, O>(name: string, func: Func<I, O>) =>
       await handleStream<I, O>(
         name,
         // transform input
         (input) => transform(Infinity, (data) => func(data), input),
       ),
-    channel,
+    fetch,
   };
 };

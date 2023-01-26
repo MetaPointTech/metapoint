@@ -21,7 +21,7 @@ export type EventFunc<I, O, C> = (
 
 export const serve = (node: Libp2p) => {
   const handleStream = async <I, O>(name: string, func: IteratorFunc<I, O>) =>
-    await node.handle(name, ({ stream, connection }) => {
+    await node.handle(name, ({ stream }) => {
       // decode input
       const inputIterator = transform(
         Infinity,

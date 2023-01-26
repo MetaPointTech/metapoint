@@ -2,7 +2,7 @@ import { createLibp2p } from "libp2p";
 import { mplex } from "@libp2p/mplex";
 import { noise } from "@chainsafe/libp2p-noise";
 import { tcp } from "@libp2p/tcp";
-import { newPRPC } from "../src";
+import { fetch } from "../src";
 import { describe, expect, test } from "vitest";
 import { startServer } from "./handler";
 
@@ -15,8 +15,6 @@ const libp2p = await createLibp2p({
   },
   connectionEncryption: [noise()],
 });
-
-const { fetch } = newPRPC(libp2p);
 
 test("test handler", async () => {
   const stream = await libp2p.dialProtocol(addr, "add");

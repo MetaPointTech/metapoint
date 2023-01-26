@@ -26,27 +26,24 @@ test("test handler", async () => {
   describe("open channel", async () => {
     const { inputChannel, outputChannel } = open<number, number>(stream);
     inputChannel.post(2);
-    inputChannel.post(3);
     expect(await outputChannel.waitFor()).toBe(3);
+    inputChannel.post(3);
     expect(await outputChannel.waitFor()).toBe(4);
   });
 });
 
 test("test channel", async () => {
   const stream = await libp2p.dialProtocol(addr, "adding");
-
-  const { inputChannel, outputChannel } = open<number, number>(stream);
-
-  inputChannel.post(1);
-  inputChannel.post(2);
-
-  // for await (const msg of outputChannel) {
-  //   console.log(msg);
-  // }
-  expect(await outputChannel.waitFor()).toBe(2);
-  expect(await outputChannel.waitFor()).toBe(3);
-  expect(await outputChannel.waitFor()).toBe(3);
-  expect(await outputChannel.waitFor()).toBe(4);
-  expect(await outputChannel.waitFor()).toBe(4);
-  expect(await outputChannel.waitFor()).toBe(5);
+  const { inputChannel, outputChannel, ctx } = open<number, number>(stream);
+  let count = 0;
+  const my_num = Math.floor(Math.random() * 100);
+  inputChannel.post(my_num);
+  for await (const msg of outputChannel) {
+    count += 1;
+    expect(my_num + count).toBe(msg);
+    if (count === 3) {
+      ctx.done();
+    }
+  }
+  expect(count).toBe(3);
 });

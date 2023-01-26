@@ -36,8 +36,5 @@ await channel("adding", ({ inputChannel, outputChannel }) =>
 const stream = await libp2p.dialProtocol(addr, "adding")
 const { inputChannel, outputChannel } = open(stream)
 inputChannel.post(1)
-for await (const msg of outputChannel) {
-    console.log(msg) // 2 3 4 5 ...
-}
+outputChannel.attach((msg) => console.log(msg)) // 2 3 4 5 ...
 ```
-

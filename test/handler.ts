@@ -23,18 +23,16 @@ export const startServer = async () => {
 
   await channel<number, number, void>(
     "adding",
-    ({ inputChannel, outputChannel }, ctx) => {
+    ({ inputChannel, outputChannel }) => {
       inputChannel.attach((data: number) => {
-        let n = 1;
+        let n = 0;
         const task = setInterval(() => {
+          n += 1;
           outputChannel.post(data + n);
           // add 3 times
           if (n === 3) {
             clearInterval(task);
-
-            ctx.done();
           }
-          n += 1;
         }, 100);
       });
     },

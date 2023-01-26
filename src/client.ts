@@ -1,7 +1,6 @@
-import type { Stream } from "@libp2p/interface-connection";
+import { Stream } from "@libp2p/interface-connection";
 import { decode, encode } from "./utils";
 import { consume, transform } from "streaming-iterables";
-// todo 联通两端 Ctx
 import { Evt } from "evt";
 
 const fetchStream = <I, O>(
@@ -26,17 +25,18 @@ const open = <I, O, C = void>(
   stream: Stream,
   ctx = Evt.newCtx<C>(),
 ) => {
-  const inputChannel: Evt<I> = stream.metadata.inputChannel ??
-    (stream.metadata.inputChannel = Evt.create<I>().pipe(ctx));
-  const outputChannel: Evt<O> = stream.metadata.outputChannel ??
-    (stream.metadata.outputChannel = Evt.create<O>().pipe(ctx));
-  const outputIterator = fetchStream<I, O>(stream, inputChannel);
+  const inputChannel: Evt<I> = Evt.create<I>();
+  const outputChannel: Evt<O> = Evt.create<O>();
+  const outputIterator = fetchStream<I, O>(stream, inputChannel.iter(ctx));
 
   consume(transform(
     Infinity,
     (data) => outputChannel.post(data),
     outputIterator,
   ));
+
+  outputChannel[Symbol.asyncIterator] = () =>
+    outputChannel.iter(ctx)[Symbol.asyncIterator]();
 
   return {
     inputChannel,

@@ -2,7 +2,10 @@
   "name": "prpc",
   "version": "1.0.0",
   "description": "",
-  "keywords": ["libp2p","rpc"],
+  "keywords": [
+    "libp2p",
+    "rpc"
+  ],
   "author": "",
   "license": "",
   "type": "module",

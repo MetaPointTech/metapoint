@@ -3,7 +3,7 @@ import { mplex } from "@libp2p/mplex";
 import { noise } from "@chainsafe/libp2p-noise";
 import { tcp } from "@libp2p/tcp";
 import { newPRPC } from "../src";
-import { expect, test } from "vitest";
+import { describe, expect, test } from "vitest";
 import { startServer } from "./handler";
 
 const addr = await startServer();
@@ -18,13 +18,35 @@ const libp2p = await createLibp2p({
 
 const { fetch } = newPRPC(libp2p);
 
-test("add handler", async () => {
+test("test handler", async () => {
   const stream = await libp2p.dialProtocol(addr, "add");
-  // fetch input style
-  expect(await fetch<number, number>(stream, 1)).toBe(2);
+  describe("fetch input style", async () => {
+    expect(await fetch<number, number>(stream, 1)).toBe(2);
+    expect(await fetch<number, number>(stream, 2)).toBe(3);
+  });
+
+  describe("fetch event style", async () => {
+    const { inputChannel, outputChannel } = fetch<number, number>(stream);
+    inputChannel.post(2);
+    inputChannel.post(3);
+    expect(await outputChannel.waitFor()).toBe(3);
+    expect(await outputChannel.waitFor()).toBe(4);
+  });
+});
+
+test("test channel", async () => {
+  const stream = await libp2p.dialProtocol(addr, "adding");
 
   // fetch event style
   const { inputChannel, outputChannel } = fetch<number, number>(stream);
+
+  inputChannel.post(1);
   inputChannel.post(2);
+
+  expect(await outputChannel.waitFor()).toBe(2);
   expect(await outputChannel.waitFor()).toBe(3);
+  expect(await outputChannel.waitFor()).toBe(3);
+  expect(await outputChannel.waitFor()).toBe(4);
+  expect(await outputChannel.waitFor()).toBe(4);
+  expect(await outputChannel.waitFor()).toBe(5);
 });

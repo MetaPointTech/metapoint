@@ -2,15 +2,23 @@ import type { Libp2p } from "libp2p";
 import type { Stream } from "@libp2p/interface-connection";
 import { decode, encode } from "./utils";
 import { consume, transform } from "streaming-iterables";
+// todo Ctx
 import { Evt } from "evt";
 
-export type IteratorFunc<I, O> = (
+type IteratorFunc<I, O> = (
   input: AsyncIterable<I> | Iterable<I>,
 ) => AsyncIterable<O> | Iterable<O>;
 
 export type Func<I, O> = (
   input?: I,
 ) => Promise<O> | O;
+
+export type EventFunc<I, O> = (
+  { inputChannel, outputChannel }: {
+    inputChannel: Evt<I>;
+    outputChannel: Evt<O>;
+  },
+) => Promise<void> | void;
 
 const fetchStream = <I, O>(
   stream: Stream,
@@ -87,6 +95,24 @@ export const newPRPC = (node: Libp2p) => {
         // transform input
         (input) => transform(Infinity, (data) => func(data), input),
       ),
+    channel: async <I, O>(name: string, func: EventFunc<I, O>) => {
+      const inputChannel = Evt.create<I>();
+      const outputChannel = Evt.create<O>();
+      return await handleStream<I, O>(
+        name,
+        // transform input
+        (input) => {
+          // send input to inputChannel
+          consume(
+            transform(Infinity, (data) => inputChannel.post(data), input),
+          );
+          // process func
+          func({ inputChannel, outputChannel });
+          // return outputChannel
+          return outputChannel;
+        },
+      );
+    },
     fetch,
   };
 };

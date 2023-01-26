@@ -14,11 +14,26 @@ export const startServer = async () => {
     connectionEncryption: [noise()],
   });
 
-  const { handle } = newPRPC(libp2p);
+  const { handle, channel } = newPRPC(libp2p);
 
   await handle("add", (data: number) => {
     console.log("server received: " + data);
     return data + 1;
+  });
+
+  await channel<number, number>("adding", (channel) => {
+    const { inputChannel, outputChannel } = channel;
+    inputChannel.attach((data) => {
+      let n = 1;
+      const task = setInterval(async () => {
+        outputChannel.post(data + n);
+        // add 3 times
+        if (n === 3) {
+          clearInterval(task);
+        }
+        n += 1;
+      }, 100);
+    });
   });
 
   return libp2p.getMultiaddrs()[0];

@@ -1,11 +1,11 @@
-# prpc
+# libp2p-transport
 
-rpc/channel communication based on libp2p
+peer to peer rpc/channel communication based on libp2p
 
 ## example
 **rpc**
 ```typescript
-import { serve, fetch } from "prpc"
+import { serve, fetch } from "libp2p-transport"
 
 // server side
 const { handle } = serve(libp2p)
@@ -18,7 +18,7 @@ await fetch(stream, 1) // 2
 
 **channel**
 ```typescript
-import { serve, open } from "prpc"
+import { serve, open } from "libp2p-transport"
 
 // server side
 const { channel } = serve(libp2p)

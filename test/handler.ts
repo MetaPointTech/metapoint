@@ -21,20 +21,24 @@ export const startServer = async () => {
     return data + 1;
   });
 
-  await channel<number, number>("adding", (channel) => {
-    const { inputChannel, outputChannel } = channel;
-    inputChannel.attach((data) => {
-      let n = 1;
-      const task = setInterval(() => {
-        outputChannel.post(data + n);
-        // add 3 times
-        if (n === 3) {
-          clearInterval(task);
-        }
-        n += 1;
-      }, 100);
-    });
-  });
+  await channel<number, number, void>(
+    "adding",
+    ({ inputChannel, outputChannel }, ctx) => {
+      inputChannel.attach((data: number) => {
+        let n = 1;
+        const task = setInterval(() => {
+          outputChannel.post(data + n);
+          // add 3 times
+          if (n === 3) {
+            clearInterval(task);
+
+            ctx.done();
+          }
+          n += 1;
+        }, 100);
+      });
+    },
+  );
 
   return libp2p.getMultiaddrs()[0];
 };

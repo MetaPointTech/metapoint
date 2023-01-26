@@ -2,7 +2,7 @@ import { createLibp2p } from "libp2p";
 import { mplex } from "@libp2p/mplex";
 import { noise } from "@chainsafe/libp2p-noise";
 import { tcp } from "@libp2p/tcp";
-import { fetch } from "../src";
+import { fetch, open } from "../src";
 import { describe, expect, test } from "vitest";
 import { startServer } from "./handler";
 
@@ -23,8 +23,8 @@ test("test handler", async () => {
     expect(await fetch<number, number>(stream, 2)).toBe(3);
   });
 
-  describe("fetch event style", async () => {
-    const { inputChannel, outputChannel } = fetch<number, number>(stream);
+  describe("open channel", async () => {
+    const { inputChannel, outputChannel } = open<number, number>(stream);
     inputChannel.post(2);
     inputChannel.post(3);
     expect(await outputChannel.waitFor()).toBe(3);
@@ -35,12 +35,14 @@ test("test handler", async () => {
 test("test channel", async () => {
   const stream = await libp2p.dialProtocol(addr, "adding");
 
-  // fetch event style
-  const { inputChannel, outputChannel } = fetch<number, number>(stream);
+  const { inputChannel, outputChannel } = open<number, number>(stream);
 
   inputChannel.post(1);
   inputChannel.post(2);
 
+  // for await (const msg of outputChannel) {
+  //   console.log(msg);
+  // }
   expect(await outputChannel.waitFor()).toBe(2);
   expect(await outputChannel.waitFor()).toBe(3);
   expect(await outputChannel.waitFor()).toBe(3);

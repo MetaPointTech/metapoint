@@ -18,7 +18,7 @@ await fetch(stream, 1) // 2
 
 **channel**
 ```typescript
-import { serve, fetch } from "prpc"
+import { serve, open } from "prpc"
 
 // server side
 const { channel } = serve(libp2p)
@@ -34,7 +34,7 @@ await channel("adding", ({ inputChannel, outputChannel }) =>
 
 // client side
 const stream = await libp2p.dialProtocol(addr, "adding")
-const { inputChannel, outputChannel } = await fetch(stream)
+const { inputChannel, outputChannel } = open(stream)
 inputChannel.post(1)
 for await (const msg of outputChannel) {
     console.log(msg) // 2 3 4 5 ...

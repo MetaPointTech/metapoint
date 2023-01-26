@@ -1,8 +1,7 @@
 import type { Libp2p } from "libp2p";
 import { decode, encode } from "./utils";
 import { consume, transform } from "streaming-iterables";
-// todo Ctx
-import { Evt } from "evt";
+import { Ctx, Evt } from "evt";
 
 type IteratorFunc<I, O> = (
   input: AsyncIterable<I> | Iterable<I>,
@@ -12,11 +11,12 @@ export type Func<I, O> = (
   input?: I,
 ) => Promise<O> | O;
 
-export type EventFunc<I, O> = (
+export type EventFunc<I, O, C> = (
   { inputChannel, outputChannel }: {
     inputChannel: Evt<I>;
     outputChannel: Evt<O>;
   },
+  ctx?: Ctx<C>,
 ) => Promise<void> | void;
 
 export const serve = (node: Libp2p) => {
@@ -45,9 +45,13 @@ export const serve = (node: Libp2p) => {
         // transform input
         (input) => transform(Infinity, (data) => func(data), input),
       ),
-    channel: async <I, O>(name: string, func: EventFunc<I, O>) => {
-      const inputChannel = Evt.create<I>();
-      const outputChannel = Evt.create<O>();
+    channel: async <I, O, C = void>(
+      name: string,
+      func: EventFunc<I, O, C>,
+      ctx = Evt.newCtx<C>(),
+    ) => {
+      const inputChannel = Evt.create<I>().pipe(ctx);
+      const outputChannel = Evt.create<O>().pipe(ctx);
       return await handleStream<I, O>(
         name,
         // transform input
@@ -57,7 +61,7 @@ export const serve = (node: Libp2p) => {
             transform(Infinity, (data) => inputChannel.post(data), input),
           );
           // process func
-          func({ inputChannel, outputChannel });
+          func({ inputChannel, outputChannel }, ctx);
           // return outputChannel
           return outputChannel;
         },
@@ -66,4 +70,4 @@ export const serve = (node: Libp2p) => {
   };
 };
 
-export { fetch } from "./fetch";
+export * from "./fetch";

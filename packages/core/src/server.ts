@@ -11,7 +11,7 @@ type Func<I, O> = (
   input?: I,
 ) => Promise<O> | O;
 
-type EventFunc<I, O, C> = (
+type EventFunc<I, O> = (
   { inputChannel, outputChannel }: {
     inputChannel: Evt<I>;
     outputChannel: Evt<O>;
@@ -45,9 +45,9 @@ const serve = (node: Libp2p) => {
       (input) => transform(Infinity, (data) => func(data), input),
     );
 
-  const channel = async <I, O, C = void>(
+  const channel = async <I, O>(
     name: string,
-    func: EventFunc<I, O, C>,
+    func: EventFunc<I, O>,
   ) => {
     const inputChannel = Evt.create<I>();
     const outputChannel = Evt.create<O>();

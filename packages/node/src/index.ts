@@ -31,6 +31,10 @@ export const peer = async () => {
     stop: async () => {
       await libp2p.stop();
     },
+    meta: (): ServerMeta => ({
+      addrs: libp2p.getMultiaddrs().map((d) => d.toString()),
+      endpoint: Array.from(endpoints.values()),
+    }),
     handle: async <I, O>(meta: EndpointMeta<I, O>) => {
       const name = makeProtocol(meta.meta.name, meta.meta.version);
       if (meta.type === "channel") {
@@ -89,10 +93,6 @@ export const peer = async () => {
         }),
       );
     },
-    meta: (): ServerMeta => ({
-      addrs: libp2p.getMultiaddrs().map((d) => d.toString()),
-      endpoint: Array.from(endpoints.values()),
-    }),
     // todo 通过 ip/domain & port & ServerMeta 生成 proxy 对象
     fetcher: () => {},
     connect: async <I, O, C>(meta: Meta<I, O>, addr: Multiaddr) => {

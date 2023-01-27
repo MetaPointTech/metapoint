@@ -4,7 +4,12 @@
   "description": "⚡Meta first and low-code. Peer-to-Peer typesafe APIs or Channels made easy.",
   "keywords": [
     "libp2p",
-    "rpc"
+    "rpc",
+    "channel",
+    "zod",
+    "low-code",
+    "p2p",
+    "subscription"
   ],
   "author": "sovlookup <gonorth@qq.com>",
   "license": "MIT",

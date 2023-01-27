@@ -1,7 +1,7 @@
 {
   "name": "metapoint",
   "version": "0.0.1",
-  "description": "",
+  "description": "⚡Meta first and low-code. Peer-to-Peer typesafe APIs or Channels made easy.",
   "keywords": [
     "libp2p",
     "rpc"

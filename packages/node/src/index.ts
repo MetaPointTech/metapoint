@@ -1,4 +1,4 @@
-import { EventFunc, fetch, Func, open, serve } from "libp2p-transport-core";
+import { EventFunc, fetch, Func, open, serve } from "libp2p-transport";
 import { z, ZodType } from "zod";
 import { createLibp2p } from "libp2p";
 import type { Multiaddr } from "@multiformats/multiaddr";

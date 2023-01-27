@@ -1,40 +1,11 @@
-# libp2p-transport
+# MetaPoint
 
-peer to peer rpc/channel communication based on libp2p
+Meta first low-code web framework. Peer-to-Peer typesafe APIs or Channels made
+easy.
 
-## example
-**rpc**
-```typescript
-import { serve, fetch } from "libp2p-transport"
+## Intro
 
-// server side
-const { handle } = serve(libp2p)
-await handle("add", (data: number) => data + 1)
+MetaPoint allows you to easily build typesafe APIs or Channels wherever
+JavaScript runs.
 
-// client side
-const stream = await libp2p.dialProtocol(addr, "add")
-await fetch(stream, 1) // 2
-```
-
-**channel**
-```typescript
-import { serve, open } from "libp2p-transport"
-
-// server side
-const { channel } = serve(libp2p)
-await channel("adding", ({ inputChannel, outputChannel }) =>
-    inputChannel.attach((data: number) => {
-      let n = 0
-      setInterval(() => {
-        n += 1
-        outputChannel.post(data + n)
-      }, 1000)
-    }),
-)
-
-// client side
-const stream = await libp2p.dialProtocol(addr, "adding")
-const { inputChannel, outputChannel } = open(stream)
-inputChannel.post(1)
-outputChannel.attach((msg) => console.log(msg)) // 2 3 4 5 ...
-```
+## Quickstart

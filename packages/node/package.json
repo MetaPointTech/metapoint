@@ -1,5 +1,5 @@
 {
-  "name": "libp2p-transport",
+  "name": "metapoint",
   "version": "0.0.1",
   "description": "",
   "keywords": [
@@ -8,13 +8,14 @@
   ],
   "author": "sovlookup <gonorth@qq.com>",
   "license": "MIT",
-  "homepage": "https://github.com/SOVLOOKUP/libp2p-transport",
+  "homepage": "https://github.com/SOVLOOKUP/metapoint",
+  
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/SOVLOOKUP/libp2p-transport"
+    "url": "git+https://github.com/SOVLOOKUP/metapoint"
   },
   "bugs": {
-    "url": "https://github.com/SOVLOOKUP/libp2p-transport/issues"
+    "url": "https://github.com/SOVLOOKUP/metapoint/issues"
   },
   "type": "module",
   "main": "dist/index.cjs",
@@ -31,7 +32,7 @@
     "@multiformats/multiaddr": "^11.3.0",
     "evt": "^2.4.13",
     "libp2p": "^0.42.2",
-    "libp2p-transport-core": "workspace:*",
+    "libp2p-transport": "workspace:*",
     "zod": "^3.20.2"
   },
   "devDependencies": {

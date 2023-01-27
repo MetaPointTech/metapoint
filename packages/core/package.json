@@ -1,5 +1,5 @@
 {
-  "name": "libp2p-transport-core",
+  "name": "libp2p-transport",
   "version": "0.0.1",
   "description": "peer to peer rpc/channel communication based on libp2p",
   "keywords": [
@@ -8,13 +8,13 @@
   ],
   "author": "sovlookup <gonorth@qq.com>",
   "license": "MIT",
-  "homepage": "https://github.com/SOVLOOKUP/libp2p-transport",
+  "homepage": "https://github.com/SOVLOOKUP/metapoint/tree/master/packages/core",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/SOVLOOKUP/libp2p-transport"
+    "url": "git+https://github.com/SOVLOOKUP/metapoint"
   },
   "bugs": {
-    "url": "https://github.com/SOVLOOKUP/libp2p-transport/issues"
+    "url": "https://github.com/SOVLOOKUP/metapoint/issues"
   },
   "type": "module",
   "main": "dist/index.cjs",

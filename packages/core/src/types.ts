@@ -24,6 +24,7 @@ export interface Codec<T> {
 export interface InitOptions<T> {
   // custom codec
   codec?: Codec<T>;
+  // todo 断言校验器
 }
 
 export interface OpenInitOptions<C, T> extends InitOptions<T> {

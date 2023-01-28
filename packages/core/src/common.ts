@@ -1,6 +1,12 @@
+import { Evt } from "evt";
 import { defaultCodec } from "./codec";
-import type { InitOptions } from "./types";
+import type { InitOptions, OpenInitOptions } from "./types";
 
-export const defaultOptions: Required<InitOptions<any>> = {
+export const defaultInitOptions: Required<InitOptions<any>> = {
   codec: defaultCodec,
+};
+
+export const defaultOpenInitOptions: Required<OpenInitOptions<void, any>> = {
+  codec: defaultCodec,
+  ctx: Evt.newCtx(),
 };

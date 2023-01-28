@@ -1,7 +1,7 @@
 import { Stream } from "@libp2p/interface-connection";
 import { consume, transform } from "streaming-iterables";
 import { Evt } from "evt";
-import { defaultOptions } from "./common";
+import { defaultInitOptions, defaultOpenInitOptions } from "./common";
 import type { Codec, InitOptions, OpenInitOptions } from "./types";
 
 const fetchStream = <T, I extends T, O extends T>(
@@ -30,10 +30,9 @@ const open = <I extends T, O extends T, T = any, C = void>(
   options?: OpenInitOptions<C, T>,
 ) => {
   const runtimeOptions = {
-    ...defaultOptions,
-    ctx: Evt.newCtx<C>(),
+    ...defaultOpenInitOptions,
     ...options,
-  } as Required<OpenInitOptions<C, T>>;
+  };
 
   const inputChannel: Evt<I> = Evt.create<I>();
   const outputChannel: Evt<O> = Evt.create<O>();
@@ -64,9 +63,9 @@ const fetch = async <I extends T, O extends T, T = any>(
   options?: InitOptions<T>,
 ): Promise<O> => {
   const runtimeOptions = {
-    ...defaultOptions,
+    ...defaultInitOptions,
     ...options,
-  } as Required<InitOptions<T>>;
+  };
 
   return (await fetchStream<T, I, O>(stream, [input], runtimeOptions.codec)
     .next())

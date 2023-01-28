@@ -8,13 +8,13 @@ import type {
 } from "./types";
 import { consume, transform } from "streaming-iterables";
 import { Evt } from "evt";
-import { defaultOptions } from "./common";
+import { defaultInitOptions } from "./common";
 
 export const serve = <T>(node: Libp2p, options?: InitOptions<T>) => {
   const runtimeOptions = {
-    ...defaultOptions,
+    ...defaultInitOptions,
     ...options,
-  } as Required<InitOptions<T>>;
+  };
 
   const handleStream = async <I extends T, O extends T>(
     name: string,

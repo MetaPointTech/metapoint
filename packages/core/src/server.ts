@@ -1,57 +1,63 @@
 import type { Libp2p } from "libp2p";
-import { decode, encode } from "./utils";
+import type {
+  Codec,
+  EventFunc,
+  Func,
+  InitOptions,
+  IteratorFunc,
+} from "./types";
 import { consume, transform } from "streaming-iterables";
 import { Evt } from "evt";
+import { defaultOptions } from "./common";
 
-type IteratorFunc<I, O> = (
-  input: AsyncIterable<I> | Iterable<I>,
-) => AsyncIterable<O> | Iterable<O>;
+export const serve = <T>(node: Libp2p, options?: InitOptions<T>) => {
+  const runtimeOptions = {
+    ...defaultOptions,
+    ...options,
+  } as Required<InitOptions<T>>;
 
-type Func<I, O> = (
-  input?: I,
-) => Promise<O> | O;
-
-type EventFunc<I, O> = (
-  { inputChannel, outputChannel }: {
-    inputChannel: Evt<I>;
-    outputChannel: Evt<O>;
-  },
-) => Promise<void> | void;
-
-const handleStream =
-  (node: Libp2p) => async <I, O>(name: string, func: IteratorFunc<I, O>) =>
+  const handleStream = async <I extends T, O extends T>(
+    name: string,
+    func: IteratorFunc<I, O>,
+    codec: Codec<T>,
+  ) =>
     await node.handle(name, ({ stream }) => {
       // decode input
       const inputIterator = transform(
         Infinity,
-        (data) => decode<I>(data.subarray()),
+        (data) => codec.decoder(data.subarray()),
         stream.source,
-      );
+      ) as AsyncIterableIterator<I>;
+      // todo 校验 T 能断言为 I
+
       // process func
       const outputIterator = transform(
         Infinity,
-        (data) => encode(data),
+        (data) => codec.encoder(data),
         func(inputIterator),
       );
       // return output
       stream.sink(outputIterator);
     });
 
-const serve = (node: Libp2p) => {
-  const handle = async <I, O>(name: string, func: Func<I, O>) =>
-    await handleStream(node)<I, O>(
+  const handle = async <I extends T, O extends T>(
+    name: string,
+    func: Func<I, O>,
+  ) =>
+    await handleStream<I, O>(
       name,
       // transform input
       (input) => transform(Infinity, (data) => func(data), input),
+      runtimeOptions.codec,
     );
 
-  const channel = async <I, O>(
+  const channel = async <I extends T, O extends T>(
     name: string,
     func: EventFunc<I, O>,
   ) => {
     const inputChannel = Evt.create<I>();
     const outputChannel = Evt.create<O>();
-    return await handleStream(node)<I, O>(
+    return await handleStream<I, O>(
       name,
       // transform input
       (input) => {
@@ -64,11 +70,9 @@ const serve = (node: Libp2p) => {
         // return outputChannel
         return outputChannel;
       },
+      runtimeOptions.codec,
     );
   };
 
   return { handle, channel };
 };
-
-export type { EventFunc, Func };
-export { serve };

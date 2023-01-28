@@ -43,3 +43,8 @@ const { inputChannel, outputChannel } = open(stream);
 inputChannel.post(1);
 outputChannel.attach((msg) => console.log(msg)); // 2 3 4 5 ...
 ```
+
+## Features
+
+- Data codec agnostic
+- Transport protocol agnostic

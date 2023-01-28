@@ -3,6 +3,7 @@ import { mplex } from "@libp2p/mplex";
 import { noise } from "@chainsafe/libp2p-noise";
 import { tcp } from "@libp2p/tcp";
 import { serve } from "../src";
+import { load } from "protobufjs";
 
 export const startServer = async () => {
   const libp2p = await createLibp2p({
@@ -14,6 +15,7 @@ export const startServer = async () => {
     connectionEncryption: [noise()],
   });
 
+  // default codec
   const { handle, channel } = serve(libp2p);
 
   await handle("add", (data: number) => {
@@ -21,7 +23,7 @@ export const startServer = async () => {
     return data + 1;
   });
 
-  await channel<number, number, void>(
+  await channel<number, number>(
     "adding",
     ({ inputChannel, outputChannel }) => {
       inputChannel.attach((data: number) => {
@@ -38,5 +40,12 @@ export const startServer = async () => {
     },
   );
 
+  // protobuf codec
+  const define = await load("msg.proto");
+  const Msg = define.lookupType("Add");
+
+  Msg.encode(Msg.create({
+    value: 1,
+  }));
   return libp2p.getMultiaddrs()[0];
 };

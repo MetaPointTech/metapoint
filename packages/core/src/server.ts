@@ -16,7 +16,7 @@ export const serve = <T>(node: Libp2p, options?: InitOptions<T>) => {
     ...options,
   };
 
-  const handleStream = async <I extends T, O extends T>(
+  const handleStream = async <T, I extends T, O extends T>(
     name: string,
     func: IteratorFunc<I, O>,
     codec: Codec<T>,
@@ -25,10 +25,15 @@ export const serve = <T>(node: Libp2p, options?: InitOptions<T>) => {
       // decode input
       const inputIterator = transform(
         Infinity,
-        (data) => codec.decoder(data.subarray()),
+        async (data) => {
+          let result = await codec.decoder(data.subarray()) as Awaited<I>;
+          if (codec.parser) {
+            result = await codec.parser(result);
+          }
+          return result;
+        },
         stream.source,
-      ) as AsyncIterableIterator<I>;
-      // todo 校验 T 能断言为 I
+      );
 
       // process func
       const outputIterator = transform(
@@ -44,7 +49,7 @@ export const serve = <T>(node: Libp2p, options?: InitOptions<T>) => {
     name: string,
     func: Func<I, O>,
   ) =>
-    await handleStream<I, O>(
+    await handleStream<T, I, O>(
       name,
       // transform input
       (input) => transform(Infinity, (data) => func(data), input),
@@ -57,7 +62,7 @@ export const serve = <T>(node: Libp2p, options?: InitOptions<T>) => {
   ) => {
     const inputChannel = Evt.create<I>();
     const outputChannel = Evt.create<O>();
-    return await handleStream<I, O>(
+    return await handleStream<T, I, O>(
       name,
       // transform input
       (input) => {

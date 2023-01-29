@@ -19,12 +19,12 @@ export type EventFunc<I, O> = (
 export interface Codec<T> {
   encoder: (data: T) => Uint8Array | Promise<Uint8Array>;
   decoder: (data: Uint8Array) => T | Promise<T>;
+  parser?: <P>(data: T) => P | Promise<P>;
 }
 
 export interface InitOptions<T> {
   // custom codec
   codec?: Codec<T>;
-  // todo IO 断言校验/转换器
 }
 
 export interface OpenInitOptions<C, T> extends InitOptions<T> {

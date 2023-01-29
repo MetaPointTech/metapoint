@@ -16,11 +16,15 @@ const fetchStream = <T, I extends T, O extends T>(
   );
   const outputIterator = transform(
     Infinity,
-    (data) => codec.decoder(data.subarray()),
+    async (data) => {
+      let result = await codec.decoder(data.subarray()) as Awaited<O>;
+      if (codec.parser) {
+        result = await codec.parser(result);
+      }
+      return result;
+    },
     stream.source,
-  ) as AsyncIterableIterator<O>;
-  // todo 校验 T 能断言为 O
-
+  );
   stream.sink(inputIterator);
   return outputIterator;
 };

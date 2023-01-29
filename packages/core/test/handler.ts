@@ -40,7 +40,7 @@ export const startServer = async () => {
     },
   );
 
-  // todo protobuf codec
+  // todo json codec
   const define = await load("test/msg.proto");
   const Msg = define.lookupType("Add");
 

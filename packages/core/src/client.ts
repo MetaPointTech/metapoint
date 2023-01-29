@@ -16,13 +16,7 @@ const fetchStream = <T, I extends T, O extends T>(
   );
   const outputIterator = transform(
     Infinity,
-    async (data) => {
-      let result = await codec.decoder(data.subarray()) as Awaited<O>;
-      if (codec.parser) {
-        result = await codec.parser(result);
-      }
-      return result;
-    },
+    async (data) => await codec.decoder(data.subarray()) as Awaited<O>,
     stream.source,
   );
   stream.sink(inputIterator);

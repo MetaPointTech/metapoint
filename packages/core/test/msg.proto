@@ -1,5 +1,0 @@
-syntax = "proto3";
-
-message Add {
-    int64 value = 0;
-}

@@ -25,13 +25,7 @@ export const serve = <T>(node: Libp2p, options?: InitOptions<T>) => {
       // decode input
       const inputIterator = transform(
         Infinity,
-        async (data) => {
-          let result = await codec.decoder(data.subarray()) as Awaited<I>;
-          if (codec.parser) {
-            result = await codec.parser(result);
-          }
-          return result;
-        },
+        async (data) => await codec.decoder(data.subarray()) as Awaited<I>,
         stream.source,
       );
 

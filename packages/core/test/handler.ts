@@ -2,8 +2,9 @@ import { createLibp2p } from "libp2p";
 import { mplex } from "@libp2p/mplex";
 import { noise } from "@chainsafe/libp2p-noise";
 import { tcp } from "@libp2p/tcp";
-import { Codec, serve } from "../src";
-import { load } from "protobufjs";
+import { serve } from "../src";
+import { jsonCodec } from "./jsonCodec";
+import type { Data } from "./types";
 
 export const startServer = async () => {
   const libp2p = await createLibp2p({
@@ -18,10 +19,7 @@ export const startServer = async () => {
   // default codec
   const { handle, channel } = serve(libp2p);
 
-  await handle("add", (data: number) => {
-    console.log("server received: " + data);
-    return data + 1;
-  });
+  await handle("add", (data: number) => data + 1);
 
   await channel<number, number>(
     "adding",
@@ -40,24 +38,32 @@ export const startServer = async () => {
     },
   );
 
-  // todo json codec
-  const define = await load("test/msg.proto");
-  const Msg = define.lookupType("Add");
+  // json codec
+  const customServer = serve(libp2p, { codec: jsonCodec });
 
-  const customCodec: Codec<number> = {
-    encoder: (data: number): Uint8Array => {
-      Msg.encode(Msg.create({ value: data }));
-      throw new Error("Function not implemented.");
-    },
-    decoder: (array: Uint8Array): number => {
-      throw new Error("Function not implemented.");
-    },
-  };
-  // const customServer = serve(libp2p, { codec: customCodec });
+  await customServer.handle<Data, Data>("addJson", (data) => {
+    data.value += 1;
+    return data;
+  });
 
-  console.log(Msg.encode(Msg.create({
-    value: 1,
-  })));
+  await customServer.channel<Data, Data>(
+    "addingJson",
+    ({ inputChannel, outputChannel }) => {
+      inputChannel.attach((data) => {
+        let n = 0;
+        const task = setInterval(() => {
+          n += 1;
+          outputChannel.post({
+            value: data.value + n,
+          });
+          // add 3 times
+          if (n === 3) {
+            clearInterval(task);
+          }
+        }, 100);
+      });
+    },
+  );
 
   return libp2p.getMultiaddrs()[0];
 };

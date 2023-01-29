@@ -19,7 +19,6 @@ export type EventFunc<I, O> = (
 export interface Codec<T> {
   encoder: (data: T) => Uint8Array | Promise<Uint8Array>;
   decoder: (data: Uint8Array) => T | Promise<T>;
-  parser?: <P>(data: T) => P | Promise<P>;
 }
 
 export interface InitOptions<T> {

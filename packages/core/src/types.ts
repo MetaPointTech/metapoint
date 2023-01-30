@@ -1,20 +1,13 @@
-import type { Evt } from "evt";
-import { Ctx } from "evt";
+import type { AnyIterable } from "streaming-iterables";
 
 export type IteratorFunc<I, O> = (
-  input: AsyncIterable<I> | Iterable<I>,
-) => AsyncIterable<O> | Iterable<O>;
+  input: AnyIterable<I>,
+) => AnyIterable<O>;
 
 export type Func<I, O> = (
   input: I,
+  send: (value: O) => Promise<void>,
 ) => Promise<O> | O;
-
-export type EventFunc<I, O> = (
-  { inputChannel, outputChannel }: {
-    inputChannel: Evt<I>;
-    outputChannel: Evt<O>;
-  },
-) => Promise<void> | void;
 
 export interface Codec<T> {
   encoder: (data: T) => Uint8Array | Promise<Uint8Array>;
@@ -26,6 +19,6 @@ export interface InitOptions<T> {
   codec?: Codec<T>;
 }
 
-export interface OpenInitOptions<C, T> extends InitOptions<T> {
-  ctx?: Ctx<C>;
+export interface TransportChannel<I, O> extends AsyncIterableIterator<O> {
+  send: (value: I) => Promise<void>;
 }

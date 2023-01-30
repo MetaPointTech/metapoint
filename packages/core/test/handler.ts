@@ -2,7 +2,7 @@ import { createLibp2p } from "libp2p";
 import { mplex } from "@libp2p/mplex";
 import { noise } from "@chainsafe/libp2p-noise";
 import { tcp } from "@libp2p/tcp";
-import { serve } from "../src";
+import { server } from "../src";
 import { jsonCodec } from "./jsonCodec";
 import type { Data } from "./types";
 
@@ -17,51 +17,32 @@ export const startServer = async () => {
   });
 
   // default codec
-  const { handle, channel } = serve(libp2p);
+  const handle = server(libp2p);
 
   await handle("add", (data: number) => data + 1);
 
-  await channel<number, number>(
+  await handle<number, number>(
     "adding",
-    ({ inputChannel, outputChannel }) => {
-      inputChannel.attach((data: number) => {
-        let n = 0;
-        const task = setInterval(() => {
-          n += 1;
-          outputChannel.post(data + n);
-          // add 3 times
-          if (n === 3) {
-            clearInterval(task);
-          }
-        }, 100);
-      });
+    async (data, send) => {
+      await send(data + 1);
+      await send(data + 2);
+      return data + 3;
     },
   );
 
   // json codec
-  const customServer = serve(libp2p, { codec: jsonCodec });
+  const handle2 = server(libp2p, { codec: jsonCodec });
 
-  await customServer.handle<Data, Data>("addJson", (data) => {
-    data.value += 1;
-    return data;
+  await handle2<Data, Data>("addJson", (data) => {
+    return { value: data.value + 1 };
   });
 
-  await customServer.channel<Data, Data>(
+  await handle2<Data, Data>(
     "addingJson",
-    ({ inputChannel, outputChannel }) => {
-      inputChannel.attach((data) => {
-        let n = 0;
-        const task = setInterval(() => {
-          n += 1;
-          outputChannel.post({
-            value: data.value + n,
-          });
-          // add 3 times
-          if (n === 3) {
-            clearInterval(task);
-          }
-        }, 100);
-      });
+    async (input, send) => {
+      await send({ value: input.value + 1 });
+      await send({ value: input.value + 2 });
+      return { value: input.value + 3 };
     },
   );
 

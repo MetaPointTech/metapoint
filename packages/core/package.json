@@ -1,10 +1,10 @@
 {
   "name": "libp2p-transport",
   "version": "0.0.1",
-  "description": "peer to peer rpc/channel communication based on libp2p",
+  "description": "peer to peer channel communication based on libp2p",
   "keywords": [
     "libp2p",
-    "rpc"
+    "channel"
   ],
   "author": "sovlookup <gonorth@qq.com>",
   "license": "MIT",
@@ -25,13 +25,14 @@
   ],
   "scripts": {
     "build": "tsup",
-    "test": "vitest"
+    "test": "vitest",
+    "bench": "vitest bench"
   },
   "dependencies": {
     "@libp2p/interface-connection": "^3.0.8",
     "@xobj/core": "^1.1.2",
-    "evt": "^2.4.13",
     "libp2p": "^0.42.2",
+    "queueable": "^5.3.1",
     "streaming-iterables": "^7.1.0"
   },
   "devDependencies": {

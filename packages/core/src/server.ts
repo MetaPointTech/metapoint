@@ -1,16 +1,10 @@
 import type { Libp2p } from "libp2p";
-import type {
-  Codec,
-  EventFunc,
-  Func,
-  InitOptions,
-  IteratorFunc,
-} from "./types";
+import type { Codec, Func, InitOptions, IteratorFunc } from "./types";
 import { consume, transform } from "streaming-iterables";
-import { Evt } from "evt";
 import { defaultInitOptions } from "./common";
+import { Channel } from "queueable";
 
-export const serve = <T>(node: Libp2p, options?: InitOptions<T>) => {
+export const server = <T>(node: Libp2p, options?: InitOptions<T>) => {
   const runtimeOptions = {
     ...defaultInitOptions,
     ...options,
@@ -28,7 +22,6 @@ export const serve = <T>(node: Libp2p, options?: InitOptions<T>) => {
         async (data) => await codec.decoder(data.subarray()) as Awaited<I>,
         stream.source,
       );
-
       // process func
       const outputIterator = transform(
         Infinity,
@@ -45,33 +38,19 @@ export const serve = <T>(node: Libp2p, options?: InitOptions<T>) => {
   ) =>
     await handleStream<T, I, O>(
       name,
-      // transform input
-      (input) => transform(Infinity, (data) => func(data), input),
-      runtimeOptions.codec,
-    );
-
-  const channel = async <I extends T, O extends T>(
-    name: string,
-    func: EventFunc<I, O>,
-  ) => {
-    const inputChannel = Evt.create<I>();
-    const outputChannel = Evt.create<O>();
-    return await handleStream<T, I, O>(
-      name,
-      // transform input
       (input) => {
-        // send input to inputChannel
-        consume(
-          transform(Infinity, (data) => inputChannel.post(data), input),
-        );
-        // process func
-        func({ inputChannel, outputChannel });
-        // return outputChannel
+        const outputChannel = new Channel<O>();
+        const send = async (value: O) => {
+          await outputChannel.push(value);
+        };
+        // transform input
+        consume(transform(Infinity, async (data) =>
+          await outputChannel.push(await func(data, send)), input));
+
         return outputChannel;
       },
       runtimeOptions.codec,
     );
-  };
 
-  return { handle, channel };
+  return handle;
 };

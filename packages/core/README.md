@@ -2,6 +2,12 @@
 
 peer to peer rpc/channel communication based on libp2p
 
+## Features
+
+- Data codec agnostic
+- Transport protocol agnostic
+- AsyncIterator style
+
 ## Quickstart
 
 **first**
@@ -17,7 +23,7 @@ const conn = await client(libp2p, addr);
 
 **↓↓↓ USAGE ↓↓↓**
 
-**one data-in one data-out**
+1. [ ] **one data-in one data-out**
 
 ```typescript
 // server side
@@ -35,7 +41,7 @@ await channelAdd.send(1);
 (await channelAdd.next()).value; // 2
 ```
 
-**one data-in multi data-out**
+2. [ ] **one data-in multi data-out**
 
 ```typescript
 // server side
@@ -57,7 +63,7 @@ await channelAdding.send(1);
 (await channelAdding.next()).value; // 4
 ```
 
-**bidirectional channel**
+3. [ ] **bidirectional channel**
 
 ```typescript
 // server side
@@ -80,9 +86,3 @@ while (true) {
   (await channelAdding.next()).value === num; // true
 }
 ```
-
-## Features
-
-- Data codec agnostic
-- Transport protocol agnostic
-- AsyncIterator style

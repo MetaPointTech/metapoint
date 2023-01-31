@@ -35,7 +35,7 @@ await handle<number, number>(
   },
 );
 // client side
-const add = await defaultClient<number, number>("add");
+const add = await conn<number, number>("add");
 const channelAdd = await add();
 await channelAdd.send(1);
 (await channelAdd.next()).value; // 2
@@ -55,7 +55,7 @@ await handle<number, number>(
   },
 );
 // client side
-const adding = await defaultClient<number, number>("adding");
+const adding = await conn<number, number>("adding");
 const channelAdding = await adding();
 await channelAdding.send(1);
 (await channelAdding.next()).value; // 2
@@ -77,7 +77,7 @@ await serve<number, number>(
 );
 
 // client side
-const channelAdd = await defaultClient<number, number>("channelAdd");
+const channelAdd = await conn<number, number>("channelAdd");
 const channel = await channelAdd();
 let num = 0;
 while (true) {

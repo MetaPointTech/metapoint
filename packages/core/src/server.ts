@@ -54,7 +54,7 @@ export const server = <T>(node: Libp2p, options?: InitOptions<T>) => {
       return outputChannel;
     });
 
-  const handleX = async <I extends T, O extends T>(
+  const serve = async <I extends T, O extends T>(
     name: string,
     func: FuncFactory<I, O>,
   ) =>
@@ -74,5 +74,5 @@ export const server = <T>(node: Libp2p, options?: InitOptions<T>) => {
       },
     );
 
-  return { handle, handleX };
+  return { handle, serve };
 };

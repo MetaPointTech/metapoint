@@ -29,7 +29,7 @@ export const startServer = async () => {
   const libp2p = await newNode();
 
   // default codec
-  const { handle, handleX } = server(libp2p);
+  const { handle, serve } = server(libp2p);
 
   await handle<number, number>(
     "add",
@@ -50,12 +50,12 @@ export const startServer = async () => {
   );
 
   // Infinity push handler
-  await handleX<number, number>(
+  await serve<number, number>(
     "repeating",
     repeatingService,
   );
 
-  await handleX<number, number>(
+  await serve<number, number>(
     "channelAdd",
     () => (data, send) => send(data + 1),
   );

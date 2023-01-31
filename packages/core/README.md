@@ -4,12 +4,23 @@ peer to peer rpc/channel communication based on libp2p
 
 ## Quickstart
 
+**first**
+
 ```typescript
 import { client, server } from "libp2p-transport";
 
-// server side ===============================================
+// server side
 const { handle, serve } = server(libp2p);
-// one data-in one data-out handle
+// client side
+const conn = await client(libp2p, addr);
+```
+
+**↓↓↓ USAGE ↓↓↓**
+
+**one data-in one data-out**
+
+```typescript
+// server side
 await handle<number, number>(
   "add",
   async (data, send, done) => {
@@ -17,8 +28,17 @@ await handle<number, number>(
     await done();
   },
 );
+// client side
+const add = await defaultClient<number, number>("add");
+const channelAdd = await add();
+await channelAdd.send(1);
+(await channelAdd.next()).value; // 2
+```
 
-// one data-in multi data-out handle
+**one data-in multi data-out**
+
+```typescript
+// server side
 await handle<number, number>(
   "adding",
   async (data, send, done) => {
@@ -28,8 +48,19 @@ await handle<number, number>(
     await done();
   },
 );
+// client side
+const adding = await defaultClient<number, number>("adding");
+const channelAdding = await adding();
+await channelAdding.send(1);
+(await channelAdding.next()).value; // 2
+(await channelAdding.next()).value; // 3
+(await channelAdding.next()).value; // 4
+```
 
-// Bidirectional channel
+**bidirectional channel**
+
+```typescript
+// server side
 const service = () => {
   const handle = (data, send) => send(data + 1);
   return handle;
@@ -39,25 +70,8 @@ await serve<number, number>(
   service,
 );
 
-// client side ===============================================
-const defaultClient = await client(libp2p, addr);
-const add = await defaultClient<number, number>("add");
-const adding = await defaultClient<number, number>("adding");
+// client side
 const channelAdd = await defaultClient<number, number>("channelAdd");
-
-// one data-in one data-out call
-const channelAdd = await add();
-await channelAdd.send(1);
-(await channelAdd.next()).value; // 2
-
-// one data-in many data-out call
-const channelAdding = await adding();
-await channelAdding.send(1);
-(await channelAdding.next()).value; // 2
-(await channelAdding.next()).value; // 3
-(await channelAdding.next()).value; // 4
-
-// Bidirectional channel
 const channel = await channelAdd();
 let num = 0;
 while (true) {
@@ -71,3 +85,4 @@ while (true) {
 
 - Data codec agnostic
 - Transport protocol agnostic
+- AsyncIterator style

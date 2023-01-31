@@ -1,71 +1,102 @@
-import { createLibp2p } from "libp2p";
-import { mplex } from "@libp2p/mplex";
-import { noise } from "@chainsafe/libp2p-noise";
-import { tcp } from "@libp2p/tcp";
 import { client } from "../src";
 import { describe, expect, test } from "vitest";
 import { startServer } from "./handler";
 import { jsonCodec } from "./jsonCodec";
 import type { Data, Json } from "./types";
+import { newNode } from "./node";
 
-const libp2p = await createLibp2p({
-  transports: [tcp()],
-  streamMuxers: [mplex()],
-  addresses: {
-    listen: ["/ip4/0.0.0.0/tcp/0"],
-  },
-  connectionEncryption: [noise()],
-});
+const libp2p = await newNode();
 const addr = await startServer();
-const addStream = await libp2p.dialProtocol(addr, "add");
-const addingStream = await libp2p.dialProtocol(addr, "adding");
-const addJsonStream = await libp2p.dialProtocol(addr, "addJson");
-const addingJsonStream = await libp2p.dialProtocol(addr, "addingJson");
-const add = client<number, number>(addStream);
-const adding = client<number, number>(addingStream);
-const addJson = client<Data, Data, Json>(addJsonStream, {
-  codec: jsonCodec,
-});
-const addingJson = client<Data, Data, Json>(addingJsonStream, {
-  codec: jsonCodec,
-});
+const defaultClient = await client(libp2p, addr);
+const jsonClient = await client(libp2p, addr, { codec: jsonCodec });
 
-describe("Server default codec", async () => {
-  test("test add handler", async () => {
-    await add.send(2);
-    await add.send(3);
-    expect((await add.next()).value).toBe(3);
-    expect((await add.next()).value).toBe(4);
+const addChannel = await defaultClient<number, number>("add");
+const addingChannel = await defaultClient<number, number>("adding");
+const addJsonChannel = await jsonClient<Data, Data, Json>("addJson");
+const addingJsonChannel = await jsonClient<Data, Data, Json>("addingJson");
+const repeatingChannel = await defaultClient<number, number>("repeating");
+
+describe.concurrent("Server default codec", async () => {
+  test("test add handler(one2one)", async () => {
+    const c = await addChannel();
+    await c.send(2);
+    let count = 0;
+    for await (const msg of c) {
+      expect(msg).toBe(3);
+      count += 1;
+    }
+    try {
+      await c.send(3);
+    } catch (error) {
+      expect(error !== undefined).toBe(true);
+    }
+    expect(count).toBe(1);
+    expect((await c.next()).value).toBe(undefined);
   });
 
-  test("test adding handler", async () => {
+  test("test adding handler(one2many)", async () => {
+    const c = await addingChannel();
     const my_num = Math.floor(Math.random() * 100);
-    await adding.send(my_num);
+    await c.send(my_num);
     let n = 1;
-    for await (const msg of adding) {
+    for await (const msg of c) {
       expect(msg).toStrictEqual(my_num + n);
       n += 1;
-      if (n > 3) break;
     }
+    expect(n).toStrictEqual(4);
   });
 });
 
-describe("Server JSON codec", async () => {
-  test("test add handler", async () => {
-    await addJson.send({ value: 2 });
-    await addJson.send({ value: 3 });
-    expect((await addJson.next()).value).toStrictEqual({ value: 3 });
-    expect((await addJson.next()).value).toStrictEqual({ value: 4 });
+describe.concurrent("Server JSON codec", async () => {
+  test("test add handler(one2one)", async () => {
+    const c = await addJsonChannel();
+    await c.send({ value: 2 });
+    let count = 0;
+    for await (const msg of c) {
+      expect(msg).toStrictEqual({ value: 3 });
+      count += 1;
+    }
+    expect(count).toBe(1);
+    expect((await c.next()).value).toBe(undefined);
   });
 
-  test("test adding handler", async () => {
+  test("test add handler(one2one)2", async () => {
+    const c = await addJsonChannel();
+    await c.send({ value: 2 });
+    let count = 0;
+    for await (const msg of c) {
+      expect(msg).toStrictEqual({ value: 3 });
+      count += 1;
+    }
+    expect(count).toBe(1);
+    expect((await c.next()).value).toBe(undefined);
+  });
+
+  test("test adding handler(one2many)", async () => {
+    const c = await addingJsonChannel();
     const my_num = Math.floor(Math.random() * 100);
-    await addingJson.send({ value: my_num });
+    await c.send({ value: my_num });
     let n = 1;
-    for await (const msg of addingJson) {
+    for await (const msg of c) {
       expect(msg).toStrictEqual({ value: my_num + n });
       n += 1;
-      if (n > 3) break;
     }
+    expect(n).toStrictEqual(4);
+  });
+});
+
+describe("Infinity output service(one2Infinity)", async () => {
+  const c = await repeatingChannel();
+  test("Infinity out with control", async () => {
+    await c.send(1);
+    let count = 0;
+    for await (const msg of c) {
+      count += 1;
+      // console.log("repeatingChannel1: ", msg);
+      if (count === 2) {
+        c.done();
+      }
+    }
+    expect(count).toBe(2);
   });
 });

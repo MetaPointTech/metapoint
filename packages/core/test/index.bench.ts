@@ -1,37 +1,50 @@
-import { createLibp2p } from "libp2p";
-import { mplex } from "@libp2p/mplex";
-import { noise } from "@chainsafe/libp2p-noise";
-import { tcp } from "@libp2p/tcp";
 import { client } from "../src";
 import { bench, describe } from "vitest";
 import { startServer } from "./handler";
 import { jsonCodec } from "./jsonCodec";
 import type { Data, Json } from "./types";
-const libp2p = await createLibp2p({
-  transports: [tcp()],
-  streamMuxers: [mplex()],
-  addresses: {
-    listen: ["/ip4/0.0.0.0/tcp/0"],
-  },
-  connectionEncryption: [noise()],
-});
+import { startHttp } from "./http";
+import { newNode } from "./node";
+
+const libp2p = await newNode();
 const addr = await startServer();
 let num = Math.floor(Math.random() * 100);
-const addStream = await libp2p.dialProtocol(addr, "add");
-const addJsonStream = await libp2p.dialProtocol(addr, "addJson");
-const add = client<number, number>(addStream);
-const addJson = client<Data, Data, Json>(addJsonStream, {
-  codec: jsonCodec,
-});
+
+const defaultClient = await client(libp2p, addr);
+const channelAddChannel = await defaultClient<number, number>("channelAdd");
+const addChannel = await defaultClient<number, number>("add");
+const jsonClient = await client(libp2p, addr, { codec: jsonCodec });
+const addJsonChannel = await jsonClient<Data, Data, Json>("addJson");
 
 describe("json/xobj codec simple benchmark", async () => {
   bench("xobj codec", async () => {
-    await add.send(num);
-    await add.next();
+    const c = await addChannel();
+    await c.send(num);
+    for await (const _ of c) {}
   });
 
   bench("JSON codec", async () => {
-    await addJson.send({ value: num });
-    await addJson.next();
+    const c = await addJsonChannel();
+    await c.send({ value: num });
+    for await (const _ of c) {}
+  });
+});
+
+describe("libp2p-transport/http simple benchmark", async () => {
+  await startHttp();
+  const ca = await channelAddChannel();
+  bench("libp2p-transport", async () => {
+    const c = await addChannel();
+    await c.send(num);
+    for await (const _ of c) {}
+  });
+
+  bench("libp2p-transport(channel)", async () => {
+    await ca.send(num);
+    for await (const _ of ca) break;
+  });
+
+  bench("http", async () => {
+    await (await fetch("http://localhost:3000/1")).json();
   });
 });

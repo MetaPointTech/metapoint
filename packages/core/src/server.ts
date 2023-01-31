@@ -1,5 +1,5 @@
 import type { Libp2p } from "libp2p";
-import type { Func, FuncFactory, InitOptions, IterableFunc } from "./types";
+import type { Func, InitOptions, IterableFunc, Service } from "./types";
 import { consume, transform } from "streaming-iterables";
 import { defaultInitOptions } from "./common";
 import { Channel } from "queueable";
@@ -56,7 +56,7 @@ export const server = <T>(node: Libp2p, options?: InitOptions<T>) => {
 
   const serve = async <I extends T, O extends T>(
     name: string,
-    func: FuncFactory<I, O>,
+    func: Service<I, O>,
   ) =>
     await handleStream<I, O>(
       name,

@@ -111,7 +111,7 @@ export const client = async <DT = any>(
     const fetchOptions = {
       ...runtimeOptions,
       ...options,
-    };
+    } as InitOptions<T>;
     return async () =>
       channel<I, O, T>(await conn.newStream(name), fetchOptions);
   };

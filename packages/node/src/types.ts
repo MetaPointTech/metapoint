@@ -1,4 +1,4 @@
-import type { EventFunc, Func } from "libp2p-transport";
+import type { Func, FuncFactory } from "libp2p-transport";
 import type { z, ZodType } from "zod";
 
 type IsEqual<T, U> = (<T1>() => T1 extends T ? 1 : 2) extends
@@ -15,7 +15,7 @@ interface HandleEndpointMeta<I, O> {
 }
 
 interface ChannelEndpointMeta<I, O> {
-  type: "channel";
+  type: "serve";
   meta: Meta<I, O>;
   func: EventFunc<
     InferIOType<Meta<I, O>["input"], I>,

@@ -4,7 +4,6 @@
   "description": "⚡Meta first and low-code. Peer-to-Peer typesafe APIs or Channels made easy.",
   "keywords": [
     "libp2p",
-    "rpc",
     "channel",
     "zod",
     "low-code",
@@ -34,16 +33,14 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@multiformats/multiaddr": "^11.3.0",
-    "evt": "^2.4.13",
     "libp2p": "^0.42.2",
     "libp2p-transport": "workspace:*",
     "zod": "^3.20.2"
   },
   "devDependencies": {
     "tsup": "^6.5.0",
-    "typescript": "^4.9.4",
-    "vitest": "^0.28.2"
+    "typescript": "^4.9.5",
+    "vitest": "^0.28.3"
   },
   "tsup": {
     "entry": [

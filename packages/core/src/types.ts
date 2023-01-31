@@ -12,7 +12,7 @@ export type Func<I, O> = (
   done: () => Promise<void>,
 ) => Promise<void> | void;
 
-export type FuncFactory<I, O> = () => Promise<Func<I, O>> | Func<I, O>;
+export type Service<I, O> = () => Promise<Func<I, O>> | Func<I, O>;
 
 export interface Codec<T> {
   encoder: (data: T) => Uint8Array | Promise<Uint8Array>;

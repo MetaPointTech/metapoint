@@ -1,8 +1,6 @@
-import { fetch, open, serve } from "libp2p-transport";
+import { client, server } from "libp2p-transport";
 import { createLibp2p } from "libp2p";
 import { channelValidate, makeProtocol } from "./utils";
-import { Evt } from "evt";
-import type { Multiaddr } from "@multiformats/multiaddr";
 import type {
   EndpointMeta,
   EndpointMetaNoFunc,
@@ -22,7 +20,7 @@ export const peer = async () => {
   });
 
   const endpoints = new Map<string, EndpointMetaNoFunc<any, any>>();
-  const { handle, channel } = serve(libp2p);
+  const { handle, serve } = server(libp2p);
 
   return {
     start: async () => {
@@ -95,42 +93,42 @@ export const peer = async () => {
     },
     // todo 通过 ip/domain & port & ServerMeta 生成 proxy 对象
     fetcher: () => {},
-    connect: async <I, O, C>(meta: Meta<I, O>, addr: Multiaddr) => {
-      const stream = await libp2p.dialProtocol(
-        addr,
-        makeProtocol(meta.name, meta.version),
-      );
-      const ctx = Evt.newCtx<C>();
-      return {
-        fetch: async (input: InferIOType<typeof meta.input, I>) => {
-          if (meta.input) input = await meta.input.parseAsync(input);
-          let output = await fetch<
-            InferIOType<typeof meta.input, I>,
-            InferIOType<typeof meta.output, O>
-          >(stream, input);
-          if (meta.output) output = await meta.output.parseAsync(output);
-          return output;
-        },
-        open: () => {
-          let { inputChannel, outputChannel } = open<
-            InferIOType<typeof meta.input, I>,
-            InferIOType<typeof meta.output, O>,
-            C
-          >(stream, ctx);
+    // connect: async <I, O, C>(meta: Meta<I, O>, addr: string) => {
+    //   const stream = await libp2p.dialProtocol(
+    //     addr,
+    //     makeProtocol(meta.name, meta.version),
+    //   );
+    //   const ctx = Evt.newCtx<C>();
+    //   return {
+    //     fetch: async (input: InferIOType<typeof meta.input, I>) => {
+    //       if (meta.input) input = await meta.input.parseAsync(input);
+    //       let output = await fetch<
+    //         InferIOType<typeof meta.input, I>,
+    //         InferIOType<typeof meta.output, O>
+    //       >(stream, input);
+    //       if (meta.output) output = await meta.output.parseAsync(output);
+    //       return output;
+    //     },
+    //     open: () => {
+    //       let { inputChannel, outputChannel } = open<
+    //         InferIOType<typeof meta.input, I>,
+    //         InferIOType<typeof meta.output, O>,
+    //         C
+    //       >(stream, ctx);
 
-          inputChannel = channelValidate(meta.input, inputChannel, ctx);
-          outputChannel = channelValidate(meta.output, outputChannel, ctx);
+    //       inputChannel = channelValidate(meta.input, inputChannel, ctx);
+    //       outputChannel = channelValidate(meta.output, outputChannel, ctx);
 
-          return {
-            inputChannel,
-            outputChannel,
-          };
-        },
-        close: (result: C) => {
-          ctx.done(result);
-          stream.close();
-        },
-      };
-    },
+    //       return {
+    //         inputChannel,
+    //         outputChannel,
+    //       };
+    //     },
+    //     close: (result: C) => {
+    //       ctx.done(result);
+    //       stream.close();
+    //     },
+    //   };
+    // },
   };
 };

@@ -89,3 +89,5 @@ for await (const msg of channelAdding) {
   await channel.send(num);
 }
 ```
+
+more examples in [test](./test/index.test.ts)

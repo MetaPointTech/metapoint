@@ -17,7 +17,6 @@ export const makeProtocol = (name: string, version: number) => {
 //       const parsedValue = (meta as Exclude<typeof meta, undefined>)
 //         .safeParse(data);
 //       if (parsedValue.success === false) {
-//         // todo process type valid error
 //       }
 //       return parsedValue.success;
 //     };

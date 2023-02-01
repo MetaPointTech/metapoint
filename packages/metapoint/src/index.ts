@@ -14,6 +14,7 @@ export const peerServer = async <T = any, I extends T = T, O extends T = T>(
   metaInit?: EndpointMetaServer<I, O>[],
   options?: PeerInitOptions<T>,
 ) => {
+  // todo 自定义 codec 增加校验器
   let libp2p: Libp2p;
   if (options?.libp2p === undefined) {
     libp2p = await newNode();
@@ -51,20 +52,14 @@ export const peerServer = async <T = any, I extends T = T, O extends T = T>(
     );
   };
 
-  const conn = async <I, O>(meta: ServerMeta<I, O>) => {
+  const connect = async <I, O>(meta: ServerMeta<I, O>) => {
     // todo retry addrs
-    const newFetch = await client(libp2p, meta.addrs[0], options);
-    // type a = ServerMeta<I, O>["endpoint"];
-    for (const i of meta.endpoint) {
-      const name = makeProtocol(i.name, i.version);
+    const channel = await client(libp2p, meta.addrs[0], options);
 
-      const c = await newFetch(name);
-      // i.
-    }
-
-    const fetch = (name: string) => {
-      c();
-    };
+    // todo name 模糊 匹配 meta
+    // todo 匹配对应 meta 的 ts type (Proxy?)
+    // const name = makeProtocol(i.name, i.version);
+    return async (name: string) => await channel(name);
   };
 
   return {
@@ -90,7 +85,6 @@ export const peerServer = async <T = any, I extends T = T, O extends T = T>(
   };
 };
 
-// todo 通过 ip/domain & port & ServerMeta 生成 proxy 对象
 // fetcher: () => {},
 // connect: async <I, O, C>(meta: Meta<I, O>, addr: string) => {
 //   const stream = await libp2p.dialProtocol(

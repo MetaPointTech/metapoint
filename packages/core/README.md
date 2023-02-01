@@ -61,9 +61,9 @@ await handle<number, number>(
 const adding = await conn<number, number>("adding");
 const channelAdding = await adding();
 await channelAdding.send(1);
-(await channelAdding.next()).value; // 2
-(await channelAdding.next()).value; // 3
-(await channelAdding.next()).value; // 4
+for await (const msg of channelAdding) {
+  console.log(msg); // 2, 3, 4
+}
 ```
 
 3. [ ] **bidirectional channel**
@@ -82,9 +82,10 @@ await serve<number, number>(
 const channelAdd = await conn<number, number>("channelAdd");
 const channel = await channelAdd();
 let num = 0;
-while (true) {
-  await channel.send(num);
-  num++;
+await channel.send(num);
+for await (const msg of channelAdding) {
   (await channelAdding.next()).value === num; // true
+  num++;
+  await channel.send(num);
 }
 ```

@@ -73,10 +73,10 @@ const channel = <I extends T, O extends T, T = any>(
   };
 };
 
-export const client = async <DT = any>(
+export const client = async <T = any>(
   node: Libp2p,
   peer: string | Multiaddr | PeerId,
-  options?: InitOptions<DT>,
+  options?: InitOptions<T>,
 ) => {
   const runtimeOptions = {
     ...defaultInitOptions,
@@ -104,15 +104,6 @@ export const client = async <DT = any>(
   }
   const conn = await node.dial(peerToDail);
 
-  return async <I extends T, O extends T, T = DT>(
-    name: string,
-    options?: InitOptions<T>,
-  ) => {
-    const fetchOptions = {
-      ...runtimeOptions,
-      ...options,
-    } as InitOptions<T>;
-    return async () =>
-      channel<I, O, T>(await conn.newStream(name), fetchOptions);
-  };
+  return async <I extends T, O extends T>(name: string) =>
+    channel<I, O, T>(await conn.newStream(name), runtimeOptions);
 };

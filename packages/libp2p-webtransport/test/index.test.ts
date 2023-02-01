@@ -10,15 +10,9 @@ const addr = await startServer();
 const defaultClient = await client(libp2p, addr);
 const jsonClient = await client(libp2p, addr, { codec: jsonCodec });
 
-const addChannel = await defaultClient<number, number>("add");
-const addingChannel = await defaultClient<number, number>("adding");
-const addJsonChannel = await jsonClient<Data, Data, Json>("addJson");
-const addingJsonChannel = await jsonClient<Data, Data, Json>("addingJson");
-const repeatingChannel = await defaultClient<number, number>("repeating");
-
 describe.concurrent("Server default codec", async () => {
   test("test add handler(one2one)", async () => {
-    const c = await addChannel();
+    const c = await defaultClient<number, number>("add");
     await c.send(2);
     let count = 0;
     for await (const msg of c) {
@@ -35,7 +29,7 @@ describe.concurrent("Server default codec", async () => {
   });
 
   test("test adding handler(one2many)", async () => {
-    const c = await addingChannel();
+    const c = await defaultClient<number, number>("adding");
     const my_num = Math.floor(Math.random() * 100);
     await c.send(my_num);
     let n = 1;
@@ -49,7 +43,7 @@ describe.concurrent("Server default codec", async () => {
 
 describe.concurrent("Server JSON codec", async () => {
   test("test add handler(one2one)", async () => {
-    const c = await addJsonChannel();
+    const c = await jsonClient<Data, Data>("addJson");
     await c.send({ value: 2 });
     let count = 0;
     for await (const msg of c) {
@@ -61,7 +55,7 @@ describe.concurrent("Server JSON codec", async () => {
   });
 
   test("test add handler(one2one)2", async () => {
-    const c = await addJsonChannel();
+    const c = await jsonClient<Data, Data>("addJson");
     await c.send({ value: 2 });
     let count = 0;
     for await (const msg of c) {
@@ -73,7 +67,7 @@ describe.concurrent("Server JSON codec", async () => {
   });
 
   test("test adding handler(one2many)", async () => {
-    const c = await addingJsonChannel();
+    const c = await jsonClient<Data, Data>("addingJson");
     const my_num = Math.floor(Math.random() * 100);
     await c.send({ value: my_num });
     let n = 1;
@@ -86,7 +80,7 @@ describe.concurrent("Server JSON codec", async () => {
 });
 
 describe("Infinity output service(one2Infinity)", async () => {
-  const c = await repeatingChannel();
+  const c = await defaultClient<number, number>("repeating");
   test("Infinity out with control", async () => {
     await c.send(1);
     let count = 0;

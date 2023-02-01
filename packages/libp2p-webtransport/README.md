@@ -39,9 +39,8 @@ await handle<number, number>(
 );
 // client side
 const add = await conn<number, number>("add");
-const channelAdd = await add();
-await channelAdd.send(1);
-(await channelAdd.next()).value; // 2
+await add.send(1);
+(await add.next()).value; // 2
 ```
 
 2. [ ] **one data-in multi data-out**
@@ -59,9 +58,8 @@ await handle<number, number>(
 );
 // client side
 const adding = await conn<number, number>("adding");
-const channelAdding = await adding();
-await channelAdding.send(1);
-for await (const msg of channelAdding) {
+await adding.send(1);
+for await (const msg of adding) {
   console.log(msg); // 2, 3, 4
 }
 ```
@@ -80,11 +78,10 @@ await serve<number, number>(
 );
 // client side
 const channelAdd = await conn<number, number>("channelAdd");
-const channel = await channelAdd();
 let num = 0;
-await channel.send(num);
-for await (const msg of channelAdding) {
-  (await channelAdding.next()).value === num; // true
+await channelAdd.send(num);
+for await (const msg of channelAdd) {
+  msg === num; // true
   num++;
   await channel.send(num);
 }

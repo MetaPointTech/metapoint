@@ -2,7 +2,7 @@ import { client } from "../src";
 import { bench, describe } from "vitest";
 import { startServer } from "./handler";
 import { jsonCodec } from "./jsonCodec";
-import type { Data, Json } from "./types";
+import type { Data } from "./types";
 import { startHttp } from "./http";
 import { newNode } from "./node";
 
@@ -11,20 +11,17 @@ const addr = await startServer();
 let num = Math.floor(Math.random() * 100);
 
 const defaultClient = await client(libp2p, addr);
-const channelAddChannel = await defaultClient<number, number>("channelAdd");
-const addChannel = await defaultClient<number, number>("add");
 const jsonClient = await client(libp2p, addr, { codec: jsonCodec });
-const addJsonChannel = await jsonClient<Data, Data, Json>("addJson");
 
 describe("json/xobj codec simple benchmark", async () => {
   bench("xobj codec", async () => {
-    const c = await addChannel();
+    const c = await defaultClient<number, number>("add");
     await c.send(num);
     for await (const _ of c) {}
   });
 
   bench("JSON codec", async () => {
-    const c = await addJsonChannel();
+    const c = await jsonClient<Data, Data>("addJson");
     await c.send({ value: num });
     for await (const _ of c) {}
   });
@@ -32,10 +29,10 @@ describe("json/xobj codec simple benchmark", async () => {
 
 describe("libp2p-transport/http simple benchmark", async () => {
   await startHttp();
-  const ca = await channelAddChannel();
+  const ca = await defaultClient<number, number>("channelAdd");
   bench("libp2p-transport", async () => {
     for (let index = 0; index < 6; index++) {
-      const c = await addChannel();
+      const c = await defaultClient<number, number>("add");
       await c.send(num);
       for await (const _ of c) {}
     }

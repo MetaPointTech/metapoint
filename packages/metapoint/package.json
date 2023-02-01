@@ -13,7 +13,6 @@
   "author": "sovlookup <gonorth@qq.com>",
   "license": "MIT",
   "homepage": "https://github.com/SOVLOOKUP/metapoint",
-  
   "repository": {
     "type": "git",
     "url": "git+https://github.com/SOVLOOKUP/metapoint"
@@ -26,13 +25,17 @@
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
-    "dist/*"
+    "dist/*",
+    "README.md"
   ],
   "scripts": {
     "build": "tsup",
     "test": "vitest"
   },
   "dependencies": {
+    "@chainsafe/libp2p-noise": "^11.0.0",
+    "@libp2p/mplex": "^7.1.1",
+    "@libp2p/websockets": "^5.0.3",
     "libp2p": "^0.42.2",
     "libp2p-transport": "workspace:*",
     "zod": "^3.20.2"

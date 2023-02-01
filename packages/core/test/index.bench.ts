@@ -34,17 +34,34 @@ describe("libp2p-transport/http simple benchmark", async () => {
   await startHttp();
   const ca = await channelAddChannel();
   bench("libp2p-transport", async () => {
-    const c = await addChannel();
-    await c.send(num);
-    for await (const _ of c) {}
+    for (let index = 0; index < 6; index++) {
+      const c = await addChannel();
+      await c.send(num);
+      for await (const _ of c) {}
+    }
   });
 
   bench("libp2p-transport(channel)", async () => {
-    await ca.send(num);
-    for await (const _ of ca) break;
+    ca.send(num);
+    ca.send(num);
+    ca.send(num);
+    ca.send(num);
+    ca.send(num);
+    ca.send(num);
+    await ca.next();
+    await ca.next();
+    await ca.next();
+    await ca.next();
+    await ca.next();
+    await ca.next();
   });
 
   bench("http", async () => {
+    await (await fetch("http://localhost:3000/1")).json();
+    await (await fetch("http://localhost:3000/1")).json();
+    await (await fetch("http://localhost:3000/1")).json();
+    await (await fetch("http://localhost:3000/1")).json();
+    await (await fetch("http://localhost:3000/1")).json();
     await (await fetch("http://localhost:3000/1")).json();
   });
 });

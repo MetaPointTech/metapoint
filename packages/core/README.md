@@ -4,9 +4,12 @@ peer to peer rpc/channel communication based on libp2p
 
 ## Features
 
-- Data codec agnostic
-- Transport protocol agnostic
-- AsyncIterator style
+- ⚡3-10x(channel) quicker than http communication
+- 🤝Bidirectional channel support
+- 🎡AsyncIterator style
+- 🪐Peer to peer connect
+- 🔢Data codec agnostic(json, protobuff, etc.)
+- 📡Transport protocol agnostic(tcp/udp, ws, webtransport, etc.)
 
 ## Quickstart
 

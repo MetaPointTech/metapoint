@@ -40,11 +40,11 @@
     "streaming-iterables": "^7.1.0"
   },
   "devDependencies": {
-    "destr": "^1.2.2",
     "@chainsafe/libp2p-noise": "^11.0.0",
     "@libp2p/mplex": "^7.1.1",
-    "@libp2p/tcp": "^6.1.1",
+    "@libp2p/websockets": "^5.0.3",
     "binconv": "^0.2.0",
+    "destr": "^1.2.2",
     "fastify": "^4.12.0",
     "tsup": "^6.5.0",
     "typescript": "^4.9.5",

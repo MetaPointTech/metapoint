@@ -78,7 +78,6 @@ await serve<number, number>(
   "channelAdd",
   service,
 );
-
 // client side
 const channelAdd = await conn<number, number>("channelAdd");
 const channel = await channelAdd();

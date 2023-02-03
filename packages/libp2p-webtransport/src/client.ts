@@ -7,6 +7,7 @@ import { isMultiaddr, Multiaddr, multiaddr } from "@multiformats/multiaddr";
 import { isPeerId, PeerId } from "@libp2p/interface-peer-id";
 import { peerIdFromString } from "@libp2p/peer-id";
 import { Libp2p } from "libp2p";
+import { collect } from "streaming-iterables";
 
 const fetchStream = <T, I extends T, O extends T>(
   stream: Stream,
@@ -30,7 +31,7 @@ const fetchStream = <T, I extends T, O extends T>(
 const channel = <I extends T, O extends T, T = any>(
   stream: Stream,
   options?: InitOptions<T>,
-): TransportChannel<O, I> => {
+): ((value: I) => Promise<O[]>) & TransportChannel<O, I> => {
   const runtimeOptions = {
     ...defaultInitOptions,
     ...options,
@@ -53,24 +54,40 @@ const channel = <I extends T, O extends T, T = any>(
     open = false;
   };
 
-  return {
+  const transportChannel = new Proxy({
     ...outputIterator,
-    [Symbol.asyncIterator]: async function* () {
-      for await (const v of outputIterator[Symbol.asyncIterator]()) {
-        yield v;
-      }
-      await done();
-    },
-    next: async (...args: [] | [undefined]) => {
-      const result = await outputIterator.next(...args);
-      if (result.done === true) {
-        await done();
-      }
-      return result;
-    },
     send,
     done,
-  };
+  }, {
+    get(target, p) {
+      if (p === Symbol.asyncIterator) {
+        return async function* () {
+          for await (const v of target[Symbol.asyncIterator]()) {
+            yield v;
+          }
+          await done();
+        };
+      }
+      if (p === "next") {
+        return async () => {
+          const result = await outputIterator.next();
+          if (result.done === true) {
+            await done();
+          }
+          return result;
+        };
+      }
+      return target[p];
+    },
+  });
+
+  return Object.assign(
+    async (value: I): Promise<O[]> => {
+      await transportChannel.send(value);
+      return await collect(transportChannel);
+    },
+    transportChannel,
+  );
 };
 
 export const client = async <T = any>(

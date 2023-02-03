@@ -56,13 +56,8 @@ describe.concurrent("Server JSON codec", async () => {
 
   test("test add handler(one2one)2", async () => {
     const c = await jsonClient<Data, Data>("addJson");
-    await c.send({ value: 2 });
-    let count = 0;
-    for await (const msg of c) {
-      expect(msg).toStrictEqual({ value: 3 });
-      count += 1;
-    }
-    expect(count).toBe(1);
+    const result = await c({ value: 2 });
+    expect(result).toStrictEqual([{ value: 3 }]);
     expect((await c.next()).value).toBe(undefined);
   });
 
@@ -86,7 +81,6 @@ describe("Infinity output service(one2Infinity)", async () => {
     let count = 0;
     for await (const msg of c) {
       count += 1;
-      // console.log("repeatingChannel1: ", msg);
       if (count === 2) {
         c.done();
       }

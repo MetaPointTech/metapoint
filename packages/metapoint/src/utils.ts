@@ -1,12 +1,5 @@
 import type { z } from "zod";
 
-export const makeProtocol = (name: string, version: number) => {
-  if (name.includes("/")) {
-    throw "func name cannot include /";
-  }
-  return `/metapoint/${name}/${version}`;
-};
-
 // export const channelValidate = <T, C>(
 //   meta: z.ZodType<T> | undefined,
 //   channel: Evt<T>,

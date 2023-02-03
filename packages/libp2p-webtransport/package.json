@@ -1,6 +1,6 @@
 {
   "name": "libp2p-transport",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "peer to peer rpc/channel communication based on libp2p",
   "keywords": [
     "libp2p",

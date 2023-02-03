@@ -6,46 +6,56 @@ type IsEqual<T, U> = (<T1>() => T1 extends T ? 1 : 2) extends
   (<T2>() => T2 extends U ? 1 : 2) ? true
   : false;
 
+export type InferIOType<Meta extends ZodType | undefined, T> =
+  IsEqual<Meta, undefined> extends true ? T : z.infer<Exclude<Meta, undefined>>;
+
+export type HandlerFunc<I, O> = Func<
+  InferIOType<ZodType<I>, I>,
+  InferIOType<ZodType<O>, O>
+>;
+
+export type ServiceFunc<I, O> = Service<
+  InferIOType<ZodType<I>, I>,
+  InferIOType<ZodType<O>, O>
+>;
+
 export interface Meta<I, O> {
-  name: string;
-  version: number;
-  description?: string;
+  info?: Json;
   input?: ZodType<I>;
   output?: ZodType<O>;
 }
 
 interface HandlerMeta<I, O> extends Meta<I, O> {
   type: "handler";
-  func: Func<
-    InferIOType<ZodType<I>, I>,
-    InferIOType<ZodType<O>, O>
-  >;
+  func: HandlerFunc<I, O>;
 }
 
 interface ServiceMeta<I, O> extends Meta<I, O> {
   type: "service";
-  func: Service<
-    InferIOType<ZodType<I>, I>,
-    InferIOType<ZodType<O>, O>
-  >;
+  func: ServiceFunc<I, O>;
 }
 
-type Unpick<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
+export type EndpointMeta<I, O> = HandlerMeta<I, O> | ServiceMeta<I, O>;
 
-export type InferIOType<Meta extends ZodType | undefined, T> =
-  IsEqual<Meta, undefined> extends true ? T : z.infer<Exclude<Meta, undefined>>;
+export interface Endpoint<I, O> {
+  [name: string]: EndpointMeta<I, O>;
+}
 
-export type EndpointMetaServer<I, O> =
-  | HandlerMeta<I, O>
-  | ServiceMeta<I, O>;
+export type UnPromisify<T> = T extends Promise<infer U> ? U : never;
 
-export type EndpointMeta<I, O> = Unpick<EndpointMetaServer<I, O>, "func">;
-
-export interface ServerMeta<I, O> {
+export interface ServerMeta<T extends Endpoint<any, any>> {
   addrs: string[];
-  endpoint: EndpointMeta<I, O>[];
+  endpoint: T;
 }
 
 export interface PeerInitOptions<T> extends InitOptions<T> {
   libp2p?: Libp2p;
 }
+
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json }
+  | Json[];

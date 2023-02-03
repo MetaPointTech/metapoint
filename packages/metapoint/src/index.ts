@@ -1,18 +1,18 @@
-import { client, server } from "libp2p-transport";
-import { Libp2p } from "libp2p";
-import { makeProtocol } from "./utils";
+import { client, server, TransportChannel } from "libp2p-transport";
+import type { Libp2p } from "libp2p";
 import type {
+  Endpoint,
   EndpointMeta,
-  EndpointMetaServer,
-  Meta,
+  InferIOType,
   PeerInitOptions,
   ServerMeta,
+  UnPromisify,
 } from "./types";
 import { newNode } from "./node";
 
-export const peerServer = async <T = any, I extends T = T, O extends T = T>(
-  metaInit?: EndpointMetaServer<I, O>[],
-  options?: PeerInitOptions<T>,
+export const peer = async <T extends Endpoint<any, any>>(
+  metaInit?: T,
+  options?: PeerInitOptions<any>,
 ) => {
   // todo 自定义 codec 增加校验器
   let libp2p: Libp2p;
@@ -22,52 +22,61 @@ export const peerServer = async <T = any, I extends T = T, O extends T = T>(
     libp2p = options.libp2p;
   }
   const { handle, serve } = server(libp2p, options);
-  const metaStore = new Map<string, EndpointMeta<I, O>>();
-  const handleMeta = async <HI extends I, HO extends O>(
-    meta: EndpointMetaServer<HI, HO>,
+  const metaStore = new Map<string, EndpointMeta<any, any>>();
+
+  const addEndpoint = async <I, O>(
+    endpoint: Endpoint<I, O>,
   ) => {
-    const name = makeProtocol(meta.name, meta.version);
-    if (meta.type === "service") {
-      await serve(name, meta.func);
-    } else if (meta.type === "handler") {
-      await handle(name, meta.func);
+    for (const [name, meta] of Object.entries(endpoint)) {
+      switch (meta.type) {
+        case "handler":
+          await handle(name, meta.func);
+          metaStore.set(name, meta as unknown as EndpointMeta<I, O>);
+          break;
+        case "service":
+          await serve(name, meta.func);
+          metaStore.set(name, meta as unknown as EndpointMeta<I, O>);
+          break;
+        default:
+          break;
+      }
     }
-    metaStore.set(name, meta);
   };
 
-  const unhandle = async <I extends Pick<Meta<I, O>, "name" | "version">>(
-    ...name: I[] | string[]
-  ) => {
+  const unhandle = async (...names: string[]) =>
     await libp2p.unhandle(
-      name.map((item: I | string) => {
-        let name: string;
-        if (typeof item === "string") {
-          name = item;
-        } else {
-          name = makeProtocol(item.name, item.version);
-        }
+      names.map((name: string) => {
         metaStore.delete(name);
         return name;
       }),
     );
-  };
 
-  const connect = async <I, O>(meta: ServerMeta<I, O>) => {
+  const connect = async <T extends Endpoint<any, any>>(
+    peer: string,
+  ) => {
     // todo retry addrs
-    const channel = await client(libp2p, meta.addrs[0], options);
-
-    // todo name 模糊 匹配 meta
-    // todo 匹配对应 meta 的 ts type (Proxy?)
-    // const name = makeProtocol(i.name, i.version);
-    return async (name: string) => await channel(name);
+    const channel = await client(libp2p, peer, options);
+    return new Proxy(
+      {} as {
+        [key in keyof T]: Promise<
+          TransportChannel<
+            InferIOType<T[key]["input"], any>,
+            InferIOType<T[key]["output"], any>
+          >
+        >;
+      },
+      {
+        async get(target, p) {
+          return await channel(p.toString());
+        },
+      },
+    );
   };
 
   return {
     start: async () => {
       if (metaInit) {
-        for (const item of metaInit) {
-          await handleMeta(item);
-        }
+        await addEndpoint(metaInit);
       }
       await libp2p.start();
     },
@@ -76,50 +85,20 @@ export const peerServer = async <T = any, I extends T = T, O extends T = T>(
       metaStore.clear();
       await libp2p.stop();
     },
-    meta: (): ServerMeta<I, O> => ({
+    meta: (): ServerMeta<T> => ({
       addrs: libp2p.getMultiaddrs().map((d) => d.toString()),
-      endpoint: Array.from(metaStore.values()),
-    }),
-    handle: handleMeta,
+      endpoint: Object.fromEntries(metaStore.entries()),
+    } as ServerMeta<T>),
+    handle: addEndpoint,
     unhandle,
+    connect,
   };
 };
 
-// fetcher: () => {},
-// connect: async <I, O, C>(meta: Meta<I, O>, addr: string) => {
-//   const stream = await libp2p.dialProtocol(
-//     addr,
-//     makeProtocol(meta.name, meta.version),
-//   );
-//   const ctx = Evt.newCtx<C>();
-//   return {
-//     fetch: async (input: InferIOType<typeof meta.input, I>) => {
-//       if (meta.input) input = await meta.input.parseAsync(input);
-//       let output = await fetch<
-//         InferIOType<typeof meta.input, I>,
-//         InferIOType<typeof meta.output, O>
-//       >(stream, input);
-//       if (meta.output) output = await meta.output.parseAsync(output);
-//       return output;
-//     },
-//     open: () => {
-//       let { inputChannel, outputChannel } = open<
-//         InferIOType<typeof meta.input, I>,
-//         InferIOType<typeof meta.output, O>,
-//         C
-//       >(stream, ctx);
+type PeerReturn<T extends Endpoint<any, any>> = UnPromisify<
+  ReturnType<typeof peer<T>>
+>;
 
-//       inputChannel = channelValidate(meta.input, inputChannel, ctx);
-//       outputChannel = channelValidate(meta.output, outputChannel, ctx);
-
-//       return {
-//         inputChannel,
-//         outputChannel,
-//       };
-//     },
-//     close: (result: C) => {
-//       ctx.done(result);
-//       stream.close();
-//     },
-//   };
-// },
+export type MetaType<T extends PeerReturn<any>> = ReturnType<
+  T["meta"]
+>["endpoint"];

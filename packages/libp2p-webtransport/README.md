@@ -26,7 +26,7 @@ const conn = await client(libp2p, addr);
 
 **↓↓↓ USAGE ↓↓↓**
 
-1. [ ] **one data-in one data-out**
+1. [ ] **One request one response**
 
 ```typescript
 // server side
@@ -41,9 +41,11 @@ await handle<number, number>(
 const add = await conn<number, number>("add");
 await add.send(1);
 (await add.next()).value; // 2
+// or
+await add(1); // [2]
 ```
 
-2. [ ] **one data-in multi data-out**
+2. [ ] **One request multi response**
 
 ```typescript
 // server side
@@ -62,9 +64,11 @@ await adding.send(1);
 for await (const msg of adding) {
   console.log(msg); // 2, 3, 4
 }
+// or
+await adding(1); // [2, 3, 4]
 ```
 
-3. [ ] **bidirectional channel**
+3. [ ] **Bidirectional channel(infinite request infinite response)**
 
 ```typescript
 // server side

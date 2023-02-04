@@ -1,6 +1,7 @@
 import { client, server, TransportChannel } from "libp2p-transport";
 import type { Libp2p } from "libp2p";
 import type {
+  ConnectEndpoint,
   Endpoint,
   EndpointMeta,
   InferIOType,
@@ -51,7 +52,7 @@ export const peer = async <T extends Endpoint<any, any>>(
       }),
     );
 
-  const connect = async <T extends Endpoint<any, any>>(
+  const connect = async <T extends ConnectEndpoint<any, any>>(
     peer: string,
   ) => {
     // todo retry addrs
@@ -102,3 +103,4 @@ type PeerReturn<T extends Endpoint<any, any>> = UnPromisify<
 export type MetaType<T extends PeerReturn<any>> = ReturnType<
   T["meta"]
 >["endpoint"];
+export * from "./helper";

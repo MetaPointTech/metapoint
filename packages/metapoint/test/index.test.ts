@@ -1,26 +1,28 @@
 // todo
 
 import { z } from "zod";
-import { MetaType, peer } from "../src";
+import { h, MetaType, peer } from "../src";
 
-const node = await peer({
-  sss: {
+const meta = h.router({
+  sss: h.endpoint({
     type: "handler",
     func: (data, send) => {
       send(data + 1);
     },
     input: z.number(),
     output: z.number(),
-  },
-  sssd: {
+  }),
+  sssd: h.endpoint({
     type: "handler",
     func: (data, send) => {
       send(data + 1);
     },
     input: z.string(),
     output: z.string(),
-  },
+  }),
 });
+
+const node = await peer(meta);
 
 const channel = await node.connect<MetaType<typeof node>>(
   "",

@@ -41,6 +41,10 @@ export interface Endpoint<I, O> {
   [name: string]: EndpointMeta<I, O>;
 }
 
+export interface ConnectEndpoint<I, O> {
+  [name: string]: Pick<EndpointMeta<I, O>, "input" | "output">;
+}
+
 export type UnPromisify<T> = T extends Promise<infer U> ? U : never;
 
 export interface ServerMeta<T extends Endpoint<any, any>> {

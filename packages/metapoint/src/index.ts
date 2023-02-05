@@ -15,7 +15,7 @@ export const peer = async <T extends Endpoint<any, any>>(
   metaInit?: T,
   options?: PeerInitOptions<any>,
 ) => {
-  // todo 自定义 codec 增加校验器
+  // todo 使用 JSON codec 并增加 zod 校验器
   let libp2p: Libp2p;
   if (options?.libp2p === undefined) {
     libp2p = await newNode();
@@ -57,42 +57,37 @@ export const peer = async <T extends Endpoint<any, any>>(
   ) => {
     // todo retry addrs
     const channel = await client(libp2p, peer, options);
-    return new Proxy(
-      {} as {
-        [key in keyof T]: Promise<
-          & ((
-            value: InferIOType<T[key]["input"], any>,
-          ) => Promise<InferIOType<T[key]["output"], any>[]>)
-          & TransportChannel<
-            InferIOType<T[key]["input"], any>,
-            InferIOType<T[key]["output"], any>
-          >
-        >;
-      },
-      {
-        async get(target, p) {
-          return await channel(p.toString());
-        },
-      },
-    );
+    return async <F extends keyof T>(name: F) => {
+      return await channel<
+        InferIOType<T[F]["input"], any>,
+        InferIOType<T[F]["output"], any>
+      >(name.toString());
+    };
   };
 
+  const start = async () => {
+    if (metaInit) {
+      await addEndpoint(metaInit);
+    }
+    await libp2p.start();
+  };
+
+  const stop = async () => {
+    await libp2p.unhandle(Array.from(metaStore.keys()));
+    metaStore.clear();
+    await libp2p.stop();
+  };
+
+  const meta = (): ServerMeta<T> => ({
+    addrs: libp2p.getMultiaddrs().map((d) => d.toString()),
+    endpoint: Object.fromEntries(metaStore.entries()),
+  } as ServerMeta<T>);
+
+  await start();
   return {
-    start: async () => {
-      if (metaInit) {
-        await addEndpoint(metaInit);
-      }
-      await libp2p.start();
-    },
-    stop: async () => {
-      await libp2p.unhandle(Array.from(metaStore.keys()));
-      metaStore.clear();
-      await libp2p.stop();
-    },
-    meta: (): ServerMeta<T> => ({
-      addrs: libp2p.getMultiaddrs().map((d) => d.toString()),
-      endpoint: Object.fromEntries(metaStore.entries()),
-    } as ServerMeta<T>),
+    start,
+    stop,
+    meta,
     handle: addEndpoint,
     unhandle,
     connect,

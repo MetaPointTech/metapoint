@@ -1,9 +1,9 @@
 import { z } from "zod";
 import { h, peer } from "../src";
-import { describe } from "vitest";
+import { describe, expect, test } from "vitest";
 
 const meta = h.router({
-  add: h.endpoint({
+  numberAdd: h.endpoint({
     type: "handler",
     func: async (data, send, done) => {
       await send(data + 1);
@@ -12,7 +12,7 @@ const meta = h.router({
     input: z.number(),
     output: z.number(),
   }),
-  w: h.endpoint({
+  stringAdd: h.endpoint({
     type: "handler",
     func: async (data, send, done) => {
       await send(data + "!");
@@ -26,14 +26,14 @@ const meta = h.router({
 const node1 = await peer(meta);
 const node2 = await peer();
 
-describe("", async () => {
-  console.log(node1.meta());
-
-  // const channel = await node2.connect<typeof meta>(node1.meta().addrs[0]);
-
-  // const a = await channel.add;
-
-  // console.log(
-  //   await a(1),
-  // );
+describe("test metapoint server/client", async () => {
+  const channel = await node2.connect<typeof meta>(node1.meta().addrs[0]);
+  test("number test", async () => {
+    const n = await channel("numberAdd");
+    expect(await n(1)).toStrictEqual([2]);
+  });
+  test("string test", async () => {
+    const s = await channel("stringAdd");
+    expect(await s("Hello world")).toStrictEqual(["Hello world!"]);
+  });
 });

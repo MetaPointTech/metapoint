@@ -52,6 +52,7 @@ export const peer = async <T extends Endpoint<any, any>>(
       }),
     );
 
+  // todo 可直接传入 serervermeta 或是 peers
   const connect = async <T extends ConnectEndpoint<any, any>>(
     peer: string,
   ) => {

@@ -2,7 +2,7 @@ import { client } from "../src";
 import { describe, expect, test } from "vitest";
 import { startServer } from "./handler";
 import { jsonCodec } from "./jsonCodec";
-import type { Data, Json } from "./types";
+import type { Data } from "./types";
 import { newNode } from "./node";
 
 const libp2p = await newNode();

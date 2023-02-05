@@ -60,7 +60,10 @@ export const peer = async <T extends Endpoint<any, any>>(
     return new Proxy(
       {} as {
         [key in keyof T]: Promise<
-          TransportChannel<
+          & ((
+            value: InferIOType<T[key]["input"], any>,
+          ) => Promise<InferIOType<T[key]["output"], any>[]>)
+          & TransportChannel<
             InferIOType<T[key]["input"], any>,
             InferIOType<T[key]["output"], any>
           >

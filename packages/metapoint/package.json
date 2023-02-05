@@ -2,6 +2,10 @@
   "name": "metapoint",
   "version": "0.0.1",
   "description": "⚡Meta first and low-code. Peer-to-Peer typesafe APIs or Channels made easy.",
+  "type": "module",
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
   "keywords": [
     "libp2p",
     "channel",
@@ -20,10 +24,6 @@
   "bugs": {
     "url": "https://github.com/SOVLOOKUP/metapoint/issues"
   },
-  "type": "module",
-  "main": "dist/index.cjs",
-  "module": "dist/index.js",
-  "types": "dist/index.d.ts",
   "files": [
     "dist/*",
     "README.md"
@@ -43,7 +43,7 @@
   "devDependencies": {
     "tsup": "^6.5.0",
     "typescript": "^4.9.5",
-    "vitest": "^0.28.3"
+    "vitest": "^0.28.4"
   },
   "tsup": {
     "entry": [

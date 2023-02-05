@@ -25,12 +25,20 @@ export interface Meta<I, O> {
   output?: ZodType<O>;
 }
 
-interface HandlerMeta<I, O> extends Meta<I, O> {
+type Simplify<T> = {
+  [P in keyof T]: T[P];
+};
+
+export type Unpick<T, K extends keyof T> = Simplify<
+  Pick<T, Exclude<keyof T, K>>
+>;
+
+export interface HandlerMeta<I, O> extends Meta<I, O> {
   type: "handler";
   func: HandlerFunc<I, O>;
 }
 
-interface ServiceMeta<I, O> extends Meta<I, O> {
+export interface ServiceMeta<I, O> extends Meta<I, O> {
   type: "service";
   func: ServiceFunc<I, O>;
 }

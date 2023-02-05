@@ -44,3 +44,21 @@ MetaPoint allows you to easily build typesafe APIs or Channels wherever
 JavaScript runs.
 
 ## Quickstart
+
+```typescript
+import { h, peer } from "metapoint";
+const node1 = await peer({
+  numberAdd: h.handler({
+    func: async (data, send, done) => {
+      await send(data + 1);
+      await done();
+    },
+    input: z.number(),
+    output: z.number(),
+  }),
+});
+const node2 = await peer();
+const channel = await node2.connect<typeof meta>(node1.meta().addrs[0]);
+const add = await channel("numberAdd");
+await add(1); // [2]
+```

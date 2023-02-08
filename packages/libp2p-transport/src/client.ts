@@ -1,7 +1,7 @@
 import { Stream } from "@libp2p/interface-connection";
 import { AnyIterable, transform } from "streaming-iterables";
 import { defaultInitOptions } from "./common";
-import type { Codec, InitOptions, TransportChannel } from "./types";
+import type { Codec, InitOptions, PeerAddr, TransportChannel } from "./types";
 import { Channel } from "queueable";
 import { isMultiaddr, Multiaddr, multiaddr } from "@multiformats/multiaddr";
 import { isPeerId, PeerId } from "@libp2p/interface-peer-id";
@@ -92,7 +92,7 @@ const channel = <I extends T, O extends T, T = any>(
 
 export const client = async <T = any>(
   node: Libp2p,
-  peer: string | Multiaddr | PeerId,
+  peer: PeerAddr | PeerAddr[],
   options?: InitOptions<T>,
 ) => {
   const runtimeOptions = {
@@ -100,27 +100,33 @@ export const client = async <T = any>(
     ...options,
   };
   let peerToDail: Multiaddr | PeerId;
-  if (!(isPeerId(peer) || isMultiaddr(peer))) {
-    try {
-      const addr = multiaddr(peer);
-      if (typeof addr.getPeerId() === "string") {
-        peerToDail = addr;
-      } else {
-        throw "Invalid addr: no peerid in addr";
-      }
-    } catch (e) {
-      try {
-        const peerid = peerIdFromString(peer);
-        peerToDail = peerid;
-      } catch (error) {
-        throw "Invalid peerid: " + peer;
-      }
-    }
-  } else {
-    peerToDail = peer;
-  }
-  const conn = await node.dial(peerToDail);
 
-  return async <I extends T, O extends T>(name: string) =>
-    channel<I, O, T>(await conn.newStream(name), runtimeOptions);
+  if (!(peer instanceof Array)) {
+    peer = [peer];
+  }
+  for (const item of peer) {
+    if (!(isPeerId(item) || isMultiaddr(item))) {
+      try {
+        const addr = multiaddr(item);
+        if (typeof addr.getPeerId() === "string") {
+          peerToDail = addr;
+        } else {
+          throw "Invalid addr: no peerid in addr";
+        }
+      } catch (e) {
+        try {
+          const peerid = peerIdFromString(item);
+          peerToDail = peerid;
+        } catch (error) {
+          throw "Invalid peerid: " + item;
+        }
+      }
+    } else {
+      peerToDail = item;
+    }
+    const conn = await node.dial(peerToDail);
+
+    return async <I extends T, O extends T>(name: string) =>
+      channel<I, O, T>(await conn.newStream(name), runtimeOptions);
+  }
 };

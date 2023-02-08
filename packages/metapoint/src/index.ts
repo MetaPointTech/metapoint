@@ -1,4 +1,4 @@
-import { client, server, TransportChannel } from "libp2p-transport";
+import { client, PeerAddr, server } from "libp2p-transport";
 import type { Libp2p } from "libp2p";
 import type {
   ConnectEndpoint,
@@ -52,18 +52,15 @@ export const peer = async <T extends Endpoint<any, any>>(
       }),
     );
 
-  // todo 可直接传入 serervermeta 或是 peers
   const connect = async <T extends ConnectEndpoint<any, any>>(
-    peer: string,
+    peer: PeerAddr | PeerAddr[],
   ) => {
-    // todo retry addrs
     const channel = await client(libp2p, peer, options);
-    return async <F extends keyof T>(name: F) => {
-      return await channel<
+    return async <F extends keyof T>(name: F) =>
+      await channel<
         InferIOType<T[F]["input"], any>,
         InferIOType<T[F]["output"], any>
       >(name.toString());
-    };
   };
 
   const start = async () => {
@@ -84,7 +81,10 @@ export const peer = async <T extends Endpoint<any, any>>(
     endpoint: Object.fromEntries(metaStore.entries()),
   } as ServerMeta<T>);
 
-  await start();
+  if (!(options?.initStart === false)) {
+    await start();
+  }
+
   return {
     start,
     stop,

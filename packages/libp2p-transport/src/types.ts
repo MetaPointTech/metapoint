@@ -1,10 +1,13 @@
 import type { AnyIterable } from "streaming-iterables";
+import type { Multiaddr } from "@multiformats/multiaddr";
+import type { PeerId } from "@libp2p/interface-peer-id";
 
 export type IterableFunc<I, O> = (
   input: AnyIterable<I>,
 ) => AnyIterable<O> | Promise<AnyIterable<O>>;
 
 export type Send<T> = (value: T) => Promise<void>;
+export type PeerAddr = string | Multiaddr | PeerId;
 
 export type Func<I, O> = (
   input: I,

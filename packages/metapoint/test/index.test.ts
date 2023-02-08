@@ -25,7 +25,7 @@ const node1 = await peer(meta);
 const node2 = await peer();
 
 describe("test metapoint server/client", async () => {
-  const channel = await node2.connect<typeof meta>(node1.meta().addrs[0]);
+  const channel = await node2.connect<typeof meta>(node1.meta().addrs);
   test("number test", async () => {
     const n = await channel("numberAdd");
     expect(await n(1)).toStrictEqual([2]);

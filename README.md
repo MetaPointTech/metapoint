@@ -64,7 +64,7 @@ export type meta = MetaType<typeof node1>;
 
 // node2
 const node2 = await peer();
-const channel = await node2.connect<meta>(node1.meta().addrs[0]);
+const channel = await node2.connect<meta>(node1.meta().addrs);
 const add = await channel("numberAdd");
 console.log(await add(1)); // [2]
 ```

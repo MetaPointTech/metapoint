@@ -62,6 +62,7 @@ export interface ServerMeta<T extends Endpoint<any, any>> {
 
 export interface PeerInitOptions<T> extends InitOptions<T> {
   libp2p?: Libp2p;
+  initStart?: boolean;
 }
 
 export type Json =

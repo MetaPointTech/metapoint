@@ -8,8 +8,8 @@ const repeatingService = async () => {
   let sender: Send<number>;
   let task: NodeJS.Timeout;
 
-  const func: Func<number, number> = async (data, ctx) => {
-    const { send, done } = ctx;
+  const func: Func<number, number> = async (data, chan) => {
+    const { send, done } = chan;
     if (sender === undefined) sender = send;
     if (data !== 0) {
       // send data instead of num
@@ -34,19 +34,19 @@ export const startServer = async () => {
 
   await handle<number, number>(
     "add",
-    async (data, ctx) => {
-      await ctx.send(data + 1);
-      await ctx.done();
+    async (data, chan) => {
+      await chan.send(data + 1);
+      await chan.done();
     },
   );
 
   await handle<number, number>(
     "adding",
-    async (data, ctx) => {
-      await ctx.send(data + 1);
-      await ctx.send(data + 2);
-      await ctx.send(data + 3);
-      await ctx.done();
+    async (data, chan) => {
+      await chan.send(data + 1);
+      await chan.send(data + 2);
+      await chan.send(data + 3);
+      await chan.done();
     },
   );
 
@@ -58,24 +58,24 @@ export const startServer = async () => {
 
   await serve<number, number>(
     "channelAdd",
-    () => (data, ctx) => ctx.send(data + 1),
+    () => (data, chan) => chan.send(data + 1),
   );
 
   // json codec
   const json = server(libp2p, { codec: jsonCodec });
 
-  await json.handle<Data, Data>("addJson", async (data, ctx) => {
-    await ctx.send({ value: data.value + 1 });
-    await ctx.done();
+  await json.handle<Data, Data>("addJson", async (data, chan) => {
+    await chan.send({ value: data.value + 1 });
+    await chan.done();
   });
 
   await json.handle<Data, Data>(
     "addingJson",
-    async (input, ctx) => {
-      await ctx.send({ value: input.value + 1 });
-      await ctx.send({ value: input.value + 2 });
-      await ctx.send({ value: input.value + 3 });
-      await ctx.done();
+    async (input, chan) => {
+      await chan.send({ value: input.value + 1 });
+      await chan.send({ value: input.value + 2 });
+      await chan.send({ value: input.value + 3 });
+      await chan.done();
     },
   );
 

@@ -1,9 +1,9 @@
 import type { AnyIterable } from "streaming-iterables";
 import type { Multiaddr } from "@multiformats/multiaddr";
 import type { PeerId } from "@libp2p/interface-peer-id";
-import type { newCtx } from "./utils";
+import type { newChan } from "./utils";
 
-export type Ctx<T> = ReturnType<typeof newCtx<T>>;
+export type Chan<T> = ReturnType<typeof newChan<T>>;
 
 export type IterableFunc<I, O> = (
   input: AnyIterable<I>,
@@ -14,7 +14,7 @@ export type PeerAddr = string | Multiaddr | PeerId;
 
 export type Func<I, O> = (
   input: I,
-  ctx: Ctx<O>,
+  chan: Chan<O>,
 ) => Promise<void> | void;
 
 export type Service<I, O> = () => Promise<Func<I, O>> | Func<I, O>;

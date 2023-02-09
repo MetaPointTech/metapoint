@@ -3,7 +3,7 @@ import type { Func, InitOptions, IterableFunc, Service } from "./types";
 import { consume, transform } from "streaming-iterables";
 import { defaultInitOptions } from "./common";
 import { Channel } from "queueable";
-import { newCtx } from "./utils";
+import { newChan } from "./utils";
 
 export const server = <T>(node: Libp2p, options?: InitOptions<T>) => {
   const runtimeOptions = {
@@ -41,17 +41,17 @@ export const server = <T>(node: Libp2p, options?: InitOptions<T>) => {
       name,
       async (input) => {
         const outputChannel = new Channel<O>();
-        const ctx = newCtx(outputChannel);
+        const chan = newChan(outputChannel);
         const process = await func();
 
         // transform input
         consume(
           transform(
             Infinity,
-            (data) => process(data, ctx),
+            (data) => process(data, chan),
             input,
           ),
-        ).then(ctx.done);
+        ).then(chan.done);
 
         return outputChannel;
       },

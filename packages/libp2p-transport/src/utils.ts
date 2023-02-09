@@ -1,6 +1,6 @@
 import type { Channel } from "queueable";
 
-export const newCtx = <T>(c: Channel<T>) => ({
+export const newChan = <T>(c: Channel<T>) => ({
   send: async (value: T) => {
     await c.push(value);
   },

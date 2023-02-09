@@ -32,9 +32,9 @@ const conn = await client(libp2p, addr);
 // server side
 await handle<number, number>(
   "add",
-  async (data, send, done) => {
-    await send(data + 1);
-    await done();
+  async (data, chan) => {
+    await chan.send(data + 1);
+    await chan.done();
   },
 );
 // client side
@@ -51,11 +51,11 @@ await add(1); // [2]
 // server side
 await handle<number, number>(
   "adding",
-  async (data, send, done) => {
-    await send(data + 1);
-    await send(data + 2);
-    await send(data + 3);
-    await done();
+  async (data, chan) => {
+    await chan.send(data + 1);
+    await chan.send(data + 2);
+    await chan.send(data + 3);
+    await chan.done();
   },
 );
 // client side
@@ -73,7 +73,7 @@ await adding(1); // [2, 3, 4]
 ```typescript
 // server side
 const service = () => {
-  const handle = (data, send) => send(data + 1);
+  const handle = (data, chan) => chan.send(data + 1);
   return handle;
 };
 await serve<number, number>(

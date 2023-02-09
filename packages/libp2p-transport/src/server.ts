@@ -3,15 +3,7 @@ import type { Func, InitOptions, IterableFunc, Service } from "./types";
 import { consume, transform } from "streaming-iterables";
 import { defaultInitOptions } from "./common";
 import { Channel } from "queueable";
-
-const op = <T>(c: Channel<T>) => ({
-  send: async (value: T) => {
-    await c.push(value);
-  },
-  done: async () => {
-    await c.return();
-  },
-});
+import { newCtx } from "./utils";
 
 export const server = <T>(node: Libp2p, options?: InitOptions<T>) => {
   const runtimeOptions = {
@@ -41,19 +33,6 @@ export const server = <T>(node: Libp2p, options?: InitOptions<T>) => {
       stream.sink(outputIterator);
     });
 
-  const handle = async <I extends T, O extends T>(
-    name: string,
-    func: Func<I, O>,
-  ) =>
-    await handleStream<I, O>(name, async (input) => {
-      const outputChannel = new Channel<O>();
-      const { send, done } = op(outputChannel);
-      // transform input
-      consume(transform(Infinity, (data) => func(data, send, done), input))
-        .then(done);
-      return outputChannel;
-    });
-
   const serve = async <I extends T, O extends T>(
     name: string,
     func: Service<I, O>,
@@ -62,17 +41,26 @@ export const server = <T>(node: Libp2p, options?: InitOptions<T>) => {
       name,
       async (input) => {
         const outputChannel = new Channel<O>();
-        const { send, done } = op(outputChannel);
+        const ctx = newCtx(outputChannel);
         const process = await func();
 
         // transform input
         consume(
-          transform(Infinity, (data) => process(data, send, done), input),
-        ).then(done);
+          transform(
+            Infinity,
+            (data) => process(data, ctx),
+            input,
+          ),
+        ).then(ctx.done);
 
         return outputChannel;
       },
     );
+
+  const handle = async <I extends T, O extends T>(
+    name: string,
+    func: Func<I, O>,
+  ) => await serve<I, O>(name, () => func);
 
   return { handle, serve };
 };

@@ -8,7 +8,8 @@ const repeatingService = async () => {
   let sender: Send<number>;
   let task: NodeJS.Timeout;
 
-  const func: Func<number, number> = async (data, send, done) => {
+  const func: Func<number, number> = async (data, ctx) => {
+    const { send, done } = ctx;
     if (sender === undefined) sender = send;
     if (data !== 0) {
       // send data instead of num
@@ -33,19 +34,19 @@ export const startServer = async () => {
 
   await handle<number, number>(
     "add",
-    async (data, send, done) => {
-      await send(data + 1);
-      await done();
+    async (data, ctx) => {
+      await ctx.send(data + 1);
+      await ctx.done();
     },
   );
 
   await handle<number, number>(
     "adding",
-    async (data, send, done) => {
-      await send(data + 1);
-      await send(data + 2);
-      await send(data + 3);
-      await done();
+    async (data, ctx) => {
+      await ctx.send(data + 1);
+      await ctx.send(data + 2);
+      await ctx.send(data + 3);
+      await ctx.done();
     },
   );
 
@@ -57,24 +58,24 @@ export const startServer = async () => {
 
   await serve<number, number>(
     "channelAdd",
-    () => (data, send) => send(data + 1),
+    () => (data, ctx) => ctx.send(data + 1),
   );
 
   // json codec
   const json = server(libp2p, { codec: jsonCodec });
 
-  await json.handle<Data, Data>("addJson", async (data, send, done) => {
-    await send({ value: data.value + 1 });
-    await done();
+  await json.handle<Data, Data>("addJson", async (data, ctx) => {
+    await ctx.send({ value: data.value + 1 });
+    await ctx.done();
   });
 
   await json.handle<Data, Data>(
     "addingJson",
-    async (input, send, done) => {
-      await send({ value: input.value + 1 });
-      await send({ value: input.value + 2 });
-      await send({ value: input.value + 3 });
-      await done();
+    async (input, ctx) => {
+      await ctx.send({ value: input.value + 1 });
+      await ctx.send({ value: input.value + 2 });
+      await ctx.send({ value: input.value + 3 });
+      await ctx.done();
     },
   );
 

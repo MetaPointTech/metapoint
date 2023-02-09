@@ -124,9 +124,14 @@ export const client = async <T = any>(
     } else {
       peerToDail = item;
     }
-    const conn = await node.dial(peerToDail);
-
-    return async <I extends T, O extends T>(name: string) =>
-      channel<I, O, T>(await conn.newStream(name), runtimeOptions);
+    try {
+      const conn = await node.dial(peerToDail);
+      return async <I extends T, O extends T>(name: string) =>
+        channel<I, O, T>(await conn.newStream(name), runtimeOptions);
+    } catch (e) {
+      // todo log
+      continue;
+    }
   }
+  throw "cannot connect to" + peer;
 };

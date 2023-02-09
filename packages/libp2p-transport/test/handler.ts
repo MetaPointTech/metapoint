@@ -30,14 +30,20 @@ export const startServer = async () => {
   const libp2p = await newNode();
 
   // default codec
-  const { handle, serve } = server(libp2p);
+  const { handle, serve } = await server(libp2p);
 
   await handle<number, number>(
     "add",
     async (data, chan) => {
-      // throw new Error("some error");
       await chan.send(data + 1);
       await chan.done();
+    },
+  );
+
+  await handle<number, number>(
+    "error",
+    async () => {
+      throw new Error("some error");
     },
   );
 
@@ -63,7 +69,7 @@ export const startServer = async () => {
   );
 
   // json codec
-  const json = server(libp2p, { codec: jsonCodec });
+  const json = await server(libp2p, { codec: jsonCodec });
 
   await json.handle<Data, Data>("addJson", async (data, chan) => {
     await chan.send({ value: data.value + 1 });

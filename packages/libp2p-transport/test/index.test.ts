@@ -28,6 +28,16 @@ describe.concurrent("Server default codec", async () => {
     expect((await c.next()).value).toBe(undefined);
   });
 
+  test("test error handler", async () => {
+    const c = await defaultClient<void, void>("error");
+    try {
+      await c();
+    } catch (error) {
+      // todo shoud have an error
+      console.log(error);
+    }
+  });
+
   test("test adding handler(one2many)", async () => {
     const c = await defaultClient<number, number>("adding");
     const my_num = Math.floor(Math.random() * 100);

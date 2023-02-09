@@ -2,11 +2,13 @@ import type { AnyIterable } from "streaming-iterables";
 import type { Multiaddr } from "@multiformats/multiaddr";
 import type { PeerId } from "@libp2p/interface-peer-id";
 import type { newChan } from "./utils";
+import type { IncomingStreamData } from "@libp2p/interface-registrar";
 
 export type Chan<T> = ReturnType<typeof newChan<T>>;
 
 export type IterableFunc<I, O> = (
   input: AnyIterable<I>,
+  incomingData: IncomingStreamData,
 ) => AnyIterable<O> | Promise<AnyIterable<O>>;
 
 export type Send<T> = (value: T) => Promise<void>;

@@ -35,6 +35,7 @@ export const startServer = async () => {
   await handle<number, number>(
     "add",
     async (data, chan) => {
+      // throw new Error("some error");
       await chan.send(data + 1);
       await chan.done();
     },

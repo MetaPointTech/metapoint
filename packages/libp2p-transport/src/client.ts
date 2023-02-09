@@ -8,6 +8,7 @@ import { isPeerId, PeerId } from "@libp2p/interface-peer-id";
 import { peerIdFromString } from "@libp2p/peer-id";
 import { Libp2p } from "libp2p";
 import { collect } from "streaming-iterables";
+import { newChan } from "./utils";
 
 const fetchStream = <T, I extends T, O extends T>(
   stream: Stream,
@@ -31,7 +32,9 @@ const fetchStream = <T, I extends T, O extends T>(
 const channel = <I extends T, O extends T, T = any>(
   stream: Stream,
   options?: InitOptions<T>,
-): ((value: I) => Promise<O[]>) & TransportChannel<O, I> => {
+):
+  & ((value: I) => Promise<O[]>)
+  & TransportChannel<O, I> => {
   const runtimeOptions = {
     ...defaultInitOptions,
     ...options,
@@ -42,22 +45,11 @@ const channel = <I extends T, O extends T, T = any>(
     inputChannel,
     runtimeOptions.codec,
   );
-  let open = true;
-  const send = async (value: I) => {
-    if (!open) {
-      throw "This channel has already closed";
-    }
-    await inputChannel.push(value);
-  };
-  const done = async () => {
-    await inputChannel.return();
-    open = false;
-  };
+  const chan = newChan(inputChannel);
 
   const transportChannel = new Proxy({
     ...outputIterator,
-    send,
-    done,
+    ...chan,
   }, {
     get(target, p) {
       if (p === Symbol.asyncIterator) {
@@ -65,14 +57,14 @@ const channel = <I extends T, O extends T, T = any>(
           for await (const v of target[Symbol.asyncIterator]()) {
             yield v;
           }
-          await done();
+          await chan.done();
         };
       }
       if (p === "next") {
         return async () => {
           const result = await outputIterator.next();
           if (result.done === true) {
-            await done();
+            await chan.done();
           }
           return result;
         };

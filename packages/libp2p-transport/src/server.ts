@@ -48,7 +48,14 @@ export const server = <T>(node: Libp2p, options?: InitOptions<T>) => {
         consume(
           transform(
             Infinity,
-            (data) => process(data, chan),
+            async (data) => {
+              // todo test
+              try {
+                await process(data, chan);
+              } catch (error) {
+                outputChannel.return(error);
+              }
+            },
             input,
           ),
         ).then(chan.done);

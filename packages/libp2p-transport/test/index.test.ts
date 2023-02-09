@@ -20,7 +20,7 @@ describe.concurrent("Server default codec", async () => {
       count += 1;
     }
     try {
-      await c.send(3);
+      await c(3);
     } catch (error) {
       expect(error !== undefined).toBe(true);
     }

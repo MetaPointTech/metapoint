@@ -1,6 +1,7 @@
 import type { IncomingStreamData } from "@libp2p/interface-registrar";
 import { nanoid } from "nanoid";
 import type { Channel } from "queueable";
+import { debug, logger } from ".";
 import type { ControlMsg, MetaPointError, MetaPointSuccess } from "./types";
 
 export const newChan = <T>(
@@ -17,6 +18,7 @@ export const newChan = <T>(
         throw "channel has already open";
       }
       await c.push(value);
+      logger.trace(`Send ${JSON.stringify(value)} to ${id}`);
     },
     done: async (err?: Error) => {
       await c.return();
@@ -27,13 +29,15 @@ export const newChan = <T>(
             id: id as string,
             name: err.name,
             message: err.message,
-            stack: err.stack,
+            stack: debug ? err.stack : undefined,
           });
+          logger.debug(`${id} chan done with error`);
         } else {
           await ctrl.push({
             type: "success",
             id: id as string,
           });
+          logger.trace(`${id} chan done with success`);
         }
       }
       open = false;

@@ -9,6 +9,7 @@ import { peerIdFromString } from "@libp2p/peer-id";
 import { Libp2p } from "libp2p";
 import { collect } from "streaming-iterables";
 import { newChan } from "./utils";
+import type { IncomingStreamData } from "@libp2p/interface-registrar";
 
 const fetchStream = <T, I extends T, O extends T>(
   stream: Stream,
@@ -30,7 +31,7 @@ const fetchStream = <T, I extends T, O extends T>(
 };
 
 const channel = <I extends T, O extends T, T = any>(
-  stream: Stream,
+  incomeingData: IncomingStreamData,
   options?: InitOptions<T>,
 ):
   & ((value: I) => Promise<O[]>)
@@ -41,11 +42,11 @@ const channel = <I extends T, O extends T, T = any>(
   };
   const inputChannel = new Channel<I>();
   const outputIterator = fetchStream<T, I, O>(
-    stream,
+    incomeingData.stream,
     inputChannel,
     runtimeOptions.codec,
   );
-  const chan = newChan(inputChannel);
+  const chan = newChan(inputChannel, incomeingData);
 
   const transportChannel = new Proxy({
     ...outputIterator,
@@ -117,9 +118,12 @@ export const client = async <T = any>(
       peerToDail = item;
     }
     try {
-      const conn = await node.dial(peerToDail);
+      const connection = await node.dial(peerToDail);
       return async <I extends T, O extends T>(name: string) =>
-        channel<I, O, T>(await conn.newStream(name), runtimeOptions);
+        channel<I, O, T>({
+          connection,
+          stream: await connection.newStream(name),
+        }, runtimeOptions);
     } catch (e) {
       // todo log
       continue;

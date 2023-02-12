@@ -41,8 +41,8 @@ export const server = async <T>(node: Libp2p, options?: InitOptions<T>) => {
       name,
       async (input, incomingData) => {
         const outputChannel = new Channel<O>();
-        const chan = newChan(outputChannel);
-        const process = await func();
+        const chan = newChan(outputChannel, incomingData);
+        const process = await func(chan);
 
         // transform input
         consume(

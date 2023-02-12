@@ -18,7 +18,7 @@ export type Func<I, O> = (
   chan: Chan<O>,
 ) => Promise<void> | void;
 
-export type Service<I, O> = () => Promise<Func<I, O>> | Func<I, O>;
+export type Service<I, O> = (chan: Chan<O>) => Promise<Func<I, O>> | Func<I, O>;
 
 export interface Codec<T> {
   encoder: (data: T) => Uint8Array | Promise<Uint8Array>;

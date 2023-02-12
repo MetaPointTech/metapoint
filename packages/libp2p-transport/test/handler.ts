@@ -1,16 +1,14 @@
-import { Func, server } from "../src";
+import { Func, server, Service } from "../src";
 import { jsonCodec } from "./jsonCodec";
 import type { Data } from "./types";
 import { newNode } from "./node";
 
-const repeatingService = async () => {
+const repeatingService: Service<number, number> = async (chan) => {
+  const { send, done } = chan;
   let num: number = 0;
-  let sender: (value: number) => Promise<void>;
   let task: NodeJS.Timeout;
 
-  const func: Func<number, number> = async (data, chan) => {
-    const { send, done } = chan;
-    if (sender === undefined) sender = send;
+  const func: Func<number, number> = async (data) => {
     if (data !== 0) {
       // send data instead of num
       num = data;

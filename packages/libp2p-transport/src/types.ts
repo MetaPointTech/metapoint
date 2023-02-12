@@ -18,7 +18,9 @@ export type Func<I, O> = (
   chan: Chan<O>,
 ) => Promise<void> | void;
 
-export type Service<I, O> = (chan: Chan<O>) => Promise<Func<I, O>> | Func<I, O>;
+export type Service<I, O> = (
+  chan: Chan<O>,
+) => Promise<Func<I, O>> | Func<I, O> | void | Promise<void>;
 
 export interface Codec<T> {
   encoder: (data: T) => Uint8Array | Promise<Uint8Array>;
@@ -32,3 +34,15 @@ export interface InitOptions<T> {
 
 export interface TransportChannel<I, O>
   extends AsyncIterableIterator<I>, Chan<O> {}
+
+export interface MetaPointError extends Error {
+  type: "error";
+  id: string;
+}
+
+export interface MetaPointSuccess {
+  type: "success";
+  id: string;
+}
+
+export type ControlMsg = MetaPointError | MetaPointSuccess;

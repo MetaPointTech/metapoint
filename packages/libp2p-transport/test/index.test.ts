@@ -19,22 +19,18 @@ describe.concurrent("Server default codec", async () => {
       expect(msg).toBe(3);
       count += 1;
     }
-    try {
-      await c(3);
-    } catch (error) {
-      expect(error !== undefined).toBe(true);
-    }
     expect(count).toBe(1);
     expect((await c.next()).value).toBe(undefined);
   });
 
   test("test error handler", async () => {
-    const c = await defaultClient<void, void>("error");
     try {
+      const c = await defaultClient<void, void>("error");
       await c();
+      // this should never run
+      expect(1).toBe(2);
     } catch (error) {
-      // todo shoud have an error
-      console.log(error);
+      expect(error).toBeInstanceOf(Error);
     }
   });
 

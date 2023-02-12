@@ -1,7 +1,15 @@
 import type { IncomingStreamData } from "@libp2p/interface-registrar";
+import { nanoid } from "nanoid";
 import type { Channel } from "queueable";
+import type { ControlMsg, MetaPointError, MetaPointSuccess } from "./types";
 
-export const newChan = <T>(c: Channel<T>, i: IncomingStreamData) => {
+export const newChan = <T>(
+  c: Channel<T>,
+  i: IncomingStreamData,
+  ctrl?: Channel<ControlMsg>,
+  id?: string,
+) => {
+  if (id === undefined) id = nanoid();
   let open = true;
   return {
     send: async (value: T) => {
@@ -10,12 +18,28 @@ export const newChan = <T>(c: Channel<T>, i: IncomingStreamData) => {
       }
       await c.push(value);
     },
-    done: async () => {
+    done: async (err?: Error) => {
       await c.return();
+      if (ctrl) {
+        if (err) {
+          await ctrl.push({
+            type: "error",
+            id: id as string,
+            name: err.name,
+            message: err.message,
+            stack: err.stack,
+          });
+        } else {
+          await ctrl.push({
+            type: "success",
+            id: id as string,
+          });
+        }
+      }
       open = false;
     },
     ctx: {
-      id: `${i.connection.id}-${i.stream.id}`,
+      id,
       stat: {
         ...i.connection.stat,
         ...i.stream.stat,

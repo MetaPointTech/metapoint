@@ -1,9 +1,18 @@
 import type { Libp2p } from "libp2p";
-import type { Func, InitOptions, IterableFunc, Service } from "./types";
+import type {
+  Chan,
+  ControlMsg,
+  Func,
+  InitOptions,
+  IterableFunc,
+  Service,
+} from "./types";
 import { consume, transform } from "streaming-iterables";
-import { defaultInitOptions } from "./common";
+import { control_name, defaultInitOptions } from "./common";
 import { Channel } from "queueable";
 import { newChan } from "./utils";
+
+const ctrlChan = new Channel<ControlMsg>();
 
 export const server = async <T>(node: Libp2p, options?: InitOptions<T>) => {
   const runtimeOptions = {
@@ -41,26 +50,33 @@ export const server = async <T>(node: Libp2p, options?: InitOptions<T>) => {
       name,
       async (input, incomingData) => {
         const outputChannel = new Channel<O>();
-        const chan = newChan(outputChannel, incomingData);
-        const process = await func(chan);
+        let chan: Chan<O> = undefined as unknown as Chan<O>;
 
-        // transform input
-        consume(
-          transform(
-            Infinity,
-            async (data) => {
-              try {
-                await process(data, chan);
-              } catch (error) {
-                // todo 错误控制 pass error to client
-                console.log(error);
-                await chan.done();
-              }
-            },
-            input,
-          ),
-        ).then(chan.done);
+        // first msg is id, use id to make chan
+        for await (const id of input) {
+          chan = newChan(outputChannel, incomingData, ctrlChan, id as string);
+          break;
+        }
 
+        try {
+          const process = await func(chan);
+          // transform input
+          consume(
+            transform(
+              Infinity,
+              async (data) => {
+                try {
+                  if (process instanceof Function) await process(data, chan);
+                } catch (error) {
+                  await chan.done(error);
+                }
+              },
+              input,
+            ),
+          ).then(() => chan.done());
+        } catch (error) {
+          await chan.done(error);
+        }
         return outputChannel;
       },
     );
@@ -70,10 +86,20 @@ export const server = async <T>(node: Libp2p, options?: InitOptions<T>) => {
     func: Func<I, O>,
   ) => await serve<I, O>(name, () => func);
 
-  // todo 错误控制 pass error to client
-  const pname = "libp2p-transport/error";
-  if (!node.getProtocols().some((p) => p === pname)) {
-    await serve(pname, () => (_, chan) => {});
+  // error handling: collect errors and send them to client
+  if (!node.getProtocols().some((p) => p === control_name)) {
+    await serve(
+      control_name,
+      (chan) => {
+        consume(
+          transform(
+            Infinity,
+            (i) => chan.send(JSON.stringify(i) as T),
+            ctrlChan,
+          ),
+        );
+      },
+    );
   }
 
   return { handle, serve };

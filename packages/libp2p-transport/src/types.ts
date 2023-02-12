@@ -31,7 +31,5 @@ export interface InitOptions<T> {
   codec?: Codec<T>;
 }
 
-export interface TransportChannel<I, O> extends AsyncIterableIterator<I> {
-  send: Send<O>;
-  done: () => Promise<void>;
-}
+export interface TransportChannel<I, O>
+  extends AsyncIterableIterator<I>, Chan<O> {}

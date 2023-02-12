@@ -15,13 +15,10 @@ export const newChan = <T>(c: Channel<T>, i: IncomingStreamData) => {
       open = false;
     },
     ctx: {
-      id: {
-        connection: i.connection.id,
-        stream: i.stream.id,
-      },
+      id: `${i.connection.id}-${i.stream.id}`,
       stat: {
-        connection: i.connection.stat,
-        stream: i.stream.stat,
+        ...i.connection.stat,
+        ...i.stream.stat,
       },
       remoteAddr: i.connection.remoteAddr,
       remotePeer: i.connection.remotePeer,

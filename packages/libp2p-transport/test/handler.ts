@@ -1,11 +1,11 @@
-import { Func, Send, server } from "../src";
+import { Func, server } from "../src";
 import { jsonCodec } from "./jsonCodec";
 import type { Data } from "./types";
 import { newNode } from "./node";
 
 const repeatingService = async () => {
   let num: number = 0;
-  let sender: Send<number>;
+  let sender: (value: number) => Promise<void>;
   let task: NodeJS.Timeout;
 
   const func: Func<number, number> = async (data, chan) => {

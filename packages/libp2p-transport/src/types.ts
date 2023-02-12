@@ -11,7 +11,6 @@ export type IterableFunc<I, O> = (
   incomingData: IncomingStreamData,
 ) => AnyIterable<O> | Promise<AnyIterable<O>>;
 
-export type Send<T> = (value: T) => Promise<void>;
 export type PeerAddr = string | Multiaddr | PeerId;
 
 export type Func<I, O> = (

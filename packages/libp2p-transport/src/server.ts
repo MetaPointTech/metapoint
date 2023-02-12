@@ -10,7 +10,7 @@ import type {
 import { consume, transform } from "streaming-iterables";
 import { control_name, defaultInitOptions } from "./common";
 import { Channel } from "queueable";
-import { newChan } from "./utils";
+import { newChannel } from "./utils";
 import { logger } from ".";
 
 const ctrlChan = new Channel<ControlMsg>();
@@ -55,7 +55,12 @@ export const server = async <T>(node: Libp2p, options?: InitOptions<T>) => {
 
         // first msg is id, use id to make chan
         for await (const id of input) {
-          chan = newChan(outputChannel, incomingData, ctrlChan, id as string);
+          chan = newChannel(
+            outputChannel,
+            incomingData,
+            ctrlChan,
+            id as string,
+          );
           logger.trace(`New connection with ${id}`);
           break;
         }

@@ -2,6 +2,7 @@ import { Stream } from "@libp2p/interface-connection";
 import { AnyIterable, transform } from "streaming-iterables";
 import { control_name, defaultInitOptions } from "./common";
 import type {
+  Chan,
   Codec,
   ControlMsg,
   InitOptions,
@@ -14,11 +15,11 @@ import { isPeerId, PeerId } from "@libp2p/interface-peer-id";
 import { peerIdFromString } from "@libp2p/peer-id";
 import { Libp2p } from "libp2p";
 import { collect } from "streaming-iterables";
-import { newChan } from "./utils";
-import type { IncomingStreamData } from "@libp2p/interface-registrar";
+import { newChannel } from "./utils";
 import { consume } from "streaming-iterables";
 import { runtimeError } from "./error";
 import { logger } from ".";
+import { Connection } from "@libp2p/interface-connection";
 
 const ccs = new Map<string, Channel<ControlMsg>>();
 const fetchStream = <T, I extends T, O extends T>(
@@ -42,20 +43,25 @@ const fetchStream = <T, I extends T, O extends T>(
 
 const handleControlMsg = async (cc: Channel<ControlMsg>) => {
   const msg = (await cc.next()).value as ControlMsg;
-  switch (msg.type) {
-    case "error":
-      const err = new Error(msg.message);
-      err.name = msg.name;
-      err.stack = msg.stack;
-      throw err;
+  // maybe has been done already
+  if (msg) {
+    switch (msg.type) {
+      case "error":
+        const err = new Error(msg.message);
+        err.name = msg.name;
+        err.stack = msg.stack;
+        throw err;
 
-    default:
-      break;
+      default:
+        break;
+    }
   }
+  cc.close();
 };
 
 const channel = async <I extends T, O extends T, T = any>(
-  incomeingData: IncomingStreamData,
+  name: string,
+  connection: Connection,
   options?: InitOptions<T>,
 ): Promise<
   & ((value: I) => Promise<O[]>)
@@ -65,19 +71,41 @@ const channel = async <I extends T, O extends T, T = any>(
     ...defaultInitOptions,
     ...options,
   };
-  const inputChannel = new Channel<I>();
-  const outputIterator = fetchStream<T, I, O>(
-    incomeingData.stream,
+
+  let inputChannel: Channel<I> = new Channel<I>();
+  let stream: Stream = await connection.newStream(name);
+  let outputIterator: AsyncIterableIterator<O> = fetchStream<T, I, O>(
+    stream,
     inputChannel,
     runtimeOptions.codec,
   );
-  const cc = new Channel<ControlMsg>();
-  const chan = newChan(inputChannel, incomeingData);
+  let cc: Channel<ControlMsg> = new Channel<ControlMsg>();
+  let chan: Chan<I> = newChannel(inputChannel, { connection, stream });
+
+  // const init = async () => {
+  //   console.log(chan?.ctx?.id);
+
+  //   inputChannel = new Channel<I>();
+  //   stream = await connection.newStream(name);
+  //   outputIterator = fetchStream<T, I, O>(
+  //     stream,
+  //     inputChannel,
+  //     runtimeOptions.codec,
+  //   );
+  //   cc = new Channel<ControlMsg>();
+  //   chan = newChan(
+  //     inputChannel,
+  //     { connection, stream },
+  //     undefined,
+  //     chan?.ctx?.id,
+  //     init,
+  //   );
+  // };
   // receive first value as id
   await chan.send(chan.ctx.id as I);
   ccs.set(chan.ctx.id, cc);
 
-  const transportChannel = new Proxy({
+  const r: TransportChannel<O, I> = new Proxy({
     ...outputIterator,
     ...chan,
   }, {
@@ -87,16 +115,18 @@ const channel = async <I extends T, O extends T, T = any>(
           for await (const v of target[Symbol.asyncIterator]()) {
             yield v;
           }
-          await chan.done();
+          await target.done();
           await handleControlMsg(cc);
+          ccs.delete(target.ctx.id);
         };
       }
       if (p === "next") {
         return async () => {
-          const result = await outputIterator.next();
+          const result = await target.next();
           if (result.done === true) {
-            await chan.done();
+            await target.done();
             await handleControlMsg(cc);
+            ccs.delete(target.ctx.id);
           }
           return result;
         };
@@ -107,10 +137,10 @@ const channel = async <I extends T, O extends T, T = any>(
 
   return Object.assign(
     async (value: I): Promise<O[]> => {
-      await transportChannel.send(value);
-      return await collect(transportChannel);
+      await r.send(value);
+      return await collect(r);
     },
-    transportChannel,
+    r,
   );
 };
 
@@ -165,18 +195,12 @@ export const client = async <T = any>(
           await cc?.push(msg);
           logger.trace(`Send control msg ${JSON.stringify(msg)} to ${msg.id}`);
         },
-        await channel<void, string>(
-          { connection, stream: await connection.newStream(control_name) },
-          runtimeOptions,
-        ),
+        await channel<void, string>(control_name, connection, runtimeOptions),
       ));
 
       return async <I extends T, O extends T>(name: string) => {
         logger.trace(`new stream to protocol ${name}`);
-        return await channel<I, O, T>({
-          connection,
-          stream: await connection.newStream(name),
-        }, runtimeOptions);
+        return await channel<I, O, T>(name, connection, runtimeOptions);
       };
     } catch (e) {
       logger.trace(`Skip addr ${item} because of ${e}`);

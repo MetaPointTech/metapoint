@@ -19,6 +19,13 @@ describe.concurrent("Server default codec", async () => {
       expect(msg).toBe(3);
       count += 1;
     }
+    // todo auto reset
+    // await c.init();
+    // await c.reset();
+    // console.log(await c(2));
+    // await c.init();
+    // console.log(await c(2));
+
     expect(count).toBe(1);
     expect((await c.next()).value).toBe(undefined);
   });

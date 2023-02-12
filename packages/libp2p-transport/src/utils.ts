@@ -1,21 +1,20 @@
 import type { IncomingStreamData } from "@libp2p/interface-registrar";
-import { nanoid } from "nanoid";
 import type { Channel } from "queueable";
 import { debug, logger } from ".";
-import type { ControlMsg, MetaPointError, MetaPointSuccess } from "./types";
+import type { ControlMsg } from "./types";
 
-export const newChan = <T>(
+const newChan = <T>(
   c: Channel<T>,
   i: IncomingStreamData,
   ctrl?: Channel<ControlMsg>,
   id?: string,
 ) => {
-  if (id === undefined) id = nanoid();
+  if (id === undefined) id = `${i.connection.id}-${i.stream.id}`;
   let open = true;
   return {
     send: async (value: T) => {
       if (!open) {
-        throw "channel has already open";
+        throw "channel has already closed";
       }
       await c.push(value);
       logger.trace(`Send ${JSON.stringify(value)} to ${id}`);
@@ -55,3 +54,28 @@ export const newChan = <T>(
     },
   };
 };
+
+type Chan<T> = ReturnType<typeof newChan<T>>;
+
+// server
+function newChannel<T>(
+  c: Channel<T>,
+  i: IncomingStreamData,
+  ctrl: Channel<ControlMsg>,
+  id: string,
+): Chan<T>;
+// client
+function newChannel<T>(
+  c: Channel<T>,
+  i: IncomingStreamData,
+): Chan<T>;
+function newChannel<T>(
+  c: Channel<T>,
+  i: IncomingStreamData,
+  ctrl?: Channel<ControlMsg>,
+  id?: string,
+): Chan<T> {
+  return newChan(c, i, ctrl, id);
+}
+
+export { newChannel };

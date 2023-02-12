@@ -10,7 +10,7 @@ peer to peer rpc/channel communication based on libp2p
 - 🪐Peer to peer connect
 - 🔢Data codec agnostic(json, protobuff, etc.)
 - 📡Transport protocol agnostic(tcp/udp, ws, webtransport, etc.)
-- 💪Cross-device error capture
+- 💪Cross-peer error capture
 
 ## Quickstart
 

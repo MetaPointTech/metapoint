@@ -44,8 +44,11 @@ const newChan = <T>(
     ctx: {
       id,
       stat: {
-        ...i.connection.stat,
-        ...i.stream.stat,
+        encryption: i.connection.stat.encryption,
+        multiplexer: i.connection.stat.multiplexer,
+        direction: i.stream.stat.direction,
+        protocol: i.stream.stat.protocol,
+        status: () => open ? "OPEN" : "CLOSED",
       },
       remoteAddr: i.connection.remoteAddr,
       remotePeer: i.connection.remotePeer,

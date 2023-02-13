@@ -82,25 +82,6 @@ const channel = async <I extends T, O extends T, T = any>(
   let cc: Channel<ControlMsg> = new Channel<ControlMsg>();
   let chan: Chan<I> = newChannel(inputChannel, { connection, stream });
 
-  // const init = async () => {
-  //   console.log(chan?.ctx?.id);
-
-  //   inputChannel = new Channel<I>();
-  //   stream = await connection.newStream(name);
-  //   outputIterator = fetchStream<T, I, O>(
-  //     stream,
-  //     inputChannel,
-  //     runtimeOptions.codec,
-  //   );
-  //   cc = new Channel<ControlMsg>();
-  //   chan = newChan(
-  //     inputChannel,
-  //     { connection, stream },
-  //     undefined,
-  //     chan?.ctx?.id,
-  //     init,
-  //   );
-  // };
   // receive first value as id
   await chan.send(chan.ctx.id as I);
   ccs.set(chan.ctx.id, cc);

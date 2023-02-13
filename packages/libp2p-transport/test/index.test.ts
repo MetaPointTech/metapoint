@@ -12,19 +12,13 @@ const jsonClient = await client(libp2p, addr, { codec: jsonCodec });
 
 describe.concurrent("Server default codec", async () => {
   test("test add handler(one2one)", async () => {
-    const c = await defaultClient<number, number>("add");
+    let c = await defaultClient<number, number>("add");
     await c.send(2);
     let count = 0;
     for await (const msg of c) {
       expect(msg).toBe(3);
       count += 1;
     }
-    // todo auto reset
-    // await c.init();
-    // await c.reset();
-    // console.log(await c(2));
-    // await c.init();
-    // console.log(await c(2));
 
     expect(count).toBe(1);
     expect((await c.next()).value).toBe(undefined);

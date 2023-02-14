@@ -93,7 +93,6 @@ const channel = async <I extends T, O extends T, T = any>(
   await chan.send(chan.ctx.id as I);
   ccs.set(chan.ctx.id, cc);
   logger.trace(`protocol ${name} connected`);
-  console.log(chan.ctx.id, name);
 
   // Connect iterator end to end
   const op = new Proxy({

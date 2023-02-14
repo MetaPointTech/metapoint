@@ -12,53 +12,41 @@ let num = Math.floor(Math.random() * 100);
 
 const defaultClient = await client(libp2p, addr);
 const jsonClient = await client(libp2p, addr, { codec: jsonCodec });
+const add = await defaultClient<number, number>("add");
+const ca = await defaultClient<number, number>("channelAdd");
 
 describe("json/xobj codec simple benchmark", async () => {
+  const c = await jsonClient<Data, Data>("addJson");
   bench("xobj codec", async () => {
-    const c = await defaultClient<number, number>("add");
-    await c.send(num);
-    for await (const _ of c) {}
+    await add(num);
   });
 
   bench("JSON codec", async () => {
-    const c = await jsonClient<Data, Data>("addJson");
-    await c.send({ value: num });
-    for await (const _ of c) {}
+    await c({ value: num });
   });
 });
 
 describe("libp2p-transport/http simple benchmark", async () => {
   await startHttp();
-  const ca = await defaultClient<number, number>("channelAdd");
+  const times = 200;
   bench("libp2p-transport", async () => {
-    for (let index = 0; index < 6; index++) {
-      const c = await defaultClient<number, number>("add");
-      await c.send(num);
-      for await (const _ of c) {}
+    for (let index = 0; index < times; index++) {
+      await add(num);
     }
   });
 
   bench("libp2p-transport(channel)", async () => {
-    ca.send(num);
-    ca.send(num);
-    ca.send(num);
-    ca.send(num);
-    ca.send(num);
-    ca.send(num);
-    await ca.next();
-    await ca.next();
-    await ca.next();
-    await ca.next();
-    await ca.next();
-    await ca.next();
+    for (let index = 0; index < times; index++) {
+      await ca.send(num);
+    }
+    for (let index = 0; index < times; index++) {
+      await ca.next();
+    }
   });
 
   bench("http", async () => {
-    await (await fetch("http://localhost:3000/1")).json();
-    await (await fetch("http://localhost:3000/1")).json();
-    await (await fetch("http://localhost:3000/1")).json();
-    await (await fetch("http://localhost:3000/1")).json();
-    await (await fetch("http://localhost:3000/1")).json();
-    await (await fetch("http://localhost:3000/1")).json();
+    for (let index = 0; index < times; index++) {
+      await (await fetch("http://localhost:3000/1")).json();
+    }
   });
 });

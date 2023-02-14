@@ -19,9 +19,13 @@ describe.concurrent("Server default codec", async () => {
       expect(msg).toBe(3);
       count += 1;
     }
-
     expect(count).toBe(1);
     expect((await c.next()).value).toBe(undefined);
+    expect(await c(3)).toStrictEqual([4]);
+    await c.send(5);
+    for await (const msg of c) {
+      expect(msg).toBe(6);
+    }
   });
 
   test("test error handler", async () => {
@@ -89,7 +93,7 @@ describe("Infinity output service(one2Infinity)", async () => {
     for await (const msg of c) {
       count += 1;
       if (count === 2) {
-        c.done();
+        await c.done();
       }
     }
     expect(count).toBe(2);

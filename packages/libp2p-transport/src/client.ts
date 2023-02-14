@@ -22,6 +22,7 @@ import { logger } from ".";
 import { Connection } from "@libp2p/interface-connection";
 
 const ccs = new Map<string, Channel<ControlMsg>>();
+
 const fetchStream = <T, I extends T, O extends T>(
   stream: Stream,
   input: AnyIterable<I>,
@@ -41,22 +42,27 @@ const fetchStream = <T, I extends T, O extends T>(
   return outputIterator;
 };
 
-const handleControlMsg = async (cc: Channel<ControlMsg>) => {
+const handleControlMsg = async (id: string, cc?: Channel<ControlMsg>) => {
+  if (cc === undefined) cc = ccs.get(id) as Channel<ControlMsg>;
   const msg = (await cc.next()).value as ControlMsg;
+  cc.close();
   // maybe has been done already
   if (msg) {
-    switch (msg.type) {
-      case "error":
-        const err = new Error(msg.message);
-        err.name = msg.name;
-        err.stack = msg.stack;
-        throw err;
+    try {
+      switch (msg.type) {
+        case "error":
+          const err = new Error(msg.message);
+          err.name = msg.name;
+          err.stack = msg.stack;
+          throw err;
 
-      default:
-        break;
+        default:
+          break;
+      }
+    } finally {
+      ccs.delete(id);
     }
   }
-  cc.close();
 };
 
 const channel = async <I extends T, O extends T, T = any>(
@@ -72,6 +78,7 @@ const channel = async <I extends T, O extends T, T = any>(
     ...options,
   };
 
+  logger.trace(`new connecting to protocol ${name}`);
   let inputChannel: Channel<I> = new Channel<I>();
   let stream: Stream = await connection.newStream(name);
   let outputIterator: AsyncIterableIterator<O> = fetchStream<T, I, O>(
@@ -85,8 +92,11 @@ const channel = async <I extends T, O extends T, T = any>(
   // receive first value as id
   await chan.send(chan.ctx.id as I);
   ccs.set(chan.ctx.id, cc);
+  logger.trace(`protocol ${name} connected`);
+  console.log(chan.ctx.id, name);
 
-  const r: TransportChannel<O, I> = new Proxy({
+  // Connect iterator end to end
+  const op = new Proxy({
     ...outputIterator,
     ...chan,
   }, {
@@ -97,8 +107,7 @@ const channel = async <I extends T, O extends T, T = any>(
             yield v;
           }
           await target.done();
-          await handleControlMsg(cc);
-          ccs.delete(target.ctx.id);
+          await handleControlMsg(target.ctx.id, cc);
         };
       }
       if (p === "next") {
@@ -106,8 +115,7 @@ const channel = async <I extends T, O extends T, T = any>(
           const result = await target.next();
           if (result.done === true) {
             await target.done();
-            await handleControlMsg(cc);
-            ccs.delete(target.ctx.id);
+            await handleControlMsg(target.ctx.id, cc);
           }
           return result;
         };
@@ -116,13 +124,10 @@ const channel = async <I extends T, O extends T, T = any>(
     },
   });
 
-  return Object.assign(
-    async (value: I): Promise<O[]> => {
-      await r.send(value);
-      return await collect(r);
-    },
-    r,
-  );
+  return Object.assign(async (value: I): Promise<O[]> => {
+    await op.send(value);
+    return await collect(op);
+  }, op);
 };
 
 export const client = async <T = any>(
@@ -180,8 +185,27 @@ export const client = async <T = any>(
       ));
 
       return async <I extends T, O extends T>(name: string) => {
-        logger.trace(`new stream to protocol ${name}`);
-        return await channel<I, O, T>(name, connection, runtimeOptions);
+        let chan = await channel<I, O, T>(name, connection, runtimeOptions);
+        // auto reopen
+        return new Proxy(chan, {
+          async apply(_, __, argArray) {
+            if (chan.ctx.stat.status() === "CLOSED") {
+              chan = await channel(name, connection, options);
+            }
+            return await chan(argArray.at(0));
+          },
+          get(_, p) {
+            if (p === "send") {
+              return async (v: I) => {
+                if (chan.ctx.stat.status() === "CLOSED") {
+                  chan = await channel(name, connection, options);
+                }
+                await chan.send(v);
+              };
+            }
+            return chan[p];
+          },
+        });
       };
     } catch (e) {
       logger.trace(`Skip addr ${item} because of ${e}`);

@@ -4,7 +4,7 @@ import { describe, expect, test } from "vitest";
 
 const meta = h.router({
   numberAdd: h.handler({
-    func: async (data, send, done) => {
+    func: async (data, {send, done}) => {
       await send(data + 1);
       await done();
     },
@@ -12,7 +12,7 @@ const meta = h.router({
     output: z.number(),
   }),
   stringAdd: h.handler({
-    func: async (data, send, done) => {
+    func: async (data, {send, done}) => {
       await send(data + "!");
       await done();
     },

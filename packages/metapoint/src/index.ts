@@ -22,7 +22,7 @@ export const peer = async <T extends Endpoint<any, any>>(
   } else {
     libp2p = options.libp2p;
   }
-  const { handle, serve } = server(libp2p, options);
+  const { handle, serve } = await server(libp2p, options);
   const metaStore = new Map<string, EndpointMeta<any, any>>();
 
   const addEndpoint = async <I, O>(

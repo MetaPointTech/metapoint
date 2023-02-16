@@ -13,7 +13,7 @@ export const newNode = async () =>
     ],
     streamMuxers: [mplex()],
     addresses: {
-      listen: ["/ip4/0.0.0.0/tcp/0/ws"],
+      listen: typeof window === "object" ? [] : ["/ip4/0.0.0.0/tcp/0/ws"],
     },
     connectionEncryption: [noise()],
   });

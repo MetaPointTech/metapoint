@@ -1,10 +1,9 @@
-import { z } from "zod";
-import { h, peer } from "../src";
+import { h, peer, z } from "../src";
 import { describe, expect, test } from "vitest";
 
 const meta = h.router({
   numberAdd: h.handler({
-    func: async (data, {send, done}) => {
+    func: async (data, { send, done }) => {
       await send(data + 1);
       await done();
     },
@@ -12,12 +11,19 @@ const meta = h.router({
     output: z.number(),
   }),
   stringAdd: h.handler({
-    func: async (data, {send, done}) => {
+    func: async (data, { send, done }) => {
       await send(data + "!");
       await done();
     },
     input: z.string(),
     output: z.string(),
+  }),
+  addChan: h.service({
+    func: () => async (data, { send }) => {
+      await send(data + 1);
+    },
+    input: z.number(),
+    output: z.number(),
   }),
 });
 
@@ -33,5 +39,13 @@ describe("test metapoint server/client", async () => {
   test("string test", async () => {
     const s = await channel("stringAdd");
     expect(await s("Hello world")).toStrictEqual(["Hello world!"]);
+    expect(await s("Hello world")).toStrictEqual(["Hello world!"]);
+  });
+  test("string add chan", async () => {
+    const c = await channel("addChan");
+    await c.send(1);
+    expect((await c.next()).value).toBe(2);
   });
 });
+
+console.log(node1.meta().addrs);

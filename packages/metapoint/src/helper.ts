@@ -15,7 +15,7 @@ const endpoint = <I, O>(
 const handler = <I, O>(
   meta: Unpick<HandlerMeta<I, O>, "type">,
 ): EndpointMeta<I, O> =>
-  endpoint({
+  endpoint<I, O>({
     ...meta,
     type: "handler",
   });
@@ -23,7 +23,7 @@ const handler = <I, O>(
 const service = <I, O>(
   meta: Unpick<ServiceMeta<I, O>, "type">,
 ): EndpointMeta<I, O> =>
-  endpoint({
+  endpoint<I, O>({
     ...meta,
     type: "service",
   });

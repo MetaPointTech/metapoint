@@ -15,7 +15,6 @@ export const peer = async <T extends Endpoint<any, any>>(
   metaInit?: T,
   options?: PeerInitOptions<any>,
 ) => {
-  // todo 使用 JSON codec 并增加 zod 校验器
   let libp2p: Libp2p;
   if (options?.libp2p === undefined) {
     libp2p = await newNode();
@@ -32,11 +31,11 @@ export const peer = async <T extends Endpoint<any, any>>(
       switch (meta.type) {
         case "handler":
           await handle(name, meta.func);
-          metaStore.set(name, meta as unknown as EndpointMeta<I, O>);
+          metaStore.set(name, meta);
           break;
         case "service":
           await serve(name, meta.func);
-          metaStore.set(name, meta as unknown as EndpointMeta<I, O>);
+          metaStore.set(name, meta);
           break;
         default:
           break;
@@ -103,3 +102,4 @@ export type MetaType<T extends PeerReturn<any>> = ReturnType<
   T["meta"]
 >["endpoint"];
 export * from "./helper";
+export { z } from "zod";

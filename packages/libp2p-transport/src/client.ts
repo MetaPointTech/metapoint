@@ -93,7 +93,7 @@ const channel = async <I extends T, O extends T, T = any>(
   const jid = JSON.stringify(chan.ctx.id);
   // receive first value as id
   await chan.send(jid as I);
-  ccs.set(jid, cc);
+  if (name !== control_name) ccs.set(jid, cc);
   logger.trace(`protocol ${name} connected`);
 
   // Connect iterator end to end

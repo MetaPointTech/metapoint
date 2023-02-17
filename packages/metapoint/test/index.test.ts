@@ -47,5 +47,3 @@ describe("test metapoint server/client", async () => {
     expect((await c.next()).value).toBe(2);
   });
 });
-
-console.log(node1.meta().addrs);

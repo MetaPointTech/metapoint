@@ -7,11 +7,8 @@ const newChannel = <T>(
   c: Channel<T>,
   i: IncomingStreamData,
   ctrl?: Channel<ControlMsg>,
-  id?: StreamID,
 ) => {
-  if (id === undefined) {
-    id = id ?? { connection: i.connection.id, stream: i.stream.id };
-  }
+  const id: StreamID = { connection: i.connection.id, stream: i.stream.id };
   let open = true;
   return {
     send: async (value: T) => {
@@ -27,7 +24,7 @@ const newChannel = <T>(
         if (err) {
           await ctrl.push({
             type: "error",
-            id: id as StreamID,
+            id,
             name: err.name,
             message: err.message,
             stack: debug ? err.stack : undefined,
@@ -36,7 +33,7 @@ const newChannel = <T>(
         } else {
           await ctrl.push({
             type: "success",
-            id: id as StreamID,
+            id,
           });
           logger.trace(`${id} chan done with success`);
         }

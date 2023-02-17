@@ -32,12 +32,15 @@ const meta = h.router({
 });
 
 const channel = await node.connect<typeof meta>(
-  "/ip4/127.0.0.1/tcp/54089/ws/p2p/12D3KooWBYdmDHdZnLx7DqEuPTH1RCm3VPKjHNjJzxRdgNHWFmWE",
+  "/ip4/127.0.0.1/tcp/50358/ws/p2p/12D3KooWDumeks6aMHuH4jqAJjkBhDNv2uEfRP2TGBfuz8JigL9q",
 );
 const add = await channel("numberAdd");
+const s = await channel("stringAdd");
 
 console.log(await add(1));
-// console.log(await add(1));
-// console.log(await add(1));
+console.log(await add(1));
+console.log(await add(1));
+console.log(await add(1));
+console.log(await s("1"));
 
 createApp(App).mount("#app");

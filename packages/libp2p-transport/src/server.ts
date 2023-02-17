@@ -57,6 +57,9 @@ export const server = async <T>(node: Libp2p, options?: InitOptions<T>) => {
         // first msg is id, use id to make chan
         for await (const id of input) {
           const sid = JSON.parse(id as string) as StreamID;
+          // sync the id
+          incomingData.connection.id = sid.connection;
+          incomingData.stream.id = sid.stream;
           const cc = ccs.get(sid.connection);
           if (cc === undefined && name !== control_name) {
             throw runtimeError("ChannelNotFound", "Control channel not found");
@@ -65,7 +68,6 @@ export const server = async <T>(node: Libp2p, options?: InitOptions<T>) => {
             outputChannel,
             incomingData,
             cc,
-            sid,
           );
           logger.trace(`New connection with ${id}`);
           break;
@@ -87,9 +89,9 @@ export const server = async <T>(node: Libp2p, options?: InitOptions<T>) => {
               },
               input,
             ),
-          ).then(() => chan.done());
+          ).then(() => chan?.done());
         } catch (error) {
-          await chan.done(error);
+          await chan?.done(error);
         }
         return outputChannel;
       },

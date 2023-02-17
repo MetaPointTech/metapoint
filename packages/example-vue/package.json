@@ -10,7 +10,6 @@
   },
   "dependencies": {
     "metapoint": "workspace:*",
-    "pino": "^8.10.0",
     "vue": "^3.2.47"
   },
   "devDependencies": {

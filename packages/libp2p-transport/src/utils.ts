@@ -1,15 +1,17 @@
 import type { IncomingStreamData } from "@libp2p/interface-registrar";
 import type { Channel } from "queueable";
 import { debug, logger } from ".";
-import type { ControlMsg } from "./types";
+import type { ControlMsg, StreamID } from "./types";
 
-const newChan = <T>(
+const newChannel = <T>(
   c: Channel<T>,
   i: IncomingStreamData,
   ctrl?: Channel<ControlMsg>,
-  id?: string,
+  id?: StreamID,
 ) => {
-  if (id === undefined) id = `${i.connection.id}-${i.stream.id}`;
+  if (id === undefined) {
+    id = id ?? { connection: i.connection.id, stream: i.stream.id };
+  }
   let open = true;
   return {
     send: async (value: T) => {
@@ -25,7 +27,7 @@ const newChan = <T>(
         if (err) {
           await ctrl.push({
             type: "error",
-            id: id as string,
+            id: id as StreamID,
             name: err.name,
             message: err.message,
             stack: debug ? err.stack : undefined,
@@ -34,7 +36,7 @@ const newChan = <T>(
         } else {
           await ctrl.push({
             type: "success",
-            id: id as string,
+            id: id as StreamID,
           });
           logger.trace(`${id} chan done with success`);
         }
@@ -57,28 +59,5 @@ const newChan = <T>(
     },
   };
 };
-
-type Chan<T> = ReturnType<typeof newChan<T>>;
-
-// server
-function newChannel<T>(
-  c: Channel<T>,
-  i: IncomingStreamData,
-  ctrl: Channel<ControlMsg>,
-  id: string,
-): Chan<T>;
-// client
-function newChannel<T>(
-  c: Channel<T>,
-  i: IncomingStreamData,
-): Chan<T>;
-function newChannel<T>(
-  c: Channel<T>,
-  i: IncomingStreamData,
-  ctrl?: Channel<ControlMsg>,
-  id?: string,
-): Chan<T> {
-  return newChan(c, i, ctrl, id);
-}
 
 export { newChannel };

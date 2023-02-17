@@ -1,4 +1,4 @@
-type runtimeError = "ConnectError";
+type runtimeError = "ConnectError" | "ChannelNotFound";
 
 export const runtimeError = (type: runtimeError, msg: string) => {
   const err = new Error(msg);

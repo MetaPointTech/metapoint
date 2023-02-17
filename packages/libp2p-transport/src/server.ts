@@ -11,9 +11,10 @@ import { consume, transform } from "streaming-iterables";
 import { control_name, defaultInitOptions } from "./common";
 import { Channel } from "queueable";
 import { newChannel } from "./utils";
-import { logger } from ".";
+import { logger, StreamID } from ".";
+import { runtimeError } from "./error";
 
-const ctrlChan = new Channel<ControlMsg>();
+const ccs = new Map<string, Channel<ControlMsg>>();
 
 export const server = async <T>(node: Libp2p, options?: InitOptions<T>) => {
   const runtimeOptions = {
@@ -55,11 +56,16 @@ export const server = async <T>(node: Libp2p, options?: InitOptions<T>) => {
 
         // first msg is id, use id to make chan
         for await (const id of input) {
+          const sid = JSON.parse(id as string) as StreamID;
+          const cc = ccs.get(sid.connection);
+          if (cc === undefined && name !== control_name) {
+            throw runtimeError("ChannelNotFound", "Control channel not found");
+          }
           chan = newChannel(
             outputChannel,
             incomingData,
-            ctrlChan,
-            id as string,
+            cc,
+            sid,
           );
           logger.trace(`New connection with ${id}`);
           break;
@@ -94,21 +100,25 @@ export const server = async <T>(node: Libp2p, options?: InitOptions<T>) => {
     func: Func<I, O>,
   ) => await serve<I, O>(name, () => func);
 
-  // error handling: collect errors and send them to client
+  // collect status and send them to client
   if (!node.getProtocols().some((p) => p === control_name)) {
-    await serve(
-      control_name,
-      (chan) => {
-        consume(
-          transform(
-            Infinity,
-            (i) => chan.send(JSON.stringify(i) as T),
-            ctrlChan,
-          ),
-        );
-      },
-    );
+    await serve(control_name, (chan) => {
+      const id = chan.ctx.id.connection;
+      const cc = new Channel<ControlMsg>();
+      ccs.set(id, cc);
+      consume(
+        transform(Infinity, (i) => chan.send(JSON.stringify(i) as T), cc),
+      );
+    });
   }
+
+  node.addEventListener(
+    "peer:disconnect",
+    async ({ detail }) => {
+      await ccs.get(detail.id)?.return();
+      ccs.delete(detail.id);
+    },
+  );
 
   return { handle, serve };
 };

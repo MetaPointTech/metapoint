@@ -9,17 +9,9 @@ const repeatingService: Service<number, number> = async (chan) => {
   let task: NodeJS.Timeout;
 
   const func: Func<number, number> = async (data) => {
-    if (data !== 0) {
-      // send data instead of num
-      num = data;
-      clearInterval(task);
-      task = setInterval(() => {
-        send(num);
-      }, 1000);
-    } else {
-      clearInterval(task);
-      await done();
-    }
+    num = data;
+    clearInterval(task);
+    task = setInterval(() => send(num), 1000);
   };
   return func;
 };

@@ -37,12 +37,17 @@ export interface TransportChannel<I, O>
 
 export interface MetaPointError extends Error {
   type: "error";
-  id: string;
+  id: StreamID;
 }
 
 export interface MetaPointSuccess {
   type: "success";
-  id: string;
+  id: StreamID;
 }
 
 export type ControlMsg = MetaPointError | MetaPointSuccess;
+
+export interface StreamID {
+  connection: string;
+  stream: string;
+}

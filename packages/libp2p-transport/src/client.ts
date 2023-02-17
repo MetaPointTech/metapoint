@@ -7,6 +7,7 @@ import type {
   ControlMsg,
   InitOptions,
   PeerAddr,
+  StreamID,
   TransportChannel,
 } from "./types";
 import { Channel } from "queueable";
@@ -89,9 +90,10 @@ const channel = async <I extends T, O extends T, T = any>(
   let cc: Channel<ControlMsg> = new Channel<ControlMsg>();
   let chan: Chan<I> = newChannel(inputChannel, { connection, stream });
 
+  const jid = JSON.stringify(chan.ctx.id);
   // receive first value as id
-  await chan.send(chan.ctx.id as I);
-  ccs.set(chan.ctx.id, cc);
+  await chan.send(jid as I);
+  ccs.set(jid, cc);
   logger.trace(`protocol ${name} connected`);
 
   // Connect iterator end to end
@@ -106,7 +108,7 @@ const channel = async <I extends T, O extends T, T = any>(
             yield v;
           }
           await target.done();
-          await handleControlMsg(target.ctx.id, cc);
+          await handleControlMsg(jid, cc);
         };
       }
       if (p === "next") {
@@ -114,7 +116,7 @@ const channel = async <I extends T, O extends T, T = any>(
           const result = await target.next();
           if (result.done === true) {
             await target.done();
-            await handleControlMsg(target.ctx.id, cc);
+            await handleControlMsg(jid, cc);
           }
           return result;
         };
@@ -171,16 +173,22 @@ export const client = async <T = any>(
       const connection = await node.dial(peerToDail);
       logger.trace(`Succeed connect to ${peerToDail}`);
 
+      const controlChan = await channel<void, string>(
+        control_name,
+        connection,
+        runtimeOptions,
+      );
+
       // collect error
       consume(transform(
         Infinity,
         async (i) => {
           const msg: ControlMsg = JSON.parse(i);
-          const cc = ccs.get(msg.id);
+          const cc = ccs.get(JSON.stringify(msg.id));
           await cc?.push(msg);
           logger.trace(`Send control msg ${JSON.stringify(msg)} to ${msg.id}`);
         },
-        await channel<void, string>(control_name, connection, runtimeOptions),
+        controlChan,
       ));
 
       return async <I extends T, O extends T>(name: string) => {

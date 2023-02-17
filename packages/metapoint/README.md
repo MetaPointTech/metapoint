@@ -49,7 +49,7 @@ JavaScript runs.
 import { h, MetaType, peer } from "metapoint";
 import { z } from "zod";
 
-// node1
+// node1(nodejs)
 const node1 = await peer(h.router({
   numberAdd: h.handler({
     func: async (data, send, done) => {
@@ -62,7 +62,7 @@ const node1 = await peer(h.router({
 }));
 export type meta = MetaType<typeof node1>;
 
-// node2
+// node2(web)
 const node2 = await peer();
 const channel = await node2.connect<meta>(node1.meta().addrs);
 const add = await channel("numberAdd");

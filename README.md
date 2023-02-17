@@ -46,8 +46,7 @@ JavaScript runs.
 ## Quickstart
 
 ```typescript
-import { h, MetaType, peer } from "metapoint";
-import { z } from "zod";
+import { h, MetaType, peer, z } from "metapoint";
 
 // node1
 const node1 = await peer(h.router({

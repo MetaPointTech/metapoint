@@ -109,18 +109,20 @@ export const server = async <T>(node: Libp2p, options?: InitOptions<T>) => {
       const cc = new Channel<ControlMsg>();
       ccs.set(id, cc);
       consume(
-        transform(Infinity, (i) => chan.send(JSON.stringify(i) as T), cc),
+        transform(Infinity, async (i) => {
+          try {
+            await chan.send(JSON.stringify(i) as T);
+          } catch (error) {
+            if (error === "channel has already closed") {
+              // connection has already been closed forcely
+              await cc.return();
+              ccs.delete(id);
+            } else throw error;
+          }
+        }, cc),
       );
     });
   }
-
-  node.addEventListener(
-    "peer:disconnect",
-    async ({ detail }) => {
-      await ccs.get(detail.id)?.return();
-      ccs.delete(detail.id);
-    },
-  );
 
   return { handle, serve };
 };

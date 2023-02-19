@@ -1,31 +1,22 @@
-<!-- <a href="https://trpc.io/" target="_blank" rel="noopener">
+<div align="center">
+<a href="https://metapoint.sovlookup.top/" target="_blank" rel="noopener" >
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://assets.trpc.io/www/trpc-readme-dark.png" />
-    <img alt="tRPC" src="https://assets.trpc.io/www/trpc-readme.png" />
+    <source media="(prefers-color-scheme: dark)" srcset="https://user-images.githubusercontent.com/53158137/219955869-b5da5805-2557-45d1-a02e-15caa827a862.png" />
+    <img alt="metapoint" height="200" src="https://user-images.githubusercontent.com/53158137/219955869-b5da5805-2557-45d1-a02e-15caa827a862.png" />
   </picture>
-</a> -->
+</a>
+</div>
 
 <div align="center">
   <h1>MetaPoint</h1>
   <h3>Meta first and low-code.<br />Peer-to-Peer typesafe APIs or Channels made easy.</h3>
-  <!-- <a href="https://codecov.io/gh/trpc/trpc">
-    <img alt="codecov" src="https://codecov.io/gh/trpc/trpc/branch/main/graph/badge.svg?token=KPPS918B0G">
+  <a href="https://github.com/sovlookup/metapoint/blob/main/LICENSE">
+    <img alt="Apache-2.0 License" src="https://img.shields.io/github/license/sovlookup/metapoint" />
   </a>
-  <a href="https://github.com/trpc/trpc/blob/main/LICENSE">
-    <img alt="MIT License" src="https://img.shields.io/github/license/trpc/trpc" />
-  </a>
-  <a href="https://trpc.io/discord">
-    <img alt="Discord" src="https://img.shields.io/discord/867764511159091230?color=7389D8&label&logo=discord&logoColor=ffffff" />
+  <a href="https://discord.gg/wGSABhbCzN">
+    <img alt="Discord" src="https://img.shields.io/discord/813599680713457665?color=7389D8&label&logo=discord&logoColor=ffffff" />
   </a>
   <br />
-  <a href="https://twitter.com/alexdotjs">
-    <img alt="Twitter" src="https://img.shields.io/twitter/url.svg?label=%40alexdotjs&style=social&url=https%3A%2F%2Ftwitter.com%2Falexdotjs" />
-  </a>
-  <a href="https://twitter.com/trpcio">
-    <img alt="Twitter" src="https://img.shields.io/twitter/url.svg?label=%40trpcio&style=social&url=https%3A%2F%2Ftwitter.com%2Falexdotjs" />
-  </a>
-  <br /> -->
-  <!-- <br /> -->
   <!-- <figure>
     <img src="https://assets.trpc.io/www/v10/v10-dark-landscape.gif" alt="Demo" />
     <figcaption>

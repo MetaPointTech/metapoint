@@ -7,7 +7,6 @@ import type {
   ControlMsg,
   InitOptions,
   PeerAddr,
-  StreamID,
   TransportChannel,
 } from "./types";
 import { Channel } from "queueable";

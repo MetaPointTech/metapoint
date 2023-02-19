@@ -51,8 +51,6 @@ const newChannel = <T>(
       },
       remoteAddr: i.connection.remoteAddr,
       remotePeer: i.connection.remotePeer,
-      tags: i.connection.tags,
-      metadata: i.stream.metadata,
     },
   };
 };

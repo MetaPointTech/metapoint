@@ -1,4 +1,7 @@
 import { client, PeerAddr, server } from "libp2p-transport";
+import { syncedStore } from "@syncedstore/core";
+import type { DocTypeDescription } from "@syncedstore/core/types/doc";
+
 import type { Libp2p } from "libp2p";
 import type {
   ConnectEndpoint,
@@ -11,9 +14,12 @@ import type {
 } from "./types";
 import { newNode } from "./node";
 
-export const peer = async <T extends Endpoint<any, any>>(
+export const peer = async <
+  T extends Endpoint<any, any>,
+  S extends DocTypeDescription | {} = {},
+>(
   metaInit?: T,
-  options?: PeerInitOptions<any>,
+  options?: PeerInitOptions<any, S>,
 ) => {
   let libp2p: Libp2p;
   if (options?.libp2p === undefined) {
@@ -22,7 +28,7 @@ export const peer = async <T extends Endpoint<any, any>>(
     libp2p = options.libp2p;
   }
   const { handle, serve } = await server(libp2p, options);
-  const metaStore = new Map<string, EndpointMeta<any, any>>();
+  const metadata = new Map<string, EndpointMeta<any, any>>();
 
   const addEndpoint = async <I, O>(
     endpoint: Endpoint<I, O>,
@@ -31,11 +37,11 @@ export const peer = async <T extends Endpoint<any, any>>(
       switch (meta.type) {
         case "handler":
           await handle(name, meta.func);
-          metaStore.set(name, meta);
+          metadata.set(name, meta);
           break;
         case "service":
           await serve(name, meta.func);
-          metaStore.set(name, meta);
+          metadata.set(name, meta);
           break;
         default:
           break;
@@ -46,19 +52,26 @@ export const peer = async <T extends Endpoint<any, any>>(
   const unhandle = async (...names: string[]) =>
     await libp2p.unhandle(
       names.map((name: string) => {
-        metaStore.delete(name);
+        metadata.delete(name);
         return name;
       }),
     );
 
-  const connect = async <T extends ConnectEndpoint<any, any>>(
+  const connect = async <
+    T extends ConnectEndpoint<any, any>,
+    Context extends S = S,
+  >(
     peer: PeerAddr | PeerAddr[],
   ) => {
-    const channel = await client(libp2p, peer, options);
+    const channel = await client(libp2p, peer, {
+      store: syncedStore<Context>((options?.store ?? {}) as Context),
+      ...options,
+    });
     return Object.assign(async <F extends keyof T>(name: F) =>
       await channel<
         InferIOType<T[F]["input"], any>,
-        InferIOType<T[F]["output"], any>
+        InferIOType<T[F]["output"], any>,
+        Context
       >(name.toString()), { close: channel.close });
   };
 
@@ -70,14 +83,14 @@ export const peer = async <T extends Endpoint<any, any>>(
   };
 
   const stop = async () => {
-    await libp2p.unhandle(Array.from(metaStore.keys()));
-    metaStore.clear();
+    await libp2p.unhandle(Array.from(metadata.keys()));
+    metadata.clear();
     await libp2p.stop();
   };
 
   const meta = (): ServerMeta<T> => ({
     addrs: libp2p.getMultiaddrs().map((d) => d.toString()),
-    endpoint: Object.fromEntries(metaStore.entries()),
+    endpoint: Object.fromEntries(metadata.entries()),
   } as ServerMeta<T>);
 
   if (!(options?.initStart === false)) {
@@ -101,5 +114,6 @@ type PeerReturn<T extends Endpoint<any, any>> = UnPromisify<
 export type MetaType<T extends PeerReturn<any>> = ReturnType<
   T["meta"]
 >["endpoint"];
+
 export * from "./helper";
 export { z } from "zod";

@@ -65,13 +65,13 @@ const handleControlMsg = async (id: string, cc?: Channel<ControlMsg>) => {
   }
 };
 
-const channel = async <I extends T, O extends T, T = any>(
+const channel = async <I extends T, O extends T, T = any, S extends {} = {}>(
   name: string,
   connection: Connection,
-  options?: InitOptions<T>,
+  options?: InitOptions<T, S>,
 ): Promise<
   & ((value: I) => Promise<O[]>)
-  & TransportChannel<O, I>
+  & TransportChannel<O, I, S>
 > => {
   const runtimeOptions = {
     ...defaultInitOptions,
@@ -87,7 +87,12 @@ const channel = async <I extends T, O extends T, T = any>(
     runtimeOptions.codec,
   );
   let cc: Channel<ControlMsg> = new Channel<ControlMsg>();
-  let chan: Chan<I> = newChannel(inputChannel, { connection, stream });
+  let chan: Chan<I, S> = newChannel(
+    inputChannel,
+    { connection, stream },
+    undefined,
+    runtimeOptions.store,
+  );
 
   const jid = JSON.stringify(chan.ctx.id);
   // receive first value as id
@@ -130,10 +135,10 @@ const channel = async <I extends T, O extends T, T = any>(
   }, op);
 };
 
-export const client = async <T = any>(
+export const client = async <T = any, S extends {} = {}>(
   node: Libp2p,
   peer: PeerAddr | PeerAddr[],
-  options?: InitOptions<T>,
+  options?: InitOptions<T, S>,
 ) => {
   const runtimeOptions = {
     ...defaultInitOptions,
@@ -190,31 +195,44 @@ export const client = async <T = any>(
         controlChan,
       ));
 
-      return Object.assign(async <I extends T, O extends T>(name: string) => {
-        let chan = await channel<I, O, T>(name, connection, runtimeOptions);
-        // auto reopen
-        return new Proxy(chan, {
-          async apply(_, __, argArray) {
-            if (chan.ctx.stat.status() === "CLOSED") {
-              chan = await channel(name, connection, options);
-            }
-            return await chan(argArray.at(0));
-          },
-          get(_, p) {
-            if (p === "send") {
-              return async (v: I) => {
-                if (chan.ctx.stat.status() === "CLOSED") {
-                  chan = await channel(name, connection, options);
-                }
-                await chan.send(v);
-              };
-            }
-            return chan[p];
-          },
-        });
-      }, {
-        close: () => connection.close(),
-      });
+      return Object.assign(
+        async <I extends T, O extends T, S extends {} = {}>(name: string) => {
+          let chan = await channel<I, O, T, S>(
+            name,
+            connection,
+            runtimeOptions,
+          );
+          // auto reopen
+          return new Proxy(chan, {
+            async apply(_, __, argArray) {
+              if (chan.ctx.stat.status() === "CLOSED") {
+                chan = await channel(name, connection, {
+                  ...options,
+                  store: chan.ctx.store,
+                });
+              }
+              return await chan(argArray.at(0));
+            },
+            get(_, p) {
+              if (p === "send") {
+                return async (v: I) => {
+                  if (chan.ctx.stat.status() === "CLOSED") {
+                    chan = await channel(name, connection, {
+                      ...options,
+                      store: chan.ctx.store,
+                    });
+                  }
+                  await chan.send(v);
+                };
+              }
+              return chan[p];
+            },
+          });
+        },
+        {
+          close: () => connection.close(),
+        },
+      );
     } catch (e) {
       logger.trace(`Skip addr ${item} because of ${e}`);
       continue;

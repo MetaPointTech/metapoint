@@ -16,7 +16,10 @@ import { runtimeError } from "./error";
 
 const ccs = new Map<string, Channel<ControlMsg>>();
 
-export const server = async <T>(node: Libp2p, options?: InitOptions<T>) => {
+export const server = async <T, S extends {} = {}>(
+  node: Libp2p,
+  options?: InitOptions<T, S>,
+) => {
   const runtimeOptions = {
     ...defaultInitOptions,
     ...options,
@@ -44,15 +47,15 @@ export const server = async <T>(node: Libp2p, options?: InitOptions<T>) => {
       incomingData.stream.sink(outputIterator);
     });
 
-  const serve = async <I extends T, O extends T>(
+  const serve = async <I extends T, O extends T, S extends {} = {}>(
     name: string,
-    func: Service<I, O>,
+    func: Service<I, O, S>,
   ) =>
     await handleStream<I, O>(
       name,
       async (input, incomingData) => {
         const outputChannel = new Channel<O>();
-        let chan: Chan<O> = undefined as unknown as Chan<O>;
+        let chan: Chan<O, S> = undefined as unknown as Chan<O, S>;
 
         // first msg is id, use id to make chan
         for await (const id of input) {
@@ -97,10 +100,10 @@ export const server = async <T>(node: Libp2p, options?: InitOptions<T>) => {
       },
     );
 
-  const handle = async <I extends T, O extends T>(
+  const handle = async <I extends T, O extends T, S extends {} = {}>(
     name: string,
-    func: Func<I, O>,
-  ) => await serve<I, O>(name, () => func);
+    func: Func<I, O, S>,
+  ) => await serve<I, O, S>(name, () => func);
 
   // collect status and send them to client
   if (!node.getProtocols().some((p) => p === control_name)) {

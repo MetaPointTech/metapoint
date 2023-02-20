@@ -3,10 +3,11 @@ import type { Channel } from "queueable";
 import { debug, logger } from ".";
 import type { ControlMsg, StreamID } from "./types";
 
-const newChannel = <T>(
+const newChannel = <T, S>(
   c: Channel<T>,
   i: IncomingStreamData,
   ctrl?: Channel<ControlMsg>,
+  store?: S,
 ) => {
   const id: StreamID = { connection: i.connection.id, stream: i.stream.id };
   let open = true;
@@ -51,6 +52,7 @@ const newChannel = <T>(
       },
       remoteAddr: i.connection.remoteAddr,
       remotePeer: i.connection.remotePeer,
+      store: store,
     },
   };
 };

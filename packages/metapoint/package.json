@@ -44,6 +44,7 @@
     "@libp2p/mplex": "^7.1.1",
     "@libp2p/websockets": "^5.0.3",
     "@multiformats/multiaddr": "^11.4.0",
+    "@syncedstore/core": "^0.4.3",
     "libp2p": "^0.42.2",
     "libp2p-transport": "workspace:*",
     "zod": "^3.20.6"

@@ -190,7 +190,7 @@ export const client = async <T = any>(
         controlChan,
       ));
 
-      return async <I extends T, O extends T>(name: string) => {
+      return Object.assign(async <I extends T, O extends T>(name: string) => {
         let chan = await channel<I, O, T>(name, connection, runtimeOptions);
         // auto reopen
         return new Proxy(chan, {
@@ -212,7 +212,9 @@ export const client = async <T = any>(
             return chan[p];
           },
         });
-      };
+      }, {
+        close: () => connection.close(),
+      });
     } catch (e) {
       logger.trace(`Skip addr ${item} because of ${e}`);
       continue;

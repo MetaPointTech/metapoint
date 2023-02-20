@@ -55,11 +55,11 @@ export const peer = async <T extends Endpoint<any, any>>(
     peer: PeerAddr | PeerAddr[],
   ) => {
     const channel = await client(libp2p, peer, options);
-    return async <F extends keyof T>(name: F) =>
+    return Object.assign(async <F extends keyof T>(name: F) =>
       await channel<
         InferIOType<T[F]["input"], any>,
         InferIOType<T[F]["output"], any>
-      >(name.toString());
+      >(name.toString()), { close: channel.close });
   };
 
   const start = async () => {

@@ -208,10 +208,7 @@ export const client = async <T = any, S extends {} = {}>(
           return new Proxy(chan, {
             async apply(_, __, argArray) {
               if (chan.ctx.stat.status() === "CLOSED") {
-                chan = await channel(name, connection, {
-                  ...options,
-                  store: chan.ctx.store,
-                });
+                chan = await channel(name, connection, runtimeOptions);
               }
               return await chan(argArray.at(0));
             },
@@ -219,10 +216,7 @@ export const client = async <T = any, S extends {} = {}>(
               if (p === "send") {
                 return async (v: I) => {
                   if (chan.ctx.stat.status() === "CLOSED") {
-                    chan = await channel(name, connection, {
-                      ...options,
-                      store: chan.ctx.store,
-                    });
+                    chan = await channel(name, connection, runtimeOptions);
                   }
                   await chan.send(v);
                 };

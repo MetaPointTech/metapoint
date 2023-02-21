@@ -16,7 +16,7 @@ import { runtimeError } from "./error";
 
 const ccs = new Map<string, Channel<ControlMsg>>();
 
-export const server = async <T, S extends {} = {}>(
+export const server = async <T = any, S extends {} = {}>(
   node: Libp2p,
   options?: InitOptions<T, S>,
 ) => {

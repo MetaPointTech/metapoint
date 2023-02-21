@@ -27,7 +27,7 @@ const meta = h.router({
   }),
 });
 
-const node1 = await peer(meta);
+const node1 = await peer({ meta });
 const node2 = await peer();
 const channel = await node2.connect<typeof meta>(node1.meta().addrs);
 

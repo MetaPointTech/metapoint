@@ -65,7 +65,7 @@ const handleControlMsg = async (id: string, cc?: Channel<ControlMsg>) => {
   }
 };
 
-const channel = async <I extends T, O extends T, T = any, S extends {} = {}>(
+const channel = async <I extends T, O extends T, T, S>(
   name: string,
   connection: Connection,
   options?: InitOptions<T, S>,
@@ -177,7 +177,7 @@ export const client = async <T = any, S extends {} = {}>(
       const connection = await node.dial(peerToDail);
       logger.trace(`Succeed connect to ${peerToDail}`);
 
-      const controlChan = await channel<void, string>(
+      const controlChan = await channel<undefined, string, any, S>(
         control_name,
         connection,
         runtimeOptions,
@@ -196,8 +196,10 @@ export const client = async <T = any, S extends {} = {}>(
       ));
 
       return Object.assign(
-        async <I extends T, O extends T, S extends {} = {}>(name: string) => {
-          let chan = await channel<I, O, T, S>(
+        async <I extends T, O extends T, Context extends S = S>(
+          name: string,
+        ) => {
+          let chan = await channel<I, O, T, Context>(
             name,
             connection,
             runtimeOptions,

@@ -52,7 +52,7 @@ const newChannel = <T, S>(
       },
       remoteAddr: i.connection.remoteAddr,
       remotePeer: i.connection.remotePeer,
-      store: store,
+      store: store as S,
     },
   };
 };

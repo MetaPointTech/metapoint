@@ -47,15 +47,15 @@ export const server = async <T, S extends {} = {}>(
       incomingData.stream.sink(outputIterator);
     });
 
-  const serve = async <I extends T, O extends T, S extends {} = {}>(
+  const serve = async <I extends T, O extends T, Context extends S = S>(
     name: string,
-    func: Service<I, O, S>,
+    func: Service<I, O, Context>,
   ) =>
     await handleStream<I, O>(
       name,
       async (input, incomingData) => {
         const outputChannel = new Channel<O>();
-        let chan: Chan<O, S> = undefined as unknown as Chan<O, S>;
+        let chan: Chan<O, Context> = undefined as unknown as Chan<O, Context>;
 
         // first msg is id, use id to make chan
         for await (const id of input) {
@@ -67,10 +67,11 @@ export const server = async <T, S extends {} = {}>(
           if (cc === undefined && name !== control_name) {
             throw runtimeError("ChannelNotFound", "Control channel not found");
           }
-          chan = newChannel(
+          chan = newChannel<O, Context>(
             outputChannel,
             incomingData,
             cc,
+            runtimeOptions.store,
           );
           logger.trace(`New connection with ${id}`);
           break;
@@ -100,10 +101,10 @@ export const server = async <T, S extends {} = {}>(
       },
     );
 
-  const handle = async <I extends T, O extends T, S extends {} = {}>(
+  const handle = async <I extends T, O extends T, Context extends S = S>(
     name: string,
-    func: Func<I, O, S>,
-  ) => await serve<I, O, S>(name, () => func);
+    func: Func<I, O, Context>,
+  ) => await serve<I, O, Context>(name, () => func);
 
   // collect status and send them to client
   if (!node.getProtocols().some((p) => p === control_name)) {

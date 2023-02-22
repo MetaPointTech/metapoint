@@ -30,7 +30,7 @@ export interface Codec<T> {
 export interface InitOptions<T, S> {
   // custom codec
   codec?: Codec<T>;
-  store?: S;
+  context?: S;
 }
 
 export interface TransportChannel<I, O, S>

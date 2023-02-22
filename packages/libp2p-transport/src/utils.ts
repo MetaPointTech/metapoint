@@ -7,7 +7,7 @@ const newChannel = <T, S>(
   c: Channel<T>,
   i: IncomingStreamData,
   ctrl?: Channel<ControlMsg>,
-  store?: S,
+  context?: S,
 ) => {
   const id: StreamID = { connection: i.connection.id, stream: i.stream.id };
   let open = true;
@@ -52,7 +52,7 @@ const newChannel = <T, S>(
       },
       remoteAddr: i.connection.remoteAddr,
       remotePeer: i.connection.remotePeer,
-      store: store as S,
+      store: context as S,
     },
   };
 };

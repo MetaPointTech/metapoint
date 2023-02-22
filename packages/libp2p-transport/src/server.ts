@@ -77,7 +77,7 @@ export const server = async (node: Libp2p) => {
             outputChannel,
             incomingData,
             cc,
-            runtimeOptions.store,
+            runtimeOptions.context,
           );
           logger.trace(`New connection with ${id}`);
           break;

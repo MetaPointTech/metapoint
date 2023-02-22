@@ -92,7 +92,7 @@ const channel = async <I extends T, O extends T, T, S>(
     inputChannel,
     { connection, stream },
     undefined,
-    runtimeOptions.store,
+    runtimeOptions.context,
   );
 
   const jid = JSON.stringify(chan.ctx.id);

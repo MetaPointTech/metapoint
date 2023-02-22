@@ -7,8 +7,8 @@ const group = <T, S extends {}>(opts?: InitOptions<T, S>) => {
   const handler = <I extends T, O extends T>(
     meta: Unpick<HandlerMeta<S, T, I, O>, "type">,
   ): HandlerMeta<S, T, I, O> => {
-    if (codec) meta.codec = codec;
-    if (context) meta.context = context;
+    if (codec && meta.codec === undefined) meta.codec = codec;
+    if (context && meta.context === undefined) meta.context = context;
 
     return {
       type: "handler",
@@ -19,8 +19,8 @@ const group = <T, S extends {}>(opts?: InitOptions<T, S>) => {
   const service = <I extends T, O extends T>(
     meta: Unpick<ServiceMeta<S, T, I, O>, "type">,
   ): ServiceMeta<S, T, I, O> => {
-    if (codec) meta.codec = codec;
-    if (context) meta.context = context;
+    if (codec && meta.codec === undefined) meta.codec = codec;
+    if (context && meta.context === undefined) meta.context = context;
 
     return {
       type: "service",

@@ -8,7 +8,7 @@ import { newNode } from "./node";
 const libp2p = await newNode();
 const addr = await startServer();
 const defaultClient = await client(libp2p, addr);
-const jsonClient = await client(libp2p, addr, { codec: jsonCodec });
+const jsonClient = await client(libp2p, addr);
 
 describe.concurrent("Server default codec", async () => {
   test.concurrent("test add handler(one2one)", async () => {
@@ -54,7 +54,7 @@ describe.concurrent("Server default codec", async () => {
 
 describe.concurrent("Server JSON codec", async () => {
   test.concurrent("test add handler(one2one)", async () => {
-    const c = await jsonClient<Data, Data>("addJson");
+    const c = await jsonClient<Data, Data>("addJson", { codec: jsonCodec });
     await c.send({ value: 2 });
     let count = 0;
     for await (const msg of c) {
@@ -66,14 +66,14 @@ describe.concurrent("Server JSON codec", async () => {
   });
 
   test.concurrent("test add handler(one2one)2", async () => {
-    const c = await jsonClient<Data, Data>("addJson");
+    const c = await jsonClient<Data, Data>("addJson", { codec: jsonCodec });
     const result = await c({ value: 2 });
     expect(result).toStrictEqual([{ value: 3 }]);
     expect((await c.next()).value).toBe(undefined);
   });
 
   test.concurrent("test adding handler(one2many)", async () => {
-    const c = await jsonClient<Data, Data>("addingJson");
+    const c = await jsonClient<Data, Data>("addingJson", { codec: jsonCodec });
     const my_num = Math.floor(Math.random() * 100);
     await c.send({ value: my_num });
     let n = 1;

@@ -136,15 +136,7 @@ const channel = async <I extends T, O extends T, T, S>(
   }, op);
 };
 
-export const client = async <T = any, S extends {} = {}>(
-  node: Libp2p,
-  peer: PeerAddr | PeerAddr[],
-  options?: InitOptions<T, S>,
-) => {
-  const runtimeOptions = {
-    ...defaultInitOptions,
-    ...options,
-  };
+export const client = async (node: Libp2p, peer: PeerAddr | PeerAddr[]) => {
   let peerToDail: Multiaddr | PeerId;
   if (!(peer instanceof Array)) {
     peer = [peer];
@@ -178,7 +170,7 @@ export const client = async <T = any, S extends {} = {}>(
       const connection = await node.dial(peerToDail);
       logger.trace(`Succeed connect to ${peerToDail}`);
 
-      const controlChan = await channel<undefined, string, any, S>(
+      const controlChan = await channel<void, string, any, {}>(
         control_name,
         connection,
         {
@@ -199,24 +191,24 @@ export const client = async <T = any, S extends {} = {}>(
       ));
 
       return Object.assign(
-        async <I extends T, O extends T, Context extends S = S>(
+        async <I extends T, O extends T, T = any, Context extends {} = {}>(
           name: string,
           options?: InitOptions<T, Context>,
         ) => {
-          const channelRuntimeOptions = {
-            ...runtimeOptions,
+          const runtimeOptions = {
+            ...defaultInitOptions,
             ...options,
           };
           let chan = await channel<I, O, T, Context>(
             name,
             connection,
-            channelRuntimeOptions,
+            runtimeOptions,
           );
           // auto reopen
           return new Proxy(chan, {
             async apply(_, __, argArray) {
               if (chan.ctx.stat.status() === "CLOSED") {
-                chan = await channel(name, connection, channelRuntimeOptions);
+                chan = await channel(name, connection, runtimeOptions);
               }
               return await chan(argArray.at(0));
             },
@@ -227,7 +219,7 @@ export const client = async <T = any, S extends {} = {}>(
                     chan = await channel(
                       name,
                       connection,
-                      channelRuntimeOptions,
+                      runtimeOptions,
                     );
                   }
                   await chan.send(v);

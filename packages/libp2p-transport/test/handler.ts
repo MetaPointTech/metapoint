@@ -59,12 +59,12 @@ export const startServer = async () => {
   );
 
   // json codec
-  const json = await server(libp2p, { codec: jsonCodec });
+  const json = await server(libp2p);
 
   await json.handle<Data, Data>("addJson", async (data, chan) => {
     await chan.send({ value: data.value + 1 });
     await chan.done();
-  });
+  }, { codec: jsonCodec });
 
   await json.handle<Data, Data>(
     "addingJson",
@@ -74,6 +74,7 @@ export const startServer = async () => {
       await chan.send({ value: input.value + 3 });
       await chan.done();
     },
+    { codec: jsonCodec },
   );
 
   return libp2p.getMultiaddrs()[0];

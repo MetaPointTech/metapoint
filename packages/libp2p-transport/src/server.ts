@@ -19,15 +19,7 @@ import { defaultCodec } from "./codec";
 
 const ccs = new Map<string, Channel<ControlMsg>>();
 
-export const server = async <T = any, S extends {} = {}>(
-  node: Libp2p,
-  options?: InitOptions<T, S>,
-) => {
-  const runtimeOptions = {
-    ...defaultInitOptions,
-    ...options,
-  };
-
+export const server = async (node: Libp2p) => {
   const makeHandleStream =
     <HT>(codec: Codec<HT>) =>
     async <I extends HT, O extends HT>(
@@ -51,24 +43,29 @@ export const server = async <T = any, S extends {} = {}>(
         incomingData.stream.sink(outputIterator);
       });
 
-  const serve = async <I extends T, O extends T, Context extends S = S>(
+  const serve = async <
+    I extends T,
+    O extends T,
+    T = any,
+    Context extends {} = {},
+  >(
     name: string,
     func: Service<I, O, Context>,
     options?: InitOptions<T, Context>,
   ) => {
-    const serveRuntimeOptions = {
-      ...runtimeOptions,
+    const runtimeOptions = {
+      ...defaultInitOptions,
       ...options,
     };
-    await makeHandleStream(serveRuntimeOptions.codec)<I, O>(
+    await makeHandleStream(runtimeOptions.codec)<I, O>(
       name,
       async (input, incomingData) => {
         const outputChannel = new Channel<O>();
-        let chan: Chan<O, Context> = undefined as unknown as Chan<O, Context>;
+        let chan!: Chan<O, Context>;
 
         // first msg is id, use id to make chan
         for await (const id of input) {
-          const sid = JSON.parse(id as string) as StreamID;
+          const sid: StreamID = JSON.parse(id as string);
           // sync the id
           incomingData.connection.id = sid.connection;
           incomingData.stream.id = sid.stream;
@@ -80,7 +77,7 @@ export const server = async <T = any, S extends {} = {}>(
             outputChannel,
             incomingData,
             cc,
-            serveRuntimeOptions.store,
+            runtimeOptions.store,
           );
           logger.trace(`New connection with ${id}`);
           break;
@@ -111,11 +108,16 @@ export const server = async <T = any, S extends {} = {}>(
     );
   };
 
-  const handle = async <I extends T, O extends T, Context extends S = S>(
+  const handle = async <
+    I extends T,
+    O extends T,
+    T = any,
+    Context extends {} = {},
+  >(
     name: string,
     func: Func<I, O, Context>,
     options?: InitOptions<T, Context>,
-  ) => await serve<I, O, Context>(name, () => func, options);
+  ) => await serve<I, O, T, Context>(name, () => func, options);
 
   // collect status and send them to client
   if (!node.getProtocols().some((p) => p === control_name)) {
@@ -126,7 +128,7 @@ export const server = async <T = any, S extends {} = {}>(
       consume(
         transform(Infinity, async (i) => {
           try {
-            await chan.send(JSON.stringify(i) as T);
+            await chan.send(JSON.stringify(i));
           } catch (error) {
             if (error === "channel has already closed") {
               // connection has already been closed forcely

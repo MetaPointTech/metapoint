@@ -1,56 +1,39 @@
-import { client, PeerAddr, server } from "libp2p-transport";
+import { client, InitOptions, PeerAddr, server } from "libp2p-transport";
 import type {
   ConnectEndpoint,
   Endpoint,
   EndpointMeta,
   InferIOType,
   PeerInitOptions,
-  ServerMeta,
   UnPromisify,
 } from "./types";
 import { newNode } from "./node";
 
-const parseOptions = async <
-  Meta extends Endpoint<any, any>,
-  Codec,
-  S extends {},
->(
-  options: PeerInitOptions<Meta, Codec, S>,
+const parseOptions = async <Context extends {}, Codec>(
+  options: PeerInitOptions<Context, Codec>,
+) => ({
+  libp2p: options.libp2p ?? await newNode(),
+  initStart: options.initStart ?? true,
+  endpoint: options.endpoint ?? {},
+  ...options,
+});
+
+export const peer = async <Context extends {}, Codec>(
+  options?: PeerInitOptions<Context, Codec>,
 ) => {
-  return {
-    libp2p: options.libp2p ?? await newNode(),
-    initStart: options.initStart ?? true,
-    meta: options.meta ?? {},
-    store: options.store ?? {} as S,
-    ...options,
-  };
-};
+  const { libp2p, initStart, endpoint } = await parseOptions(options ?? {});
+  const { handle, serve } = await server(libp2p);
+  const metadata = new Map<string, EndpointMeta<Context, Codec, any, any>>();
 
-export const peer = async <
-  Meta extends Endpoint<any, any>,
-  Codec extends any,
-  S extends {},
->(
-  options?: PeerInitOptions<Meta, Codec, S>,
-) => {
-  const { libp2p, initStart, meta, ...runtimeOptions } = await parseOptions(
-    options ?? {},
-  );
-
-  const { handle, serve } = await server(libp2p, runtimeOptions);
-  const metadata = new Map<string, EndpointMeta<any, any>>();
-
-  const addEndpoint = async <I extends Codec, O extends Codec>(
-    endpoint: Endpoint<I, O>,
-  ) => {
+  const addEndpoint = async (endpoint: Endpoint<any, any>) => {
     for (const [name, meta] of Object.entries(endpoint)) {
       switch (meta.type) {
         case "handler":
-          await handle(name, meta.func);
+          await handle(name, meta.func, meta);
           metadata.set(name, meta);
           break;
         case "service":
-          await serve(name, meta.func);
+          await serve(name, meta.func, meta);
           metadata.set(name, meta);
           break;
         default:
@@ -67,19 +50,25 @@ export const peer = async <
       }),
     );
 
-  const connect = async <T extends ConnectEndpoint<any, any>>(
+  const connect = async <
+    T extends ConnectEndpoint<any, any>,
+    Context extends {} = {},
+  >(
     peer: PeerAddr | PeerAddr[],
+    options?: InitOptions<any, Context>,
   ) => {
-    const channel = await client(libp2p, peer, runtimeOptions);
+    const channel = await client(libp2p, peer);
     return Object.assign(async <F extends keyof T>(name: F) =>
       await channel<
         InferIOType<T[F]["input"], any>,
-        InferIOType<T[F]["output"], any>
-      >(name.toString()), { close: channel.close });
+        InferIOType<T[F]["output"], any>,
+        any,
+        Context
+      >(name.toString(), options), { close: channel.close });
   };
 
   const start = async () => {
-    await addEndpoint(meta);
+    await addEndpoint(endpoint);
     await libp2p.start();
   };
 
@@ -89,10 +78,10 @@ export const peer = async <
     await libp2p.stop();
   };
 
-  const getMeta = (): ServerMeta<Meta> => ({
+  const getMeta = () => ({
     addrs: libp2p.getMultiaddrs().map((d) => d.toString()),
     endpoint: Object.fromEntries(metadata.entries()),
-  } as ServerMeta<Meta>);
+  });
 
   if (initStart) await start();
 
@@ -106,10 +95,11 @@ export const peer = async <
   };
 };
 
-type PeerReturn<T extends Endpoint<any, any>, Codec, S extends {}> =
-  UnPromisify<ReturnType<typeof peer<T, Codec, S>>>;
+type PeerReturn<S extends {}, Codec> = UnPromisify<
+  ReturnType<typeof peer<S, Codec>>
+>;
 
-export type MetaType<T extends PeerReturn<any, any, {}>> = ReturnType<
+export type MetaType<T extends PeerReturn<{}, any>> = ReturnType<
   T["meta"]
 >["endpoint"];
 

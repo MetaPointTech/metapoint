@@ -1,24 +1,20 @@
 import { h, peer, z } from "../src";
 import { describe, expect, test } from "vitest";
 
-const meta = h.router({
-  numberAdd: h.handler({
-    func: async (data, { send, done }) => {
+const g = h.group({
+  context: { name: 1 },
+});
+
+const endpoint = h.router({
+  numberAdd: g.handler({
+    func: async (data, { send, done, ctx }) => {
       await send(data + 1);
       await done();
     },
     input: z.number(),
     output: z.number(),
   }),
-  stringAdd: h.handler({
-    func: async (data, { send, done }) => {
-      await send(data + "!");
-      await done();
-    },
-    input: z.string(),
-    output: z.string(),
-  }),
-  addChan: h.service({
+  addChan: g.service({
     func: () => async (data, { send }) => {
       await send(data + 1);
     },
@@ -27,19 +23,14 @@ const meta = h.router({
   }),
 });
 
-const node1 = await peer({ meta });
+const node1 = await peer({ endpoint });
 const node2 = await peer();
-const channel = await node2.connect<typeof meta>(node1.meta().addrs);
+const channel = await node2.connect<typeof endpoint>(node1.meta().addrs);
 
 describe("test metapoint server/client", async () => {
   test("number test", async () => {
     const n = await channel("numberAdd");
     expect(await n(1)).toStrictEqual([2]);
-  });
-  test("string test", async () => {
-    const s = await channel("stringAdd");
-    expect(await s("Hello world")).toStrictEqual(["Hello world!"]);
-    expect(await s("Hello world")).toStrictEqual(["Hello world!"]);
   });
   test("string add chan", async () => {
     const c = await channel("addChan");

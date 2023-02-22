@@ -9,21 +9,26 @@ type IsEqual<T, U> = (<T1>() => T1 extends T ? 1 : 2) extends
 export type InferIOType<Meta extends ZodType | undefined, T> =
   IsEqual<Meta, undefined> extends true ? T : z.infer<Exclude<Meta, undefined>>;
 
-export type HandlerFunc<I, O> = Func<
+export type HandlerFunc<I, O, S extends {}> = Func<
   InferIOType<ZodType<I>, I>,
-  InferIOType<ZodType<O>, O>
+  InferIOType<ZodType<O>, O>,
+  S
 >;
 
-export type ServiceFunc<I, O> = Service<
+export type ServiceFunc<I, O, S extends {}> = Service<
   InferIOType<ZodType<I>, I>,
-  InferIOType<ZodType<O>, O>
+  InferIOType<ZodType<O>, O>,
+  S
 >;
 
-export interface Meta<I, O> {
+export interface MetaBase<I, O> {
   info?: Json;
   input?: ZodType<I>;
   output?: ZodType<O>;
 }
+
+interface Meta<S, T, I extends T, O extends T>
+  extends MetaBase<I, O>, InitOptions<T, S> {}
 
 type Simplify<T> = {
   [P in keyof T]: T[P];
@@ -33,46 +38,37 @@ export type Unpick<T, K extends keyof T> = Simplify<
   Pick<T, Exclude<keyof T, K>>
 >;
 
-export interface HandlerMeta<I, O> extends Meta<I, O> {
+export interface HandlerMeta<S extends {}, T, I extends T, O extends T>
+  extends Meta<S, T, I, O> {
   type: "handler";
-  func: HandlerFunc<I, O>;
+  func: HandlerFunc<I, O, S>;
 }
 
-export interface ServiceMeta<I, O> extends Meta<I, O> {
+export interface ServiceMeta<S extends {}, T, I extends T, O extends T>
+  extends Meta<S, T, I, O> {
   type: "service";
-  func: ServiceFunc<I, O>;
+  func: ServiceFunc<I, O, S>;
 }
 
-export type EndpointMeta<I, O> = HandlerMeta<I, O> | ServiceMeta<I, O>;
+export type EndpointMeta<S extends {}, T, I extends T, O extends T> =
+  | HandlerMeta<S, T, I, O>
+  | ServiceMeta<S, T, I, O>;
 
-export interface Endpoint<I, O> {
-  [name: string]: EndpointMeta<I, O>;
+export interface Endpoint<S extends {}, T> {
+  [name: string]: EndpointMeta<S, T, any, any>;
 }
 
 export interface ConnectEndpoint<I, O> {
-  [name: string]: Pick<EndpointMeta<I, O>, "input" | "output">;
+  [name: string]: MetaBase<I, O>;
 }
 
-export interface Router<S extends {}> {
-  id: string;
-  ctx: S;
-  meta: Endpoint<any, any>;
-  middleware: () => {};
-}
-
-export type UnPromisify<T> = T extends Promise<infer U> ? U : never;
-
-export interface ServerMeta<T extends Endpoint<any, any>> {
-  addrs: string[];
-  endpoint: T;
-}
-
-export interface PeerInitOptions<M extends Endpoint<any, any>, T, S>
-  extends InitOptions<T, S> {
-  meta?: M;
+export interface PeerInitOptions<S extends {}, T> {
+  endpoint?: Endpoint<S, T>;
   libp2p?: Libp2p;
   initStart?: boolean;
 }
+
+export type UnPromisify<T> = T extends Promise<infer U> ? U : never;
 
 export type Json =
   | string

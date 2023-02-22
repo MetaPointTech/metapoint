@@ -1,35 +1,40 @@
-import type {
-  Endpoint,
-  EndpointMeta,
-  HandlerMeta,
-  ServiceMeta,
-  Unpick,
-} from "./types";
+import { InitOptions } from "libp2p-transport";
+import type { Endpoint, HandlerMeta, ServiceMeta, Unpick } from "./types";
 
-const router = <T extends Endpoint<any, any>>(meta: T): T => meta;
+const group = <T, S extends {}>(opts?: InitOptions<T, S>) => {
+  const { codec, context } = opts ?? {};
 
-const endpoint = <I, O>(
-  endpoint: EndpointMeta<I, O>,
-): EndpointMeta<I, O> => endpoint;
+  const handler = <I extends T, O extends T>(
+    meta: Unpick<HandlerMeta<S, T, I, O>, "type">,
+  ): HandlerMeta<S, T, I, O> => {
+    if (codec) meta.codec = codec;
+    if (context) meta.context = context;
 
-const handler = <I, O>(
-  meta: Unpick<HandlerMeta<I, O>, "type">,
-): EndpointMeta<I, O> =>
-  endpoint<I, O>({
-    ...meta,
-    type: "handler",
-  });
+    return {
+      type: "handler",
+      ...meta,
+    };
+  };
 
-const service = <I, O>(
-  meta: Unpick<ServiceMeta<I, O>, "type">,
-): EndpointMeta<I, O> =>
-  endpoint<I, O>({
-    ...meta,
-    type: "service",
-  });
+  const service = <I extends T, O extends T>(
+    meta: Unpick<ServiceMeta<S, T, I, O>, "type">,
+  ): ServiceMeta<S, T, I, O> => {
+    if (codec) meta.codec = codec;
+    if (context) meta.context = context;
+
+    return {
+      type: "service",
+      ...meta,
+    };
+  };
+
+  return {
+    handler,
+    service,
+  };
+};
 
 export const h = {
-  router,
-  handler,
-  service,
+  router: <T extends Endpoint<any, any>>(endpoint: T) => endpoint,
+  group,
 };

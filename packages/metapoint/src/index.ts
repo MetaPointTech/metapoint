@@ -103,7 +103,6 @@ export const peer = async <
     handle: addEndpoint,
     unhandle,
     connect,
-    store: runtimeOptions.store,
   };
 };
 

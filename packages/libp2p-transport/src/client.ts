@@ -20,6 +20,7 @@ import { consume } from "streaming-iterables";
 import { runtimeError } from "./error";
 import { logger } from ".";
 import { Connection } from "@libp2p/interface-connection";
+import { defaultCodec } from "./codec";
 
 const ccs = new Map<string, Channel<ControlMsg>>();
 
@@ -180,7 +181,9 @@ export const client = async <T = any, S extends {} = {}>(
       const controlChan = await channel<undefined, string, any, S>(
         control_name,
         connection,
-        runtimeOptions,
+        {
+          codec: defaultCodec,
+        },
       );
 
       // collect error
@@ -198,17 +201,22 @@ export const client = async <T = any, S extends {} = {}>(
       return Object.assign(
         async <I extends T, O extends T, Context extends S = S>(
           name: string,
+          options?: InitOptions<T, Context>,
         ) => {
+          const channelRuntimeOptions = {
+            ...runtimeOptions,
+            ...options,
+          };
           let chan = await channel<I, O, T, Context>(
             name,
             connection,
-            runtimeOptions,
+            channelRuntimeOptions,
           );
           // auto reopen
           return new Proxy(chan, {
             async apply(_, __, argArray) {
               if (chan.ctx.stat.status() === "CLOSED") {
-                chan = await channel(name, connection, runtimeOptions);
+                chan = await channel(name, connection, channelRuntimeOptions);
               }
               return await chan(argArray.at(0));
             },
@@ -216,7 +224,11 @@ export const client = async <T = any, S extends {} = {}>(
               if (p === "send") {
                 return async (v: I) => {
                   if (chan.ctx.stat.status() === "CLOSED") {
-                    chan = await channel(name, connection, runtimeOptions);
+                    chan = await channel(
+                      name,
+                      connection,
+                      channelRuntimeOptions,
+                    );
                   }
                   await chan.send(v);
                 };

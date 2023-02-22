@@ -1,18 +1,21 @@
 import type { Libp2p } from "libp2p";
 import type {
   Chan,
+  Codec,
   ControlMsg,
   Func,
   InitOptions,
   IterableFunc,
   Service,
+  StreamID,
 } from "./types";
 import { consume, transform } from "streaming-iterables";
 import { control_name, defaultInitOptions } from "./common";
 import { Channel } from "queueable";
 import { newChannel } from "./utils";
-import { logger, StreamID } from ".";
+import { logger } from ".";
 import { runtimeError } from "./error";
+import { defaultCodec } from "./codec";
 
 const ccs = new Map<string, Channel<ControlMsg>>();
 
@@ -25,33 +28,39 @@ export const server = async <T = any, S extends {} = {}>(
     ...options,
   };
 
-  const handleStream = async <I extends T, O extends T>(
-    name: string,
-    func: IterableFunc<I, O>,
-  ) =>
-    await node.handle(name, async (incomingData) => {
-      // decode input
-      const inputIterator = transform(
-        Infinity,
-        async (data) =>
-          await runtimeOptions.codec.decoder(data.subarray()) as Awaited<I>,
-        incomingData.stream.source,
-      );
-      // process func
-      const outputIterator = transform(
-        Infinity,
-        (data) => runtimeOptions.codec.encoder(data),
-        await func(inputIterator, incomingData),
-      );
-      // return output
-      incomingData.stream.sink(outputIterator);
-    });
+  const makeHandleStream =
+    <HT>(codec: Codec<HT>) =>
+    async <I extends HT, O extends HT>(
+      name: string,
+      func: IterableFunc<I, O>,
+    ) =>
+      await node.handle(name, async (incomingData) => {
+        // decode input
+        const inputIterator = transform(
+          Infinity,
+          async (data) => await codec.decoder(data.subarray()) as Awaited<I>,
+          incomingData.stream.source,
+        );
+        // process func
+        const outputIterator = transform(
+          Infinity,
+          (data) => codec.encoder(data),
+          await func(inputIterator, incomingData),
+        );
+        // return output
+        incomingData.stream.sink(outputIterator);
+      });
 
   const serve = async <I extends T, O extends T, Context extends S = S>(
     name: string,
     func: Service<I, O, Context>,
-  ) =>
-    await handleStream<I, O>(
+    options?: InitOptions<T, Context>,
+  ) => {
+    const serveRuntimeOptions = {
+      ...runtimeOptions,
+      ...options,
+    };
+    await makeHandleStream(serveRuntimeOptions.codec)<I, O>(
       name,
       async (input, incomingData) => {
         const outputChannel = new Channel<O>();
@@ -71,7 +80,7 @@ export const server = async <T = any, S extends {} = {}>(
             outputChannel,
             incomingData,
             cc,
-            runtimeOptions.store,
+            serveRuntimeOptions.store,
           );
           logger.trace(`New connection with ${id}`);
           break;
@@ -100,11 +109,13 @@ export const server = async <T = any, S extends {} = {}>(
         return outputChannel;
       },
     );
+  };
 
   const handle = async <I extends T, O extends T, Context extends S = S>(
     name: string,
     func: Func<I, O, Context>,
-  ) => await serve<I, O, Context>(name, () => func);
+    options?: InitOptions<T, Context>,
+  ) => await serve<I, O, Context>(name, () => func, options);
 
   // collect status and send them to client
   if (!node.getProtocols().some((p) => p === control_name)) {
@@ -125,6 +136,8 @@ export const server = async <T = any, S extends {} = {}>(
           }
         }, cc),
       );
+    }, {
+      codec: defaultCodec,
     });
   }
 

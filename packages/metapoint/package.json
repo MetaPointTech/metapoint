@@ -46,6 +46,7 @@
     "@multiformats/multiaddr": "^11.4.0",
     "libp2p": "^0.42.2",
     "libp2p-transport": "workspace:*",
+    "nanoid": "^4.0.1",
     "zod": "^3.20.6"
   },
   "devDependencies": {

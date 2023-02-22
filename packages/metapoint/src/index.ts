@@ -1,6 +1,4 @@
 import { client, PeerAddr, server } from "libp2p-transport";
-import { syncedStore } from "@syncedstore/core";
-import type { DocTypeDescription } from "@syncedstore/core/types/doc";
 import type {
   ConnectEndpoint,
   Endpoint,
@@ -15,7 +13,7 @@ import { newNode } from "./node";
 const parseOptions = async <
   Meta extends Endpoint<any, any>,
   Codec,
-  S extends DocTypeDescription = {},
+  S extends {},
 >(
   options: PeerInitOptions<Meta, Codec, S>,
 ) => {
@@ -23,15 +21,15 @@ const parseOptions = async <
     libp2p: options.libp2p ?? await newNode(),
     initStart: options.initStart ?? true,
     meta: options.meta ?? {},
+    store: options.store ?? {} as S,
     ...options,
-    store: syncedStore<S>((options.store ?? {}) as S),
   };
 };
 
 export const peer = async <
   Meta extends Endpoint<any, any>,
-  Codec extends any = any,
-  S extends DocTypeDescription = {},
+  Codec extends any,
+  S extends {},
 >(
   options?: PeerInitOptions<Meta, Codec, S>,
 ) => {
@@ -109,11 +107,10 @@ export const peer = async <
   };
 };
 
-type PeerReturn<T extends Endpoint<any, any>> = UnPromisify<
-  ReturnType<typeof peer<T>>
->;
+type PeerReturn<T extends Endpoint<any, any>, Codec, S extends {}> =
+  UnPromisify<ReturnType<typeof peer<T, Codec, S>>>;
 
-export type MetaType<T extends PeerReturn<any>> = ReturnType<
+export type MetaType<T extends PeerReturn<any, any, {}>> = ReturnType<
   T["meta"]
 >["endpoint"];
 

@@ -16,7 +16,7 @@ import { h, MetaType, peer, z } from "metapoint";
 
 const g = h();
 
-// node1(nodejs)
+// node1(nodejs/web/deno)
 const node1 = await peer({
   numberAdd: g.handler({
     func: async (data, send, done) => {
@@ -29,7 +29,7 @@ const node1 = await peer({
 });
 export type meta = MetaType<typeof node1>;
 
-// node2(web)
+// node2(nodejs/web/deno)
 const node2 = await peer();
 const channel = await node2.connect<meta>(node1.meta().addrs);
 const add = await channel("numberAdd");

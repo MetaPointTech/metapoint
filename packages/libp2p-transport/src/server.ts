@@ -84,7 +84,8 @@ export const server = async (node: Libp2p) => {
         }
 
         try {
-          const process = await func(chan) ?? (() => {});
+          const process: Func<I, O, Context> =
+            (await func(chan) ?? (() => {})) as Func<I, O, Context>;
           // transform input
           consume(
             transform(

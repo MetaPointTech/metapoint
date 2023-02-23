@@ -48,9 +48,11 @@ JavaScript runs.
 ```typescript
 import { h, MetaType, peer, z } from "metapoint";
 
+const g = h();
+
 // node1(nodejs)
-const node1 = await peer(h.router({
-  numberAdd: h.handler({
+const node1 = await peer({
+  numberAdd: g.handler({
     func: async (data, send, done) => {
       await send(data + 1);
       await done();
@@ -58,7 +60,7 @@ const node1 = await peer(h.router({
     input: z.number(),
     output: z.number(),
   }),
-}));
+});
 export type meta = MetaType<typeof node1>;
 
 // node2(web)

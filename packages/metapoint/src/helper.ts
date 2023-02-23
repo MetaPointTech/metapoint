@@ -1,7 +1,7 @@
 import { InitOptions } from "libp2p-transport";
 import type { Endpoint, HandlerMeta, ServiceMeta, Unpick } from "./types";
 
-const group = <T, S extends {}>(opts?: InitOptions<T, S>) => {
+export const h = <T, S extends {}>(opts?: InitOptions<T, S>) => {
   const { codec, context } = opts ?? {};
 
   const handler = <I extends T, O extends T>(
@@ -32,9 +32,4 @@ const group = <T, S extends {}>(opts?: InitOptions<T, S>) => {
     handler,
     service,
   };
-};
-
-export const h = {
-  router: <T extends Endpoint<any, any>>(endpoint: T) => endpoint,
-  group,
 };

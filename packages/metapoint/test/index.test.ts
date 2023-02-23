@@ -1,11 +1,11 @@
 import { h, peer, z } from "../src";
 import { describe, expect, test } from "vitest";
 
-const g = h.group({
+const g = h({
   context: { name: 1 },
 });
 
-const endpoint = h.router({
+const endpoint = {
   numberAdd: g.handler({
     func: async (data, { send, done, ctx }) => {
       await send(data + 1);
@@ -21,7 +21,7 @@ const endpoint = h.router({
     input: z.number(),
     output: z.number(),
   }),
-});
+};
 
 const node1 = await peer({ endpoint });
 const node2 = await peer();

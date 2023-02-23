@@ -1,14 +1,19 @@
-import { InitOptions } from "libp2p-transport";
-import type { Endpoint, HandlerMeta, ServiceMeta, Unpick } from "./types";
+import { ServerInitOptions } from "libp2p-transport";
+import type { HandlerMeta, ServiceMeta, Unpick } from "./types";
 
-export const h = <T, S extends {}>(opts?: InitOptions<T, S>) => {
-  const { codec, context } = opts ?? {};
+export const h = <I extends T, O extends T, T, S extends {}>(
+  opts?: ServerInitOptions<I, O, T, S>,
+) => {
+  const { codec, context, middleware } = opts ?? {};
 
-  const handler = <I extends T, O extends T>(
+  const handler = (
     meta: Unpick<HandlerMeta<S, T, I, O>, "type">,
   ): HandlerMeta<S, T, I, O> => {
     if (codec && meta.codec === undefined) meta.codec = codec;
     if (context && meta.context === undefined) meta.context = context;
+    if (middleware && meta.middleware === undefined) {
+      meta.middleware = middleware as any;
+    }
 
     return {
       type: "handler",
@@ -16,11 +21,14 @@ export const h = <T, S extends {}>(opts?: InitOptions<T, S>) => {
     };
   };
 
-  const service = <I extends T, O extends T>(
+  const service = (
     meta: Unpick<ServiceMeta<S, T, I, O>, "type">,
   ): ServiceMeta<S, T, I, O> => {
     if (codec && meta.codec === undefined) meta.codec = codec;
     if (context && meta.context === undefined) meta.context = context;
+    if (middleware && meta.middleware === undefined) {
+      meta.middleware = middleware as any;
+    }
 
     return {
       type: "service",

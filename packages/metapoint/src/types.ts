@@ -1,4 +1,9 @@
-import type { Func, InitOptions, Service } from "libp2p-transport";
+import type {
+  Func,
+  InitOptions,
+  ServerInitOptions,
+  Service,
+} from "libp2p-transport";
 import type { Libp2p } from "libp2p";
 import type { z, ZodType } from "zod";
 
@@ -27,8 +32,8 @@ export interface MetaBase<I, O> {
   output?: ZodType<O>;
 }
 
-interface Meta<S, T, I extends T, O extends T>
-  extends MetaBase<I, O>, InitOptions<T, S> {}
+interface Meta<S extends {}, T, I extends T, O extends T>
+  extends MetaBase<I, O>, ServerInitOptions<I, O, T, S> {}
 
 type Simplify<T> = {
   [P in keyof T]: T[P];

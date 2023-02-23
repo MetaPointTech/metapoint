@@ -7,15 +7,24 @@ import type { IncomingStreamData } from "@libp2p/interface-registrar";
 export type Chan<T, S> = ReturnType<typeof newChannel<T, S>>;
 
 export type IterableFunc<I, O> = (
-  input: AnyIterable<I>,
+  data: AnyIterable<I>,
   incomingData: IncomingStreamData,
 ) => AnyIterable<O> | Promise<AnyIterable<O>>;
 
 export type PeerAddr = string | Multiaddr | PeerId;
 
+export interface FuncParams<I, O, S> {
+  data: I;
+  chan: Chan<O, S>;
+}
+
+export interface MiddlewareParams<I, O, S extends {}>
+  extends FuncParams<I, O, S> {
+  next: (params?: Partial<FuncParams<I, O, S>>) => Promise<void>;
+}
+
 export type Func<I, O, S extends {} = {}> = (
-  input: I,
-  chan: Chan<O, S>,
+  params: FuncParams<I, O, S>,
 ) => Promise<void> | void;
 
 export type Service<I, O, S extends {} = {}> = (
@@ -27,10 +36,19 @@ export interface Codec<T> {
   decoder: (data: Uint8Array) => T | Promise<T>;
 }
 
-export interface InitOptions<T, S> {
+export interface InitOptions<T, S extends {}> {
   // custom codec
   codec?: Codec<T>;
   context?: S;
+}
+
+export interface ServerInitOptions<I extends T, O extends T, T, S extends {}>
+  extends InitOptions<T, S> {
+  middleware?:
+    | ((
+      params: MiddlewareParams<I, O, S>,
+    ) => void | Promise<void>)
+    | null;
 }
 
 export interface TransportChannel<I, O, S>

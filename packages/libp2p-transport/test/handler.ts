@@ -8,7 +8,7 @@ const repeatingService: Service<number, number> = async (chan) => {
   let num: number = 0;
   let task: NodeJS.Timeout;
 
-  const func: Func<number, number> = async (data) => {
+  const func: Func<number, number> = async ({ data }) => {
     num = data;
     clearInterval(task);
     task = setInterval(() => send(num), 1000);
@@ -22,11 +22,20 @@ export const startServer = async () => {
   // default codec
   const { handle, serve } = await server(libp2p);
 
-  await handle<number, number>(
+  // test context and middleware
+  await handle(
     "add",
-    async (data, chan) => {
-      await chan.send(data + 1);
+    async ({ data, chan }) => {
+      await chan.send(data + 1 - chan.ctx.store.other);
       await chan.done();
+    },
+    {
+      middleware: async (params) => {
+        await params.next({
+          data: params.data + 1,
+        });
+      },
+      context: { other: 1 },
     },
   );
 
@@ -39,7 +48,7 @@ export const startServer = async () => {
 
   await handle<number, number>(
     "adding",
-    async (data, chan) => {
+    async ({ data, chan }) => {
       await chan.send(data + 1);
       await chan.send(data + 2);
       await chan.send(data + 3);
@@ -55,23 +64,23 @@ export const startServer = async () => {
 
   await serve<number, number>(
     "channelAdd",
-    () => (data, chan) => chan.send(data + 1),
+    () => ({ data, chan }) => chan.send(data + 1),
   );
 
   // json codec
   const json = await server(libp2p);
 
-  await json.handle<Data, Data>("addJson", async (data, chan) => {
+  await json.handle<Data, Data>("addJson", async ({ data, chan }) => {
     await chan.send({ value: data.value + 1 });
     await chan.done();
   }, { codec: jsonCodec });
 
   await json.handle<Data, Data>(
     "addingJson",
-    async (input, chan) => {
-      await chan.send({ value: input.value + 1 });
-      await chan.send({ value: input.value + 2 });
-      await chan.send({ value: input.value + 3 });
+    async ({ data, chan }) => {
+      await chan.send({ value: data.value + 1 });
+      await chan.send({ value: data.value + 2 });
+      await chan.send({ value: data.value + 3 });
       await chan.done();
     },
     { codec: jsonCodec },

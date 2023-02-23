@@ -1,7 +1,7 @@
 import type { IncomingStreamData } from "@libp2p/interface-registrar";
 import type { Channel } from "queueable";
 import { debug, logger } from ".";
-import type { ControlMsg, StreamID } from "./types";
+import type { ControlMsg, Func, FuncParams, StreamID } from "./types";
 
 const newChannel = <T, S>(
   c: Channel<T>,
@@ -57,4 +57,16 @@ const newChannel = <T, S>(
   };
 };
 
-export { newChannel };
+const makeNext = <I, O, S extends {}>(
+  defaultParams: FuncParams<I, O, S> & { next: Func<I, O, S> },
+) =>
+async (params?: Partial<FuncParams<I, O, S>>) => {
+  const { next, ...pp } = defaultParams;
+
+  await next({
+    ...pp,
+    ...params,
+  });
+};
+
+export { makeNext, newChannel };

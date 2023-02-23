@@ -12,8 +12,8 @@ import type {
 import { consume, transform } from "streaming-iterables";
 import { control_name, defaultInitOptions } from "./common";
 import { Channel } from "queueable";
-import { newChannel } from "./utils";
-import { logger } from ".";
+import { makeNext, newChannel } from "./utils";
+import { logger, ServerInitOptions } from ".";
 import { runtimeError } from "./error";
 import { defaultCodec } from "./codec";
 
@@ -51,7 +51,7 @@ export const server = async (node: Libp2p) => {
   >(
     name: string,
     func: Service<I, O, Context>,
-    options?: InitOptions<T, Context>,
+    options?: ServerInitOptions<I, O, T, Context>,
   ) => {
     const runtimeOptions = {
       ...defaultInitOptions,
@@ -84,7 +84,7 @@ export const server = async (node: Libp2p) => {
         }
 
         try {
-          const process = await func(chan);
+          const process = await func(chan) ?? (() => {});
           // transform input
           consume(
             transform(
@@ -92,7 +92,15 @@ export const server = async (node: Libp2p) => {
               async (data) => {
                 logger.trace(`Incoming data: ${JSON.stringify(data)}`);
                 try {
-                  if (process instanceof Function) await process(data, chan);
+                  if (runtimeOptions.middleware !== null) {
+                    await runtimeOptions.middleware({
+                      data,
+                      chan,
+                      next: makeNext({ data, chan, next: process }),
+                    });
+                  } else {
+                    await process({ data, chan });
+                  }
                 } catch (error) {
                   await chan.done(error);
                 }
@@ -116,7 +124,7 @@ export const server = async (node: Libp2p) => {
   >(
     name: string,
     func: Func<I, O, Context>,
-    options?: InitOptions<T, Context>,
+    options?: ServerInitOptions<I, O, T, Context>,
   ) => await serve<I, O, T, Context>(name, () => func, options);
 
   // collect status and send them to client

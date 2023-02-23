@@ -66,7 +66,7 @@ const handleControlMsg = async (id: string, cc?: Channel<ControlMsg>) => {
   }
 };
 
-const channel = async <I extends T, O extends T, T, S>(
+const channel = async <I extends T, O extends T, T, S extends {}>(
   name: string,
   connection: Connection,
   options?: InitOptions<T, S>,

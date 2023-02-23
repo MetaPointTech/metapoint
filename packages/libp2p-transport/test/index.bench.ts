@@ -11,12 +11,12 @@ const addr = await startServer();
 let num = Math.floor(Math.random() * 100);
 
 const defaultClient = await client(libp2p, addr);
-const jsonClient = await client(libp2p, addr, { codec: jsonCodec });
+const jsonClient = await client(libp2p, addr);
 const add = await defaultClient<number, number>("add");
 const ca = await defaultClient<number, number>("channelAdd");
+const c = await jsonClient<Data, Data>("addJson", { codec: jsonCodec });
 
 describe("json/xobj codec simple benchmark", async () => {
-  const c = await jsonClient<Data, Data>("addJson");
   bench("xobj codec", async () => {
     await add(num);
   });

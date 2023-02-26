@@ -44,11 +44,9 @@ export interface InitOptions<T, S extends {}> {
 
 export interface ServerInitOptions<I extends T, O extends T, T, S extends {}>
   extends InitOptions<T, S> {
-  middleware?:
-    | ((
-      params: MiddlewareParams<I, O, S>,
-    ) => void | Promise<void>)
-    | null;
+  middleware?: (
+    params: MiddlewareParams<I, O, S>,
+  ) => void | Promise<void>;
 }
 
 export interface TransportChannel<I, O, S>

@@ -1,9 +1,4 @@
-import type {
-  Func,
-  InitOptions,
-  ServerInitOptions,
-  Service,
-} from "libp2p-transport";
+import type { Func, ServerInitOptions, Service } from "libp2p-transport";
 import type { Libp2p } from "libp2p";
 import type { z, ZodType } from "zod";
 

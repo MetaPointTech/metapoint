@@ -43,16 +43,16 @@ const newChannel = <T, S>(
     },
     ctx: {
       id,
+      name: i.stream.stat.protocol,
+      remoteAddr: i.connection.remoteAddr,
+      remotePeer: i.connection.remotePeer,
+      context: context as S,
       stat: {
         encryption: i.connection.stat.encryption,
         multiplexer: i.connection.stat.multiplexer,
         direction: i.stream.stat.direction,
-        protocol: i.stream.stat.protocol,
-        status: () => open ? "OPEN" : "CLOSED",
+        open: () => open,
       },
-      remoteAddr: i.connection.remoteAddr,
-      remotePeer: i.connection.remotePeer,
-      store: context as S,
     },
   };
 };

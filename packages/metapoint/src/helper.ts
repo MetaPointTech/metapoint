@@ -1,7 +1,7 @@
 import { ServerInitOptions } from "libp2p-transport";
 import type { HandlerMeta, ServiceMeta, Unpick } from "./types";
 
-export const h = <I extends T, O extends T, T, S extends {}>(
+export const h = <I extends T, O extends T, T = any, S extends {} = {}>(
   opts?: ServerInitOptions<I, O, T, S>,
 ) => {
   const { codec, context, middleware } = opts ?? {};
@@ -12,7 +12,7 @@ export const h = <I extends T, O extends T, T, S extends {}>(
     if (codec && meta.codec === undefined) meta.codec = codec;
     if (context && meta.context === undefined) meta.context = context;
     if (middleware && meta.middleware === undefined) {
-      meta.middleware = middleware as any;
+      meta.middleware = middleware;
     }
 
     return {
@@ -27,7 +27,7 @@ export const h = <I extends T, O extends T, T, S extends {}>(
     if (codec && meta.codec === undefined) meta.codec = codec;
     if (context && meta.context === undefined) meta.context = context;
     if (middleware && meta.middleware === undefined) {
-      meta.middleware = middleware as any;
+      meta.middleware = middleware;
     }
 
     return {

@@ -3,7 +3,7 @@ import { describe, expect, test } from "vitest";
 
 const g = h({
   context: { name: 1 },
-  middleware: (p) => p.next({ data: p.data + 1 }),
+  middleware: (p) => p.next({ data: p.chan.ctx.store.name + 1 }),
 });
 
 const endpoint = {

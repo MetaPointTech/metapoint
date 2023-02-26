@@ -93,7 +93,7 @@ export const server = async (node: Libp2p) => {
               async (data) => {
                 logger.trace(`Incoming data: ${JSON.stringify(data)}`);
                 try {
-                  if (runtimeOptions.middleware !== null) {
+                  if (runtimeOptions.middleware) {
                     await runtimeOptions.middleware({
                       data,
                       chan,

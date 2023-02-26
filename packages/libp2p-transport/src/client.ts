@@ -207,7 +207,7 @@ export const client = async (node: Libp2p, peer: PeerAddr | PeerAddr[]) => {
           // auto reopen
           return new Proxy(chan, {
             async apply(_, __, argArray) {
-              if (chan.ctx.stat.status() === "CLOSED") {
+              if (!chan.ctx.stat.open()) {
                 chan = await channel(name, connection, runtimeOptions);
               }
               return await chan(argArray.at(0));
@@ -215,7 +215,7 @@ export const client = async (node: Libp2p, peer: PeerAddr | PeerAddr[]) => {
             get(_, p) {
               if (p === "send") {
                 return async (v: I) => {
-                  if (chan.ctx.stat.status() === "CLOSED") {
+                  if (!chan.ctx.stat.open()) {
                     chan = await channel(
                       name,
                       connection,

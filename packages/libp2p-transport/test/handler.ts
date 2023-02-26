@@ -26,7 +26,7 @@ export const startServer = async () => {
   await handle(
     "add",
     async ({ data, chan }) => {
-      await chan.send(data + 1 - chan.ctx.store.other);
+      await chan.send(data + 1 - chan.ctx.context.other);
       await chan.done();
     },
     {

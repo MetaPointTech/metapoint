@@ -12,8 +12,10 @@ const test = async () => {
   try {
     if (chan) await chan.close();
     chan = await newChan(addr.value)
-    add.value = await chan("numberAdd")
-    info.value = JSON.stringify(add.value?.ctx?.id)
+    const numberAdd = await chan("numberAdd")
+    add.value = numberAdd
+    console.log(numberAdd);
+    info.value = JSON.stringify(add.value)
   } catch (error) {
     add.value = undefined
   }

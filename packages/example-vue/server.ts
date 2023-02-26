@@ -1,45 +1,47 @@
 import { h, MetaType, peer, z } from "metapoint";
 
-const meta = h.router({
-  numberAdd: h.handler({
-    input: z.number(),
-    output: z.number(),
-    func: async (data, chan) => {
-      const result = data + 1;
-      await chan.send(result);
-      await chan.done();
-    },
-  }),
-  numberAdd1: h.handler({
-    input: z.number(),
-    output: z.number(),
-    func: async (data, chan) => {
-      const result = data + 1;
-      await chan.send(result);
-      await chan.done();
-    },
-  }),
-  numberAdd2: h.handler({
-    input: z.number(),
-    output: z.number(),
-    func: async (data, chan) => {
-      const result = data + 1;
-      await chan.send(result);
-      await chan.done();
-    },
-  }),
-  numberAdd3: h.handler({
-    input: z.number(),
-    output: z.number(),
-    func: async (data, chan) => {
-      const result = data + 1;
-      await chan.send(result);
-      await chan.done();
-    },
-  }),
-});
+const g = h();
 
-const server = await peer(meta);
+const endpoint = {
+  numberAdd: g.handler({
+    input: z.number(),
+    output: z.number(),
+    func: async ({ data, send, done }) => {
+      const result = data + 1;
+      await send(result);
+      await done();
+    },
+  }),
+  numberAdd1: g.handler({
+    input: z.number(),
+    output: z.number(),
+    func: async ({ data, send, done }) => {
+      const result = data + 1;
+      await send(result);
+      await done();
+    },
+  }),
+  numberAdd2: g.handler({
+    input: z.number(),
+    output: z.number(),
+    func: async ({ data, send, done }) => {
+      const result = data + 1;
+      await send(result);
+      await done();
+    },
+  }),
+  numberAdd3: g.handler({
+    input: z.number(),
+    output: z.number(),
+    func: async ({ data, send, done }) => {
+      const result = data + 1;
+      await send(result);
+      await done();
+    },
+  }),
+};
+
+const server = await peer({ endpoint });
 
 export type meta = MetaType<typeof server>;
 const addrs = server.meta().addrs;

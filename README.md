@@ -44,14 +44,16 @@ const g = h();
 
 // node1(nodejs/web/deno)
 const node1 = await peer({
-  numberAdd: g.handler({
-    func: async ({ data, send, done }) => {
-      await send(data + 1);
-      await done();
-    },
-    input: z.number(),
-    output: z.number(),
-  }),
+  endpoint: {
+    numberAdd: g.handler({
+      func: async ({ data, send, done }) => {
+        await send(data + 1);
+        await done();
+      },
+      input: z.number(),
+      output: z.number(),
+    }),
+  },
 });
 export type meta = MetaType<typeof node1>;
 

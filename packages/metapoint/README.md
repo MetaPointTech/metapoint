@@ -14,12 +14,13 @@ JavaScript runs.
 ```typescript
 import { h, MetaType, peer, z } from "metapoint";
 
+// router group
 const g = h();
 
 // node1(nodejs/web/deno)
 const node1 = await peer({
   numberAdd: g.handler({
-    func: async (data, send, done) => {
+    func: async ({ data, send, done }) => {
       await send(data + 1);
       await done();
     },

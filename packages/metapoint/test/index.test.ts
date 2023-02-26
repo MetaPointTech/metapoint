@@ -3,12 +3,12 @@ import { describe, expect, test } from "vitest";
 
 const g = h({
   context: { name: 1 },
-  middleware: (p) => p.next({ data: p.chan.ctx.store.name + 1 }),
+  middleware: ({ context, next }) => next({ data: context.name + 1 }),
 });
 
 const endpoint = {
   numberAdd: g.handler({
-    func: async ({ data, chan: { send, done, ctx } }) => {
+    func: async ({ data, send, done }) => {
       await send(data);
       await done();
     },
@@ -16,7 +16,7 @@ const endpoint = {
     output: z.number(),
   }),
   addChan: g.service({
-    func: () => async ({ data, chan: { send, done, ctx } }) => {
+    func: () => async ({ data, send }) => {
       await send(data);
     },
     input: z.number(),

@@ -13,9 +13,8 @@ export type IterableFunc<I, O> = (
 
 export type PeerAddr = string | Multiaddr | PeerId;
 
-export interface FuncParams<I, O, S> {
+export interface FuncParams<I, O, S> extends Chan<O, S> {
   data: I;
-  chan: Chan<O, S>;
 }
 
 export interface MiddlewareParams<I, O, S extends {}>

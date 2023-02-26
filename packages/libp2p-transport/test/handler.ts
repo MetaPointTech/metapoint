@@ -25,9 +25,9 @@ export const startServer = async () => {
   // test context and middleware
   await handle(
     "add",
-    async ({ data, chan }) => {
-      await chan.send(data + 1 - chan.ctx.context.other);
-      await chan.done();
+    async ({ data, send, done, context }) => {
+      await send(data + 1 - context.other);
+      await done();
     },
     {
       middleware: async (params) => {
@@ -48,11 +48,11 @@ export const startServer = async () => {
 
   await handle<number, number>(
     "adding",
-    async ({ data, chan }) => {
-      await chan.send(data + 1);
-      await chan.send(data + 2);
-      await chan.send(data + 3);
-      await chan.done();
+    async ({ data, send, done }) => {
+      await send(data + 1);
+      await send(data + 2);
+      await send(data + 3);
+      await done();
     },
   );
 
@@ -64,24 +64,24 @@ export const startServer = async () => {
 
   await serve<number, number>(
     "channelAdd",
-    () => ({ data, chan }) => chan.send(data + 1),
+    () => ({ data, send }) => send(data + 1),
   );
 
   // json codec
   const json = await server(libp2p);
 
-  await json.handle<Data, Data>("addJson", async ({ data, chan }) => {
-    await chan.send({ value: data.value + 1 });
-    await chan.done();
+  await json.handle<Data, Data>("addJson", async ({ data, send, done }) => {
+    await send({ value: data.value + 1 });
+    await done();
   }, { codec: jsonCodec });
 
   await json.handle<Data, Data>(
     "addingJson",
-    async ({ data, chan }) => {
-      await chan.send({ value: data.value + 1 });
-      await chan.send({ value: data.value + 2 });
-      await chan.send({ value: data.value + 3 });
-      await chan.done();
+    async ({ data, send, done }) => {
+      await send({ value: data.value + 1 });
+      await send({ value: data.value + 2 });
+      await send({ value: data.value + 3 });
+      await done();
     },
     { codec: jsonCodec },
   );

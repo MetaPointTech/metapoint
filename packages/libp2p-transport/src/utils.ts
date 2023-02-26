@@ -1,6 +1,7 @@
 import type { IncomingStreamData } from "@libp2p/interface-registrar";
 import type { Channel } from "queueable";
-import { debug, logger } from ".";
+import { debug } from "./const";
+import { logger } from "./logger";
 import type { ControlMsg, Func, FuncParams, StreamID } from "./types";
 
 const newChannel = <T, S>(
@@ -17,7 +18,7 @@ const newChannel = <T, S>(
         throw "channel has already closed";
       }
       await c.push(value);
-      logger.trace(`Send ${JSON.stringify(value)} to ${id}`);
+      logger.trace(`Send ${JSON.stringify(value)} to ${JSON.stringify(id)}`);
     },
     done: async (err?: Error) => {
       await c.return();
@@ -30,29 +31,27 @@ const newChannel = <T, S>(
             message: err.message,
             stack: debug ? err.stack : undefined,
           });
-          logger.debug(`${id} chan done with error`);
+          logger.debug(`${JSON.stringify(id)} chan done with error`);
         } else {
           await ctrl.push({
             type: "success",
             id,
           });
-          logger.trace(`${id} chan done with success`);
+          logger.trace(`${JSON.stringify(id)} chan done with success`);
         }
       }
       open = false;
     },
-    ctx: {
-      id,
-      name: i.stream.stat.protocol,
+    id,
+    protocol: i.stream.stat.protocol,
+    context: context as S,
+    stat: {
       remoteAddr: i.connection.remoteAddr,
       remotePeer: i.connection.remotePeer,
-      context: context as S,
-      stat: {
-        encryption: i.connection.stat.encryption,
-        multiplexer: i.connection.stat.multiplexer,
-        direction: i.stream.stat.direction,
-        open: () => open,
-      },
+      encryption: i.connection.stat.encryption,
+      multiplexer: i.connection.stat.multiplexer,
+      direction: i.stream.stat.direction,
+      open: () => open,
     },
   };
 };

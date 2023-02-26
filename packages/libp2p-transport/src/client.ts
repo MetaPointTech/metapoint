@@ -18,7 +18,7 @@ import { collect } from "streaming-iterables";
 import { newChannel } from "./utils";
 import { consume } from "streaming-iterables";
 import { runtimeError } from "./error";
-import { logger } from ".";
+import { logger } from "./logger";
 import { Connection } from "@libp2p/interface-connection";
 import { defaultCodec } from "./codec";
 
@@ -95,7 +95,7 @@ const channel = async <I extends T, O extends T, T, S extends {}>(
     runtimeOptions.context,
   );
 
-  const jid = JSON.stringify(chan.ctx.id);
+  const jid = JSON.stringify(chan.id);
   // receive first value as id
   await chan.send(jid as I);
   if (name !== control_name) ccs.set(jid, cc);
@@ -185,7 +185,11 @@ export const client = async (node: Libp2p, peer: PeerAddr | PeerAddr[]) => {
           const msg: ControlMsg = JSON.parse(i);
           const cc = ccs.get(JSON.stringify(msg.id));
           await cc?.push(msg);
-          logger.trace(`Send control msg ${JSON.stringify(msg)} to ${msg.id}`);
+          logger.trace(
+            `Send control msg ${JSON.stringify(msg)} to ${
+              JSON.stringify(msg.id)
+            }`,
+          );
         },
         controlChan,
       ));
@@ -207,7 +211,7 @@ export const client = async (node: Libp2p, peer: PeerAddr | PeerAddr[]) => {
           // auto reopen
           return new Proxy(chan, {
             async apply(_, __, argArray) {
-              if (!chan.ctx.stat.open()) {
+              if (!chan.stat.open()) {
                 chan = await channel(name, connection, runtimeOptions);
               }
               return await chan(argArray.at(0));
@@ -215,7 +219,7 @@ export const client = async (node: Libp2p, peer: PeerAddr | PeerAddr[]) => {
             get(_, p) {
               if (p === "send") {
                 return async (v: I) => {
-                  if (!chan.ctx.stat.open()) {
+                  if (!chan.stat.open()) {
                     chan = await channel(
                       name,
                       connection,
@@ -238,5 +242,5 @@ export const client = async (node: Libp2p, peer: PeerAddr | PeerAddr[]) => {
       continue;
     }
   }
-  throw runtimeError("ConnectError", "cannot connect to" + peer);
+  throw runtimeError("ConnectError", "cannot connect to " + peer);
 };

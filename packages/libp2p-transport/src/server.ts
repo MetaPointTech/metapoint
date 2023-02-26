@@ -6,6 +6,7 @@ import type {
   Func,
   InitOptions,
   IterableFunc,
+  ServerInitOptions,
   Service,
   StreamID,
 } from "./types";
@@ -13,9 +14,9 @@ import { consume, transform } from "streaming-iterables";
 import { control_name, defaultInitOptions } from "./common";
 import { Channel } from "queueable";
 import { makeNext, newChannel } from "./utils";
-import { logger, ServerInitOptions } from ".";
 import { runtimeError } from "./error";
 import { defaultCodec } from "./codec";
+import { logger } from "./logger";
 
 const ccs = new Map<string, Channel<ControlMsg>>();
 
@@ -96,11 +97,11 @@ export const server = async (node: Libp2p) => {
                   if (runtimeOptions.middleware) {
                     await runtimeOptions.middleware({
                       data,
-                      chan,
-                      next: makeNext({ data, chan, next: process }),
+                      ...chan,
+                      next: makeNext({ data, ...chan, next: process }),
                     });
                   } else {
-                    await process({ data, chan });
+                    await process({ data, ...chan });
                   }
                 } catch (error) {
                   await chan.done(error);
@@ -131,7 +132,7 @@ export const server = async (node: Libp2p) => {
   // collect status and send them to client
   if (!node.getProtocols().some((p) => p === control_name)) {
     await serve(control_name, (chan) => {
-      const id = chan.ctx.id.connection;
+      const id = chan.id.connection;
       const cc = new Channel<ControlMsg>();
       ccs.set(id, cc);
       consume(

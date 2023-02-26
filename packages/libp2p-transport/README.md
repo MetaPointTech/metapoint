@@ -4,7 +4,7 @@ peer to peer rpc/channel communication based on libp2p
 
 ## Features
 
-- ⚡10x(channel) faster than http communication
+- ⚡Efficient transmission
 - 🤝Bidirectional channel support
 - 🎡AsyncIterator style
 - 🪐Peer to peer connect

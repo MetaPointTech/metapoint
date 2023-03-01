@@ -15,5 +15,8 @@
     "vue": "^3.2.47",
     "vuepress": "next",
     "vuepress-theme-hope": "2.0.0-beta.185"
+  },
+  "dependencies": {
+    "vuepress-plugin-comment2": "2.0.0-beta.185"
   }
 }

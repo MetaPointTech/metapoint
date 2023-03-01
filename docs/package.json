@@ -1,0 +1,19 @@
+{
+  "name": "metapoint",
+  "version": "1.0.0",
+  "description": "⚡Meta first and low-code. Peer-to-Peer typesafe APIs or Channels made easy.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "scripts": {
+    "docs:build": "vuepress build src --clean-cache",
+    "docs:clean-dev": "vuepress dev src --clean-cache",
+    "docs:dev": "vuepress dev src",
+    "docs:update-package": "pnpm dlx vp-update"
+  },
+  "devDependencies": {
+    "@vuepress/client": "2.0.0-beta.61",
+    "vue": "^3.2.47",
+    "vuepress": "2.0.0-beta.61",
+    "vuepress-theme-hope": "2.0.0-beta.185"
+  }
+}

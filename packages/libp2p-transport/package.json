@@ -33,7 +33,7 @@
   ],
   "scripts": {
     "build": "tsup",
-    "test": "vitest",
+    "test": "vitest run",
     "bench": "vitest bench"
   },
   "dependencies": {

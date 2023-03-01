@@ -1,7 +1,5 @@
-on:
-  - push:
-    branches: ["master"]
-  - pull_request
+on:push:branches: ["master"]
+on:pull_request
 
 jobs:
   cache-and-install:

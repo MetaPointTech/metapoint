@@ -2,7 +2,7 @@ import { defineUserConfig } from "vuepress";
 import theme from "./theme.js";
 
 export default defineUserConfig({
-  base: "/",
+  base: "/metapoint/",
 
   locales: {
     "/": {
@@ -18,7 +18,6 @@ export default defineUserConfig({
   },
 
   theme,
-
   // Enable it with pwa
   // shouldPrefetch: false,
 });

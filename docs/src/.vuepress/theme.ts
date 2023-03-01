@@ -65,6 +65,7 @@ export default hopeTheme({
 
   plugins: {
     comment: {
+      comment: true,
       provider: "Giscus",
       repo: `SOVLOOKUP/metapoint`,
       repoId: "R_kgDOI1te7w",

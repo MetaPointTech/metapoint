@@ -65,8 +65,14 @@ export default hopeTheme({
 
   plugins: {
     comment: {
-      // @ts-expect-error: You should generate and use your own comment service
-      provider: "Waline",
+      provider: "Giscus",
+      repo: `SOVLOOKUP/metapoint`,
+      repoId: "R_kgDOI1te7w",
+      category: "Comments",
+      categoryId: "DIC_kwDOI1te784CUkvI",
+      lazyLoading: true,
+      reactionsEnabled: true,
+      lightTheme: "preferred_color_scheme",
     },
 
     // all features are enabled for demo, only preserve features you need here
@@ -97,12 +103,13 @@ export default hopeTheme({
         {
           matcher: "Recommended",
           replacer: ({ tag }) => {
-            if (tag === "em")
+            if (tag === "em") {
               return {
                 tag: "Badge",
                 attrs: { type: "tip" },
                 content: "Recommended",
               };
+            }
           },
         },
       ],
@@ -112,7 +119,6 @@ export default hopeTheme({
       vPre: true,
       vuePlayground: true,
     },
-
     // uncomment these if you want a pwa
     // pwa: {
     //   favicon: "/favicon.ico",

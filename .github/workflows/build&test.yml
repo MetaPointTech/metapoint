@@ -41,14 +41,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Build libp2p-transport 
-        run: cd packages/libp2p-transport && pnpm build
-
-      - name: Build metapoint
-        run: cd packages/metapoint && pnpm build
-
-      - name: Build examples
-        run: cd packages/example-vue && pnpm build
+      - name: Build
+        run: pnpm -r build
 
       - name: Test
         run: pnpm -r test

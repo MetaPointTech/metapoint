@@ -11,7 +11,7 @@
     "docs:update-package": "pnpm dlx vp-update"
   },
   "devDependencies": {
-    "@vuepress/client": "2.0.0-beta.61",
+    "@vuepress/client": "2.0.0-beta.50-pre.1",
     "vue": "^3.2.47",
     "vuepress": "next",
     "vuepress-theme-hope": "2.0.0-beta.185"

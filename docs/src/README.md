@@ -1,10 +1,10 @@
 ---
 home: true
 icon: home
-title: Project home
-heroImage: /logo.svg
-heroText: Project name
-tagline: You can place the description of the project here.
+title: MetaPoint
+heroImage: https://user-images.githubusercontent.com/53158137/219955869-b5da5805-2557-45d1-a02e-15caa827a862.png
+heroText: MetaPoint
+tagline: ⚡Meta first and low-code. Peer-to-Peer typesafe APIs or Channels made easy.
 actions:
   - text: How to Use 💡
     link: /demo/

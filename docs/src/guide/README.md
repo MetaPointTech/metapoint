@@ -1,16 +1,17 @@
 ---
-title: Guide
-icon: creative
+title: Features Demo
+index: false
+icon: discover
+category:
+  - Guide
 ---
 
-## Highlight Features
+## Catalog
 
-### Bar
+- [Markdown Enhance](markdown.md)
 
-- [baz](bar/baz.md)
-- ...
+- [Page Config](page.md)
 
-### Foo
+- [Function Disable](disable.md)
 
-- [ray](foo/ray.md)
-- ...
+- [Encryption Demo](encrypt.md)

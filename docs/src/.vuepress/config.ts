@@ -7,17 +7,15 @@ export default defineUserConfig({
   locales: {
     "/": {
       lang: "en-US",
-      title: "Docs Demo",
-      description: "A docs demo for vuepress-theme-hope",
+      title: "MetaPoint",
+      description: "Low-code p2p web framework",
     },
     "/zh/": {
       lang: "zh-CN",
-      title: "文档演示",
-      description: "vuepress-theme-hope 的文档演示",
+      title: "元点",
+      description: "低代码点对点通讯框架",
     },
   },
 
   theme,
-  // Enable it with pwa
-  // shouldPrefetch: false,
 });

@@ -78,7 +78,9 @@ You can use all kinds of markup in slides.
 
 Headings will transform to UPPERCASE by default.
 
-Here is paragraph with some **bold**, _italic_, ~~strike-through~~ text and a [link](https://mrhope.site), and it can auto break itself so you don’t need to worry the length.
+Here is paragraph with some **bold**, _italic_, ~~strike-through~~ text and a
+[link](https://mrhope.site), and it can auto break itself so you don’t need to
+worry the length.
 
 --
 
@@ -122,9 +124,7 @@ You can use all kinds of markup in slides.
 
 You can also write math equation using tex syntax if you enable `math` plugin.
 
-$$
-J(\theta_0,\theta_1) = \sum_{i=0}
-$$
+$$ J(\theta_0,\theta_1) = \sum_{i=0} $$
 
 --
 
@@ -152,7 +152,8 @@ You can use all kinds of markup in slides.
 
 <!-- .element: class="r-fit-text" -->
 
-👆 The `r-fit-text` class makes text as large as possible without overflowing the slide.
+👆 The `r-fit-text` class makes text as large as possible without overflowing
+the slide.
 
 --
 
@@ -160,11 +161,12 @@ You can use all kinds of markup in slides.
 
 ## Layout
 
-![Logo](/logo.svg)
+![Logo](/logo.png)
 
 <!-- .element: class="r-stretch" -->
 
-👆 The `r-stretch` class helper lets you resize an element, like an image or video, to cover the remaining vertical space in a slide.
+👆 The `r-stretch` class helper lets you resize an element, like an image or
+video, to cover the remaining vertical space in a slide.
 
 --
 
@@ -192,7 +194,8 @@ Custom background by adding `data-background` attribute to slide.
 
 <!-- .element: class="r-fit-text" -->
 
-Fragments are used to highlight or incrementally reveal individual elements on a slide.
+Fragments are used to highlight or incrementally reveal individual elements on a
+slide.
 
 Add `fragment` and animation class to element.
 
@@ -205,31 +208,39 @@ Add `fragment` and animation class to element.
 ### Animation class
 
 - `fade-in`
+
 <!-- .element: class="fragment fade-in" -->
 
 - `fade-out`
+
 <!-- .element: class="fragment fade-out" -->
 
 - `fade-up`
+
 <!-- .element: class="fragment fade-up" -->
 
 <!-- list break -->
 
 - `fade-down`
+
 <!-- .element: class="fragment fade-down" -->
 
 - `fade-left`
+
 <!-- .element: class="fragment fade-left" -->
 
 - `fade-right`
+
 <!-- .element: class="fragment fade-right" -->
 
 <!-- list break -->
 
 - `fade-in-then-out`
+
 <!-- .element: class="fragment fade-in-then-out" -->
 
 - `fade-in-then-semi-out`
+
 <!-- .element: class="fragment fade-in-then-semi-out" -->
 
 --
@@ -241,34 +252,43 @@ Add `fragment` and animation class to element.
 ### Animation class
 
 - `grow`
+
 <!-- .element: class="fragment grow" -->
 
 - `shrink`
+
 <!-- .element: class="fragment shrink" -->
 
 - `strike`
+
 <!-- .element: class="fragment strike" -->
 
 <!-- list break -->
 
 - `highlight-red`
+
 <!-- .element: class="fragment highlight-red" -->
 
 - `highlight-green`
+
 <!-- .element: class="fragment highlight-green" -->
 
 - `highlight-blue`
+
 <!-- .element: class="fragment highlight-blue" -->
 
 <!-- list break -->
 
 - `highlight-current-red`
+
 <!-- .element: class="fragment highlight-current-red" -->
 
 - `highlight-current-green`
+
 <!-- .element: class="fragment highlight-current-green" -->
 
 - `highlight-current-blue`
+
 <!-- .element: class="fragment highlight-current-blue" -->
 
 --
@@ -279,7 +299,8 @@ Add `fragment` and animation class to element.
 
 ### Multiple fragments
 
-Multiple fragments can be applied to the same element sequentially by wrapping it
+Multiple fragments can be applied to the same element sequentially by wrapping
+it
 
 <span class="fragment fade-in">
   <span class="fragment highlight-red">
@@ -302,17 +323,21 @@ Order can be changed using the `data-fragment-index` attribute.
 Multiple elements can appear at the same index.
 
 - Appears last
+
 <!-- .element: class="fragment" data-fragment-index="3"-->
 
 - Appears second
+
 <!-- .element: class="fragment" data-fragment-index="2"-->
 
 <!-- list break -->
 
 - Appears first
+
 <!-- .element: class="fragment" data-fragment-index="1"-->
 
 - Appears second
+
 <!-- .element: class="fragment" data-fragment-index="2"-->
 
 ---
@@ -331,7 +356,8 @@ Multiple elements can appear at the same index.
 
 <!-- .element: class="r-fit-text" -->
 
-Transition can be changed by setting the `transition` config option globally or `data-transition` attribute on slide.
+Transition can be changed by setting the `transition` config option globally or
+`data-transition` attribute on slide.
 
 Possible values:
 
@@ -355,7 +381,8 @@ Possible values:
 
 ### Auto animate
 
-`data-auto-animate` can be added on nearby slides to make an animation on unchanged elements.
+`data-auto-animate` can be added on nearby slides to make an animation on
+unchanged elements.
 
 ---
 
@@ -420,7 +447,8 @@ Press `F` or `F11` to enter fullscreen when the presentation is active
 
 ### Zoom
 
-Hold down the `alt` key (`ctrl` in Linux) and click on any element to zoom towards it.
+Hold down the `alt` key (`ctrl` in Linux) and click on any element to zoom
+towards it.
 
 Click again to zoom back out.
 

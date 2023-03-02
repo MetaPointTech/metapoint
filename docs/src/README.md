@@ -2,109 +2,115 @@
 home: true
 icon: home
 title: MetaPoint
-heroImage: https://user-images.githubusercontent.com/53158137/219955869-b5da5805-2557-45d1-a02e-15caa827a862.png
+heroImage: /logo.png
 heroText: MetaPoint
 tagline: ⚡Meta first and low-code. Peer-to-Peer typesafe APIs or Channels made easy.
 actions:
-  - text: How to Use 💡
-    link: /demo/
+  - text: QuickStart 💡
+    link: /guide/
     type: primary
 
-  - text: Docs
-    link: /guide/
+  - text: ⭐ Star
+    link: https://github.com/SOVLOOKUP/metapoint/stargazers
 
 features:
-  - title: Markdown Enhance
-    icon: markdown
-    details: Add align, sup/sub script, footnote, tasklist, tex, flowchart, diagram, mark and presentation support in markdown
-    link: https://theme-hope.vuejs.press/guide/markdown/
+  - title: ⚡Efficient
+    details: HTTP frequent connections waste your time? MetaPoint connect only once, communicate unlimited times.
 
-  - title: Slide page
-    icon: slides
-    details: Adding slide pages to display things you like
-    link: https://theme-hope.vuejs.press/guide/layout/slides.html
+  - title: 🤝Bidirectional channel
+    details: MetaPoint establish a bidirectional channel between devices, so that you no longer have to worry about server-side push.
 
-  - title: Layout enhancement
-    icon: layout
-    details: Adding breadcrumb, footer, improved navbar, improved page nav and etc.
-    link: https://theme-hope.vuejs.press/guide/layout/
+  - title: 🪞Shadow functions
+    details: Painlessly calling a function on another device, just like...local calls (Even includes error catching).
 
-  - title: Pageviews and comments
-    icon: comment
-    details: Start pageview statistics and comment support with Waline
-    link: https://theme-hope.vuejs.press/guide/feature/comment.html
+  - title: 👌Autocompletion
+    details: Just like calling native functions, TypeScript gives you autocompletion across devices!
 
-  - title: Article information
-    icon: info
-    details: Add author, writing date, reading time, word count and other information to your article
-    link: https://theme-hope.vuejs.press/guide/feature/page-info.html
+  - title: 🎡Run everywhere
+    details: Nodejs and Browser? Metapoint can all run!
 
-  - title: Blog support
-    icon: blog
-    details: Listing your articles with their dates, tags and categories with some awesome layouts
-    link: https://theme-hope.vuejs.press/guide/blog/
+  - title: 🪐P2P or C/S 
+    details: Whether there is a centralized server or not, you have the final say.
 
-  - title: Custom theme color
-    icon: palette
-    details: Supports custom theme colors and allows users to switch between preset theme colors
-    link: https://theme-hope.vuejs.press/guide/interface/theme-color.html
+  - title: 🔢Data codec agnostic
+    details: JSON, Protobuff, xml, Thrift, MessagePack ...
 
-  - title: Dark Mode
-    icon: contrast
-    details: Switch between light and dark modes freely
-    link: https://theme-hope.vuejs.press/guide/interface/darkmode.html
+  - title: 📡Transport protocol agnostic
+    details: tcp, ws, webtransport, quic...
 
-  - title: Full A11y support
-    icon: support
-    details: Full support of accessibility in your site
-    link: https://theme-hope.vuejs.press/guide/interface/accessibility.html
+  - title: 🔒Automatic typesafety
+    details: Something changed? TypeScript will warn you of errors in the call before you even save the file!
 
-  - title: Article Encryption
-    icon: lock
-    details: Encrypt you articles based on page links, so that only the one you want could see them
-    link: https://theme-hope.vuejs.press/guide/feature/encrypt.html
+  - title: ⚙Auto management
+    details: Streams are managed by MetaPoint. All you have to do is use!
 
-  - title: Copy button
-    icon: copy
-    details: Copy codes with one click in code blocks
-    link: https://theme-hope.vuejs.press/guide/feature/copy-code.html
+  - title: 🔐Secure transmission
+    details: Devices communicate with each other over encrypted channels
 
-  - title: Image preview
-    icon: pic
-    details: Support viewing, zooming, sharing your page images like a gallery
-    link: https://theme-hope.vuejs.press/guide/feature/photo-swipe.html
+  - title: 🧩Plugin support
+    details: Extend MetaPoint through plugins
 
-  - title: SEO enhancement
-    icon: config
-    details: Optimize pages for search engines
-    link: https://theme-hope.vuejs.press/guide/advanced/seo.html
-
-  - title: Sitemap
-    icon: sitemap
-    details: Generate a Sitemap for your site
-    link: https://theme-hope.vuejs.press/guide/advanced/sitemap.html
-
-  - title: Feed support
-    icon: rss
-    details: Generate feed to allow users to subscribe it
-    link: https://theme-hope.vuejs.press/guide/advanced/feed.html
-
-  - title: PWA support
-    icon: mobile
-    details: Make your site more like an APP
-    link: https://theme-hope.vuejs.press/guide/advanced/pwa.html
-
-  - title: More new features
-    icon: more
-    details: Including icon support, fullscreen button, etc.
-    link: https://theme-hope.vuejs.press/guide/feature/
-
-copyright: false
-footer: Theme by <a href="https://theme-hope.vuejs.press/" target="_blank">VuePress Theme Hope</a> | MIT Licensed, Copyright © 2019-present Mr.Hope
+copyright: Copyright © 2022 SOVLOOKUP
+footer: Apache-2.0 Licensed
 ---
 
-This is an example of a project homepage. You can place your main content here.
+## 🛠Install
 
-To use this layout, you need to set `home: true` in the page front matter.
+Install MetaPoint:
 
-For related descriptions of configuration items, please see [Project HomePage Layout Config](https://theme-hope.vuejs.press/guide/layout/home/).
+::: code-tabs#shell
+
+@tab:active pnpm
+
+```bash
+pnpm add metapoint
+```
+
+@tab yarn
+
+```bash
+yarn add metapoint
+```
+
+@tab npm
+
+```bash
+npm i metapoint
+```
+
+:::
+
+## 🚀Usage
+
+@slidestart
+
+## 幻灯片 1
+
+一个有文字和 [链接](https://mrhope.site) 的段落
+
+---
+
+## 幻灯片 2
+
+- 项目 1
+- 项目 2
+
+---
+
+## 幻灯片 3.1
+
+```js
+const a = 1;
+```
+
+--
+
+## 幻灯片 3.2
+
+$$ J(\theta_0,\theta_1) = \sum_{i=0} $$
+
+@slideend
+
+## Try it out for yourself!
+
+<StackBlitz id="vuepress-theme-hope" />

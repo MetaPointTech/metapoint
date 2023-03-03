@@ -82,35 +82,44 @@ npm i metapoint
 
 ## 🚀Usage
 
-@slidestart
+👉 Define endpoints
 
-## 幻灯片 1
+```ts
+// server.ts
+import { h, MetaType, peer, z } from "metapoint";
 
-一个有文字和 [链接](https://mrhope.site) 的段落
+const group = h({ context: { addnum: 1 } });
 
----
+const endpoint = {
+  plus: g.handler({
+    func: async ({ data, send, done, context }) => {
+      await send(data + context.addnum);
+      await done();
+    },
+    input: z.number(),
+    output: z.number(),
+  }),
+};
 
-## 幻灯片 2
+const node = await peer({ endpoint });
+export type Meta = MetaType<typeof node>;
 
-- 项目 1
-- 项目 2
-
----
-
-## 幻灯片 3.1
-
-```js
-const a = 1;
+console.log("MetaPoint addr: ", node1.meta().addrs);
+// /ipv4/127.0.0.1/xxxxxx (it's your server's connect addr)
 ```
 
---
+👉 Call endpoints
 
-## 幻灯片 3.2
+```ts
+// client.ts
+import { h, peer, z } from "metapoint";
+import type { Meta } from "./server";
+const node = await peer();
+const channel = await node.connect<Meta>("your server addr");
+const plus = await channel("plus");
+console.log(await plus(1)); // [2]
+```
 
-$$ J(\theta_0,\theta_1) = \sum_{i=0} $$
-
-@slideend
-
-## Try it out for yourself!
+## 🎉Try it out for yourself!
 
 <StackBlitz id="vuepress-theme-hope" />

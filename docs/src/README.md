@@ -6,7 +6,7 @@ heroImage: /logo.png
 heroText: MetaPoint
 tagline: ⚡Meta first and low-code. Peer-to-Peer typesafe APIs or Channels made easy.
 actions:
-  - text: QuickStart 💡
+  - text: Guide 💡
     link: /guide/
     type: primary
 

@@ -122,4 +122,6 @@ console.log(await plus(1)); // [2]
 
 ## 🎉Try it out for yourself!
 
-<StackBlitz id="vuepress-theme-hope" />
+<div style="height: 80vh;">
+<iframe src="https://stackblitz.com/edit/vuepress-theme-hope?embed=1&view=editor&theme=dark" width="100%" style=" border-radius: 6px; border: none;" height="100%" ></iframe>
+</div>

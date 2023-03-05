@@ -54,6 +54,28 @@ copyright: Copyright © 2022 SOVLOOKUP
 footer: Apache-2.0 Licensed
 ---
 
+## ❓️What's MetaPoint?
+
+- MetaPoint saves your team _**a lot of communication time**_ because the SDK is
+  _**automatically**_ generated. API documentation is also no longer needed.
+
+- MetaPoint works well with _**any**_ front-end framework.
+
+- Thanks to the efficient transmission of metapoint, you can use it to replace
+  traditional HTTP/Websocket communication for _**higher performance**_.
+
+- You will _**never**_ get your API called incorrectly. TypeScript will warn you
+  of errors in the call before you even save the file!
+
+- MetaPoint is great for making _**real-time**_ applications.
+
+- MetaPoint is great for making _**client-first**_ apps.
+
+- Using metapoints makes your app to be _**more immune to malicious crawlers**_.
+
+- Metapoint's _**secure transmission**_ protects you from man-in-the-middle
+  attacks!
+
 ## 🛠Install
 
 Install MetaPoint:

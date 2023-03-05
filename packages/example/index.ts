@@ -1,4 +1,4 @@
-import { h, peer, z } from "metapoint";
+import { peer } from "metapoint";
 import type { Meta } from "./server";
 import addr from "./server";
 const node = await peer();

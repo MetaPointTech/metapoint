@@ -91,7 +91,7 @@ import { h, MetaType, peer, z } from "metapoint";
 const group = h({ context: { addnum: 1 } });
 
 const endpoint = {
-  plus: g.handler({
+  plus: group.handler({
     func: async ({ data, send, done, context }) => {
       await send(data + context.addnum);
       await done();
@@ -104,7 +104,7 @@ const endpoint = {
 const node = await peer({ endpoint });
 export type Meta = MetaType<typeof node>;
 
-console.log("MetaPoint addr: ", node1.meta().addrs);
+console.log("MetaPoint addr: ", node.meta().addrs);
 // /ipv4/127.0.0.1/xxxxxx (it's your server's connect addr)
 ```
 

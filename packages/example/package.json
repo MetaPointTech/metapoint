@@ -3,7 +3,12 @@
   "version": "1.0.0",
   "description": "",
   "type": "module",
+  "scripts": {
+    "start": "ts-node index.ts"
+  },
   "dependencies": {
-    "metapoint": "*"
+    "metapoint": "*",
+    "typescript": "*",
+    "ts-node": "*"
   }
 }

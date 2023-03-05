@@ -84,7 +84,7 @@ npm i metapoint
 
 👉 Define endpoints
 
-```ts
+```ts {7-14}
 // server.ts
 import { h, MetaType, peer, z } from "metapoint";
 
@@ -110,9 +110,9 @@ console.log("MetaPoint addr: ", node.meta().addrs);
 
 👉 Call endpoints
 
-```ts
+```ts {6-7}
 // client.ts
-import { h, peer, z } from "metapoint";
+import { peer } from "metapoint";
 import type { Meta } from "./server";
 const node = await peer();
 const channel = await node.connect<Meta>("your server addr");

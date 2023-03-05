@@ -34,6 +34,8 @@
 MetaPoint allows you to easily build typesafe APIs or Channels wherever
 JavaScript runs.
 
+See more information at https://sovlookup.github.io/metapoint/
+
 ## Quickstart
 
 ```typescript

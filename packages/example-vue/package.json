@@ -7,7 +7,7 @@
     "dev": "vite"
   },
   "dependencies": {
-    "metapoint": "workspace:^0.1.0",
+    "metapoint": "workspace:*",
     "vue": "^3.2.45"
   },
   "devDependencies": {

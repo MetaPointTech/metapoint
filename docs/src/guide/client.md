@@ -61,3 +61,13 @@ const channel = await node.connect<Meta>("your server addr");
 const helloworld = await channel("helloworld");
 console.log(await helloworld("sovlookup")); // ["hi sovlookup", "hello world!"]
 ```
+
+::: info Use MetaPoint with Web Frameworks
+
+1. [Vue example](https://github.com/SOVLOOKUP/metapoint/tree/master/packages/example-vue)
+2. [React example](https://github.com/SOVLOOKUP/metapoint/tree/master/packages/example-react)
+3. [Svelte example](https://github.com/SOVLOOKUP/metapoint/tree/master/packages/example-svelte)
+4. [Vue example with custom server addr](https://github.com/SOVLOOKUP/metapoint/tree/master/packages/example-svelte)
+
+:::
+

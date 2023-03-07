@@ -1,15 +1,23 @@
-<async script  lang="ts">
+<script lang="ts">
   import { peer } from 'metapoint'
-  import type { Meta } from "../../example/server"
-  import addr from './server'
-  const node = await peer()
-  const channel = await node.connect<Meta>(addr)
-  let count: number = 0
-  const increment = () => {
-    count += 1
-  }
-</async script>
+  // @ts-ignore
+  import type { Meta } from '../../example/server'
 
-<button on:click={increment}>
-  count is {count}
-</button>
+  const main = async () => {
+    const node = await peer()
+    const channel = await node.connect<Meta>(window['addr'])
+    return await channel("plus")
+  }
+
+  let count: number = 0
+</script>
+
+{#await main()}
+	<p>connecting...</p>
+{:then plus}
+	<button on:click={async ()=>count = (await plus(count))[0]}>
+    count is {count}
+  </button>
+{:catch error}
+	<p style="color: red">{error.message}</p>
+{/await}

@@ -18,12 +18,12 @@ const parseOptions = async <Context extends {}, Codec>(
   ...options,
 });
 
-export const peer = async <Context extends {}, Codec>(
-  options?: PeerInitOptions<Context, Codec>,
+export const peer = async <T extends PeerInitOptions<any, any>>(
+  options?: T,
 ) => {
   const { libp2p, initStart, endpoint } = await parseOptions(options ?? {});
   const { handle, serve } = await server(libp2p);
-  const metadata = new Map<string, EndpointMeta<Context, Codec, any, any>>();
+  const metadata = new Map<string, EndpointMeta<object, any, any, any>>();
 
   const addEndpoint = async (endpoint: Endpoint<any, any>) => {
     for (const [name, meta] of Object.entries(endpoint)) {
@@ -80,7 +80,7 @@ export const peer = async <Context extends {}, Codec>(
 
   const getMeta = () => ({
     addrs: libp2p.getMultiaddrs().map((d) => d.toString()),
-    endpoint: Object.fromEntries(metadata.entries()),
+    endpoint: Object.fromEntries(metadata.entries()) as T["endpoint"],
   });
 
   if (initStart) await start();
@@ -95,13 +95,7 @@ export const peer = async <Context extends {}, Codec>(
   };
 };
 
-type PeerReturn<S extends {}, Codec> = UnPromisify<
-  ReturnType<typeof peer<S, Codec>>
->;
-
-export type MetaType<T extends PeerReturn<{}, any>> = ReturnType<
-  T["meta"]
->["endpoint"];
+export type MetaType<T extends UnPromisify<ReturnType<typeof peer>>> = ReturnType<T["meta"]>["endpoint"];
 
 export * from "./helper";
 export { z } from "zod";

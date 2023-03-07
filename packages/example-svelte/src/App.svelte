@@ -1,8 +1,6 @@
 <script lang="ts">
   import svelteLogo from './assets/svelte.svg'
   import Counter from './lib/Counter.svelte'
-  const addr: string = JSON.stringify()
-  console.log(addr)
 </script>
 
 <main>
@@ -24,7 +22,7 @@
   </div>
   <h1>MetaPoint + Svelte</h1>
 
-  {window.addr.join('\n')}
+  {window['addr'].join('\n')}
   <div class="card">
     <Counter />
   </div>

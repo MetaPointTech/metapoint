@@ -18,7 +18,7 @@ const count = ref(0)
   </p>
 
   <div class="card">
-    <button type="button" @click="async () => (count = ((await plus(count)))[0] as number)">count is {{ count }}</button>
+    <button type="button" @click="async () => (count = ((await plus(count)))[0])">count is {{ count }}</button>
   </div>
 </template>
 

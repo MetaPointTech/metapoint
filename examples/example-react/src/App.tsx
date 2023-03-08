@@ -2,7 +2,7 @@ import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import './App.css'
 // @ts-ignore
-import type { Meta } from '../../example/server'
+import type { Meta } from '../../example-basic/server'
 import { peer } from 'metapoint'
 
 const node = await peer()

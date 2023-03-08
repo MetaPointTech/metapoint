@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { peer } from "metapoint"
-import type { Meta } from "../../example/server"
+import type { Meta } from "../../../example-basic/server"
 defineProps<{ msg: string }>()
 const node = await peer()
 const addr = (window as any).addr.reverse()

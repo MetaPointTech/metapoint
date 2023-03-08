@@ -1,7 +1,7 @@
 <script lang="ts">
   import { peer } from 'metapoint'
   // @ts-ignore
-  import type { Meta } from '../../example/server'
+  import type { Meta } from '../../example-basic/server'
 
   const main = async () => {
     const node = await peer()

@@ -19,7 +19,7 @@ In this guide, we will learn how to use MetaPoint from two starting points:
 
 You can also get started by learning these real-world examples:
 
-1. [Basic example](https://github.com/SOVLOOKUP/metapoint/tree/master/packages/example)
+1. [Basic example](https://github.com/SOVLOOKUP/metapoint/tree/master/packages/example-basic)
 2. [Vue example](https://github.com/SOVLOOKUP/metapoint/tree/master/packages/example-vue)
 3. [React example](https://github.com/SOVLOOKUP/metapoint/tree/master/packages/example-react)
 4. [Svelte example](https://github.com/SOVLOOKUP/metapoint/tree/master/packages/example-svelte)

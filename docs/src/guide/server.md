@@ -3,7 +3,7 @@ title: Server
 icon: config
 index: true
 order: 2
-next: ./client/README.md
+next: ./client.md
 category:
   - Guide
 tag:

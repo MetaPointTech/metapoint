@@ -113,7 +113,7 @@ import { h, MetaType, peer, z } from "metapoint";
 const group = h({ context: { addnum: 1 } });
 
 const endpoint = {
-  plus: group.handler({
+  add: group.handler({
     func: async ({ data, send, done, context }) => {
       await send(data + context.addnum);
       await done();
@@ -138,8 +138,8 @@ import { peer } from "metapoint";
 import type { Meta } from "./server";
 const node = await peer();
 const channel = await node.connect<Meta>("your server addr");
-const plus = await channel("plus");
-console.log(await plus(1)); // [2]
+const add = await channel("add");
+console.log(await add(1)); // [2]
 ```
 
 ## 🎉Try it out for yourself!

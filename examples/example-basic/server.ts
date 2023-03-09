@@ -3,7 +3,7 @@ import { h, MetaType, peer, z } from "metapoint";
 const group = h({ context: { addnum: 1 } });
 
 const endpoint = {
-  plus: group.handler({
+  add: group.handler({
     func: async ({ data, send, done, context }) => {
       await send(data + context.addnum);
       await done();

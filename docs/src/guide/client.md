@@ -3,6 +3,7 @@ title: Client
 icon: config
 index: true
 order: 3
+next: ../advance/README.md
 category:
   - Guide
 tag:

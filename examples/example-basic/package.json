@@ -4,6 +4,6 @@
   "description": "",
   "type": "module",
   "dependencies": {
-    "metapoint": "*"
+    "metapoint": "workspace:*"
   }
 }

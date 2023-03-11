@@ -37,8 +37,6 @@ JavaScript runs.</h3>
   </figure>
 </div>
 
-<br />
-
 ## Intro
 
 More information at https://sovlookup.github.io/metapoint/

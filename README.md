@@ -28,7 +28,7 @@ JavaScript runs.</h3>
   </a>
   <br />
   <figure>
-    <img src="https://user-images.githubusercontent.com/53158137/224493829-5387149f-e561-4a1b-81a8-c42649ba9899.gif" alt="Demo" />
+    <img src="https://user-images.githubusercontent.com/53158137/224494201-7e70b6d7-e29a-45ac-b534-e1d3c04dea48.gif" alt="Demo" />
     <figcaption>
       <p align="center">
         The client above is <strong>not</strong> importing any code from the server, only its type declarations.

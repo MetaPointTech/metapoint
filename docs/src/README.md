@@ -56,6 +56,15 @@ footer: Apache-2.0 Licensed
 
 ## ❓️What's MetaPoint?
 
+<figure>
+    <img src="https://user-images.githubusercontent.com/53158137/224494201-7e70b6d7-e29a-45ac-b534-e1d3c04dea48.gif" alt="Demo" />
+    <figcaption>
+      <p align="center">
+        The client above is <strong>not</strong> importing any code from the server, only its type declarations.
+      </p>
+  </figcaption>
+</figure>
+
 - MetaPoint saves your team _**a lot of communication time**_ because the SDK is
   _**automatically**_ generated. API documentation is also no longer needed.
 

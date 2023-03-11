@@ -64,7 +64,7 @@ jobs:
         run: pnpm install
 
       - name: Build Pages
-        run: cd docs && pnpm docs:build
+        run: cd docs && export NODE_OPTIONS=--max_old_space_size=4096 && pnpm docs:build
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1

@@ -5,7 +5,7 @@
   "license": "Apache-2.0",
   "type": "module",
   "scripts": {
-    "docs:build": "vuepress build src --clean-cache",
+    "docs:build": "npx --max_old_space_size=4096 vuepress build src --clean-cache",
     "docs:clean-dev": "vuepress dev src --clean-cache",
     "docs:dev": "vuepress dev src",
     "docs:update-package": "pnpm dlx vp-update"
@@ -14,6 +14,6 @@
     "@vuepress/client": "2.0.0-beta.61",
     "vue": "^3.2.47",
     "vuepress": "next",
-    "vuepress-theme-hope": "2.0.0-beta.189"
+    "vuepress-theme-hope": "2.0.0-beta.191"
   }
 }

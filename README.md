@@ -9,32 +9,39 @@
 
 <div align="center">
   <h1>MetaPoint</h1>
-  <h3>Meta first and low-code.<br />Peer-to-Peer typesafe APIs or Channels made easy.</h3>
+  <h3>Meta first and low-code.<br />Peer-to-Peer typesafe APIs or Channels made easy.<br />Easily build typesafe APIs or Channels wherever
+JavaScript runs.</h3>
   <a href="https://github.com/sovlookup/metapoint/blob/main/LICENSE">
     <img alt="Apache-2.0 License" src="https://img.shields.io/github/license/sovlookup/metapoint" />
   </a>
   <a href="https://discord.gg/wGSABhbCzN">
     <img alt="Discord" src="https://img.shields.io/discord/813599680713457665?color=7389D8&label&logo=discord&logoColor=ffffff" />
   </a>
+  <a href="https://www.npmjs.com/package/metapoint">
+    <img alt="Version" src="https://img.shields.io/npm/v/metapoint.svg?style=flat-square&logo=npm" />
+  </a>
+  <a href="https://www.npmjs.com/package/metapoint">
+    <img alt="Downloads" src="https://img.shields.io/npm/dm/metapoint.svg?style=flat-square&logo=npm" />
+  </a>
+  <a href="https://www.npmjs.com/package/metapoint">
+    <img alt="Total Downloads" src="https://img.shields.io/npm/dt/metapoint?style=flat-square&logo=npm" />
+  </a>
   <br />
-  <!-- <figure>
-    <img src="https://assets.trpc.io/www/v10/v10-dark-landscape.gif" alt="Demo" />
+  <figure>
+    <img src="https://user-images.githubusercontent.com/53158137/224493829-5387149f-e561-4a1b-81a8-c42649ba9899.gif" alt="Demo" />
     <figcaption>
       <p align="center">
         The client above is <strong>not</strong> importing any code from the server, only its type declarations.
       </p>
     </figcaption>
-  </figure> -->
+  </figure>
 </div>
 
 <br />
 
 ## Intro
 
-MetaPoint allows you to easily build typesafe APIs or Channels wherever
-JavaScript runs.
-
-See more information at https://sovlookup.github.io/metapoint/
+More information at https://sovlookup.github.io/metapoint/
 
 ## Quickstart
 

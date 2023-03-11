@@ -5,7 +5,7 @@
   "license": "Apache-2.0",
   "type": "module",
   "scripts": {
-    "docs:build": "npx --max_old_space_size=4096 vuepress build src --clean-cache",
+    "docs:build": "npx --max_old_space_size=2048 vuepress build src --clean-cache",
     "docs:clean-dev": "vuepress dev src --clean-cache",
     "docs:dev": "vuepress dev src",
     "docs:update-package": "pnpm dlx vp-update"

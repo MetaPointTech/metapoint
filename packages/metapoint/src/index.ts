@@ -67,27 +67,17 @@ export const peer = async <T extends PeerInitOptions<any, any>>(
       >(name.toString(), options), { close: channel.close });
   };
 
-  const start = async () => {
-    await addEndpoint(endpoint);
-    await libp2p.start();
-  };
-
-  const stop = async () => {
-    await libp2p.unhandle(Array.from(metadata.keys()));
-    metadata.clear();
-    await libp2p.stop();
-  };
-
   const getMeta = () => ({
     addrs: libp2p.getMultiaddrs().map((d) => d.toString()),
     endpoint: Object.fromEntries(metadata.entries()) as T["endpoint"],
   });
 
-  if (initStart) await start();
+  if (initStart) {
+    await addEndpoint(endpoint);
+    await libp2p.start();
+  };
 
   return {
-    start,
-    stop,
     meta: getMeta,
     handle: addEndpoint,
     unhandle,

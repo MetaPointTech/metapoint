@@ -6,11 +6,11 @@ export const h = <I extends T, O extends T, T = any, S extends {} = {}>(
 ) => {
   const { codec, context, middleware } = opts ?? {};
 
-  const handler = <HI extends T = I, HO extends T = O>(
-    meta: Unpick<HandlerMeta<S, T, HI, HO>, "type">,
+  const handler = <HI extends T = I, HO extends T = O, HS extends S = S>(
+    meta: Unpick<HandlerMeta<HS, T, HI, HO>, "type">,
   ) => {
     if (codec && meta.codec === undefined) meta.codec = codec;
-    if (context && meta.context === undefined) meta.context = context;
+    if (context && meta.context === undefined) meta.context = context as unknown as typeof meta["context"];
     if (middleware && meta.middleware === undefined) {
       meta.middleware = middleware as unknown as typeof meta["middleware"];
     }
@@ -21,11 +21,11 @@ export const h = <I extends T, O extends T, T = any, S extends {} = {}>(
     };
   };
 
-  const service = <HI extends T = I, HO extends T = O>(
-    meta: Unpick<ServiceMeta<S, T,  HI, HO>, "type">,
+  const service = <HI extends T = I, HO extends T = O, HS extends S = S>(
+    meta: Unpick<ServiceMeta<HS, T, HI, HO>, "type">,
   ) => {
     if (codec && meta.codec === undefined) meta.codec = codec;
-    if (context && meta.context === undefined) meta.context = context;
+    if (context && meta.context === undefined) meta.context = context as unknown as typeof meta["context"];
     if (middleware && meta.middleware === undefined) {
       meta.middleware = middleware as unknown as typeof meta["middleware"];
     }

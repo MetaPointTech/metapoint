@@ -1,6 +1,6 @@
 {
   "name": "metapoint",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "⚡Meta first and low-code. Peer-to-Peer typesafe APIs or Channels made easy.",
   "type": "module",
   "main": "dist/index.cjs",

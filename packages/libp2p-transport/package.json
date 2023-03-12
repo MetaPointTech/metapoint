@@ -37,27 +37,27 @@
     "bench": "vitest bench"
   },
   "dependencies": {
-    "@libp2p/interface-connection": "^3.0.8",
+    "@libp2p/interface-connection": "^3.1.0",
     "@libp2p/interface-peer-id": "^2.0.1",
-    "@libp2p/interface-registrar": "^2.0.8",
-    "@libp2p/peer-id": "^2.0.1",
-    "@multiformats/multiaddr": "^11.4.0",
+    "@libp2p/interface-registrar": "^2.0.9",
+    "@libp2p/peer-id": "^2.0.2",
+    "@multiformats/multiaddr": "^11.6.1",
     "@xobj/core": "^1.3.1",
     "libp2p": "^0.42.2",
-    "pino": "^8.10.0",
+    "pino": "^8.11.0",
     "queueable": "^5.3.1",
     "streaming-iterables": "^7.1.0"
   },
   "devDependencies": {
     "@chainsafe/libp2p-noise": "^11.0.1",
     "@libp2p/mplex": "^7.1.1",
-    "@libp2p/websockets": "^5.0.3",
+    "@libp2p/websockets": "^5.0.5",
     "binconv": "^0.2.0",
     "destr": "^1.2.2",
-    "fastify": "^4.13.0",
+    "fastify": "^4.14.1",
     "tsup": "^6.6.3",
     "typescript": "^4.9.5",
-    "vitest": "^0.29.0"
+    "vitest": "^0.29.2"
   },
   "tsup": {
     "entry": [

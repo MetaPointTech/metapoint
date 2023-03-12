@@ -1,6 +1,6 @@
 {
   "name": "metapoint",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "⚡Meta first and low-code. Peer-to-Peer typesafe APIs or Channels made easy.",
   "type": "module",
   "main": "dist/index.cjs",
@@ -35,7 +35,7 @@
     "README.md"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "tsup && vite build",
     "test": "vitest run"
   },
   "dependencies": {
@@ -52,6 +52,7 @@
   "devDependencies": {
     "tsup": "^6.6.3",
     "typescript": "^4.9.5",
+    "vite": "^4.1.4",
     "vitest": "^0.29.0"
   },
   "tsup": {

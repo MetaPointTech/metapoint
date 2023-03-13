@@ -30,7 +30,7 @@
     <img src="https://user-images.githubusercontent.com/53158137/224494201-7e70b6d7-e29a-45ac-b534-e1d3c04dea48.gif" alt="Demo" />
     <figcaption>
       <p align="center">
-        Metapoint lets you <strong>focus on</strong> what you want to do
+        MetaPoint lets you <strong>focus on</strong> what you want to do
       </p>
     </figcaption>
   </figure>

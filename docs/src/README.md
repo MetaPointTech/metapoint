@@ -60,25 +60,25 @@ footer: Apache-2.0 Licensed
     <img src="https://user-images.githubusercontent.com/53158137/224494201-7e70b6d7-e29a-45ac-b534-e1d3c04dea48.gif" alt="Demo" />
     <figcaption>
       <p align="center">
-        Metapoint lets you <strong>focus on</strong> what you want to do
+        MetaPoint lets you <strong>focus on</strong> what you want to do
       </p>
   </figcaption>
 </figure>
 
-- MetaPoint works well with nodejs and _**any**_ front-end framework.
-
 - You _**no longer**_ need to pay attention to tedious network layer coding,
   just write business code. Save a lot of time and energy.
+
+- MetaPoint works well with nodejs and _**any**_ front-end framework.
 
 - MetaPoint saves your team _**a lot of communication time**_ because the SDK is
   _**automatically**_ generated. API documentation is also no longer needed.
 
+- You will _**never**_ get your API called incorrectly. TypeScript will warn you
+  of errors in the call before you even save the file.
+
 - Thanks to the extensibility of libp2p, you can use _**any**_ transport
   protocol, including any in the _**future**_, which means _**zero**_ upgrade
   cost.
-
-- You will _**never**_ get your API called incorrectly. TypeScript will warn you
-  of errors in the call before you even save the file.
 
 - MetaPoint is great for making _**real-time**_ applications.
 

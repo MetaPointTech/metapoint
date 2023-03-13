@@ -2,12 +2,13 @@
 title: Context
 index: true
 order: 3
-icon: discover
+icon: float
 category:
   - Guide
 ---
 
-You can define context that are shared in the endpoint group, and you can read or modify the context in endpoint handlers.
+You can define context that are shared in the endpoint group, and you can read
+or modify the context in endpoint handlers.
 
 ```ts {3,8}
 import { h, MetaType, peer, z } from "metapoint";

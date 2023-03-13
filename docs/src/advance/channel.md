@@ -2,12 +2,13 @@
 title: Channel
 index: true
 order: 2
-icon: discover
+icon: emmet
 category:
   - Guide
 ---
 
-This is the "function style" code we wrote earlier in [guide](../guide/client.md).
+This is the "function style" code we wrote earlier in
+[guide](../guide/client.md).
 
 ```ts {5-6}
 import { peer } from "metapoint";
@@ -31,6 +32,8 @@ for await (const msg of helloworld) {
 }
 ```
 
-This is useful for receiving response from endpoints that send multiple returns or infinite returns.
+This is useful for receiving response from endpoints that send multiple returns
+or infinite returns.
 
-It is recommended to use the "function style" for one return, and use the "channel style" for multiple returns or infinite returns.
+It is recommended to use the "function style" for one return, and use the
+"channel style" for multiple returns or infinite returns.

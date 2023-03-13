@@ -7,9 +7,4 @@ export const zhNavbar = navbar([
     icon: "creative",
     link: "/zh/guide/",
   },
-  {
-    text: "V2 文档",
-    icon: "note",
-    link: "https://sovlookup.github.io/metapoint/",
-  },
 ]);

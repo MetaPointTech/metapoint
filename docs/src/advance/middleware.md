@@ -2,14 +2,15 @@
 title: Middleware
 index: true
 order: 4
-icon: discover
+icon: sort
 category:
   - Guide
 ---
 
 You can define middleware in endpoint group.
 
-In Middleware, you can add logic before and after handler execution, or even stop handler running.
+In Middleware, you can add logic before and after handler execution, or even
+stop handler running.
 
 ```ts {3-13}
 import { h, MetaType, peer, z } from "metapoint";

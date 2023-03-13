@@ -1,6 +1,6 @@
 ---
 title: Server
-icon: config
+icon: software
 index: true
 order: 2
 next: ./client.md

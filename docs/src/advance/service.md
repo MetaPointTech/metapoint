@@ -2,7 +2,7 @@
 title: Service
 index: true
 order: 6
-icon: discover
+icon: app
 category:
   - Guide
 ---

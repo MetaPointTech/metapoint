@@ -2,7 +2,7 @@
 title: Guide
 index: true
 order: 1
-icon: discover
+icon: guide
 category:
   - Guide
 ---

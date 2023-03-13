@@ -1,6 +1,6 @@
 ---
 title: Client
-icon: config
+icon: tab
 index: true
 order: 3
 next: ../advance/README.md
@@ -71,4 +71,3 @@ console.log(await helloworld("sovlookup")); // ["hi sovlookup", "hello world!"]
 4. [Vue example with custom server addr](https://github.com/SOVLOOKUP/metapoint/tree/master/examples/example-svelte)
 
 :::
-

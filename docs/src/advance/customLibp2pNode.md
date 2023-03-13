@@ -2,7 +2,7 @@
 title: Custom Libp2p Node
 index: true
 order: 9
-icon: discover
+icon: relation
 category:
   - Guide
 ---

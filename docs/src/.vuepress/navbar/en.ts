@@ -7,9 +7,4 @@ export const enNavbar = navbar([
     icon: "creative",
     link: "/guide/",
   },
-  {
-    text: "Docs",
-    icon: "note",
-    link: "https://sovlookup.github.io/metapoint/",
-  },
 ]);

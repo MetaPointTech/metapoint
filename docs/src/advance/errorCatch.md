@@ -2,18 +2,21 @@
 title: Error Catching
 index: true
 order: 5
-icon: discover
+icon: safe
 category:
   - Guide
 ---
 
-You can throw an Error directly in the endpoint, and the Error will be passed directly to the client and then thrown.
+You can throw an Error directly in the endpoint, and the Error will be passed
+directly to the client and then thrown.
 
 It's like the client is calling a local function.
 
-In the following example, the server finds that the request has not been verified and throws an Unauthorized exception, and the client receives it.
+In the following example, the server finds that the request has not been
+verified and throws an Unauthorized exception, and the client receives it.
 
 **server**
+
 ```ts {3-10}
 import { h, MetaType, peer, z } from "metapoint";
 
@@ -45,6 +48,7 @@ console.log("MetaPoint addr: ", node.meta().addrs);
 ```
 
 **client**
+
 ```ts {6-10}
 import { peer } from "metapoint";
 import type { Meta } from "./server";

@@ -2,7 +2,7 @@
 title: Custom Codec
 index: true
 order: 8
-icon: discover
+icon: json
 category:
   - Guide
 ---
@@ -44,6 +44,7 @@ console.log("MetaPoint addr: ", node.meta().addrs);
 
 ::: warning Attention
 
-You need to change the codec of both the server and the client! Otherwise the data will not be recognized correctly.
+You need to change the codec of both the server and the client! Otherwise the
+data will not be recognized correctly.
 
 :::

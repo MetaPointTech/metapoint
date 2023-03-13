@@ -2,7 +2,7 @@
 title: Plugin
 index: true
 order: 7
-icon: discover
+icon: plugin
 category:
   - Guide
 ---

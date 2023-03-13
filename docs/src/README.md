@@ -21,7 +21,7 @@ features:
     details: MetaPoint establish a bidirectional channel between devices, so that you no longer have to worry about server-side push.
 
   - title: 🪞Shadow functions
-    details: Painlessly calling a function on another device, just like...local calls (Even includes error catching).
+    details: Call APIs painlessly, just like using local functions(Even includes error catching).
 
   - title: 👌Autocompletion
     details: Just like calling native functions, TypeScript gives you autocompletion across devices!
@@ -39,18 +39,18 @@ features:
     details: tcp, ws, webtransport, quic...
 
   - title: 🔒Automatic typesafety
-    details: Something changed? TypeScript will warn you of errors in the call before you even save the file!
+    details: Something changed? TypeScript will warn you of errors before you even save the file.
 
   - title: ⚙Auto management
-    details: Streams are managed by MetaPoint. All you have to do is use!
+    details: Streams are managed by MetaPoint. You only need to consider the business code!
 
   - title: 🔐Secure transmission
-    details: Devices communicate with each other over encrypted channels
+    details: Devices communicate with each other over encrypted channels.
 
   - title: 🧩Plugin support
-    details: Extend MetaPoint through plugins
+    details: Extend MetaPoint through plugins.
 
-copyright: Copyright © 2022 SOVLOOKUP
+copyright: Copyright © 2023 SOVLOOKUP
 footer: Apache-2.0 Licensed
 ---
 
@@ -60,21 +60,25 @@ footer: Apache-2.0 Licensed
     <img src="https://user-images.githubusercontent.com/53158137/224494201-7e70b6d7-e29a-45ac-b534-e1d3c04dea48.gif" alt="Demo" />
     <figcaption>
       <p align="center">
-        The client above is <strong>not</strong> importing any code from the server, only its type declarations.
+        Metapoint lets you <strong>focus on</strong> what you want to do
       </p>
   </figcaption>
 </figure>
 
+- MetaPoint works well with nodejs and _**any**_ front-end framework.
+
+- You _**no longer**_ need to pay attention to tedious network layer coding,
+  just write business code. Save a lot of time and energy.
+
 - MetaPoint saves your team _**a lot of communication time**_ because the SDK is
   _**automatically**_ generated. API documentation is also no longer needed.
 
-- MetaPoint works well with _**any**_ front-end framework.
-
-- Thanks to the efficient transmission of metapoint, you can use it to replace
-  traditional HTTP/Websocket communication for _**higher performance**_.
+- Thanks to the extensibility of libp2p, you can use _**any**_ transport
+  protocol, including any in the _**future**_, which means _**zero**_ upgrade
+  cost.
 
 - You will _**never**_ get your API called incorrectly. TypeScript will warn you
-  of errors in the call before you even save the file!
+  of errors in the call before you even save the file.
 
 - MetaPoint is great for making _**real-time**_ applications.
 
@@ -83,7 +87,7 @@ footer: Apache-2.0 Licensed
 - Using metapoints makes your app to be _**more immune to malicious crawlers**_.
 
 - Metapoint's _**secure transmission**_ protects you from man-in-the-middle
-  attacks!
+  attacks.
 
 ## 🛠Install
 

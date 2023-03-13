@@ -13,6 +13,6 @@ actions:
   - text: ⭐ 点亮星星
     link: https://github.com/SOVLOOKUP/metapoint/stargazers
 
-copyright: Copyright © 2022 SOVLOOKUP
+copyright: Copyright © 2023 SOVLOOKUP
 footer: Apache-2.0 Licensed
 ---

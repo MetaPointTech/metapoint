@@ -9,8 +9,7 @@
 
 <div align="center">
   <h1>MetaPoint</h1>
-  <h3>Meta first and low-code.<br />Peer-to-Peer typesafe APIs or Channels made easy.<br />Easily build typesafe APIs or Channels wherever
-JavaScript runs.</h3>
+  <h3>Meta first and low-code.<br />Peer-to-Peer typesafe APIs or Channels made easy.</h3>
   <a href="https://github.com/sovlookup/metapoint/blob/main/LICENSE">
     <img alt="Apache-2.0 License" src="https://img.shields.io/github/license/sovlookup/metapoint" />
   </a>
@@ -31,7 +30,7 @@ JavaScript runs.</h3>
     <img src="https://user-images.githubusercontent.com/53158137/224494201-7e70b6d7-e29a-45ac-b534-e1d3c04dea48.gif" alt="Demo" />
     <figcaption>
       <p align="center">
-        The client above is <strong>not</strong> importing any code from the server, only its type declarations.
+        Metapoint lets you <strong>focus on</strong> what you want to do
       </p>
     </figcaption>
   </figure>
@@ -49,7 +48,7 @@ import { h, MetaType, peer, z } from "metapoint";
 // router group
 const g = h();
 
-// node1(nodejs/web/deno)
+// node1(nodejs/browser)
 const node1 = await peer({
   endpoint: {
     numberAdd: g.handler({
@@ -64,7 +63,7 @@ const node1 = await peer({
 });
 export type meta = MetaType<typeof node1>;
 
-// node2(nodejs/web/deno)
+// node2(nodejs/browser)
 const node2 = await peer();
 const channel = await node2.connect<meta>(node1.meta().addrs);
 const add = await channel("numberAdd");

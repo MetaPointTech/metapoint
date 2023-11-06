@@ -10,8 +10,8 @@ import type {
   TransportChannel,
 } from "./types";
 import { Channel } from "queueable";
-import type {  Multiaddr } from "@multiformats/multiaddr";
-import type {  PeerId } from "@libp2p/interface/peer-id";
+import type { Multiaddr } from "@multiformats/multiaddr";
+import type { PeerId } from "@libp2p/interface/peer-id";
 import { Libp2p } from "libp2p";
 import { collect, consume } from "streaming-iterables";
 import { newChannel } from "./utils";
@@ -135,9 +135,9 @@ const channel = async <I extends T, O extends T, T, S extends {}>(
 };
 
 export const client = async (node: Libp2p, peer: PeerAddr | PeerAddr[]) => {
-  const { isMultiaddr, multiaddr } = await import("@multiformats/multiaddr")
-  const { isPeerId } = await import("@libp2p/interface/peer-id")
-  const {peerIdFromString } = await import ("@libp2p/peer-id")
+  const { isMultiaddr, multiaddr } = await import("@multiformats/multiaddr");
+  const { isPeerId } = await import("@libp2p/interface/peer-id");
+  const { peerIdFromString } = await import("@libp2p/peer-id");
   let peerToDail: Multiaddr | PeerId;
   if (!(peer instanceof Array)) {
     peer = [peer];

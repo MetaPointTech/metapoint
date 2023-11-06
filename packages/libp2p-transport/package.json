@@ -46,10 +46,7 @@
     "@libp2p/websockets": "^7.0.11",
     "binconv": "^0.2.0",
     "destr": "^2.0.2",
-    "fastify": "^4.24.3",
-    "tsup": "^7.2.0",
-    "typescript": "^5.2.2",
-    "vitest": "^0.34.6"
+    "fastify": "^4.24.3"
   },
   "tsup": {
     "entry": [

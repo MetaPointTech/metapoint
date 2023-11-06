@@ -75,7 +75,7 @@ export const peer = async <T extends PeerInitOptions<any, any>>(
   if (initStart) {
     await addEndpoint(endpoint);
     await libp2p.start();
-  };
+  }
 
   return {
     meta: getMeta,
@@ -85,7 +85,8 @@ export const peer = async <T extends PeerInitOptions<any, any>>(
   };
 };
 
-export type MetaType<T extends UnPromisify<ReturnType<typeof peer>>> = ReturnType<T["meta"]>["endpoint"];
+export type MetaType<T extends UnPromisify<ReturnType<typeof peer>>> =
+  ReturnType<T["meta"]>["endpoint"];
 
 export * from "./helper";
 export { z } from "zod";

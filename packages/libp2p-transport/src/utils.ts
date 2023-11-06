@@ -1,4 +1,4 @@
-import type { IncomingStreamData } from "@libp2p/interface-registrar";
+import type { IncomingStreamData } from "@libp2p/interface/stream-handler";
 import type { Channel } from "queueable";
 import { debug } from "./const";
 import { logger } from "./logger";
@@ -43,14 +43,14 @@ const newChannel = <T, S>(
       open = false;
     },
     id,
-    protocol: i.stream.stat.protocol,
+    protocol: i.stream.protocol,
     context: context as S,
     stat: {
       remoteAddr: i.connection.remoteAddr,
       remotePeer: i.connection.remotePeer,
-      encryption: i.connection.stat.encryption,
-      multiplexer: i.connection.stat.multiplexer,
-      direction: i.stream.stat.direction,
+      encryption: i.connection.encryption,
+      multiplexer: i.connection.multiplexer,
+      direction: i.stream.direction,
       open: () => open,
     },
   };

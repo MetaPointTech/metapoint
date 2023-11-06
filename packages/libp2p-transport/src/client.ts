@@ -1,4 +1,4 @@
-import { Stream } from "@libp2p/interface-connection";
+import { Stream } from "@libp2p/interface/connection";
 import { AnyIterable, transform } from "streaming-iterables";
 import { control_name, defaultInitOptions } from "./common";
 import type {
@@ -10,16 +10,14 @@ import type {
   TransportChannel,
 } from "./types";
 import { Channel } from "queueable";
-import { isMultiaddr, Multiaddr, multiaddr } from "@multiformats/multiaddr";
-import { isPeerId, PeerId } from "@libp2p/interface-peer-id";
-import { peerIdFromString } from "@libp2p/peer-id";
+import type {  Multiaddr } from "@multiformats/multiaddr";
+import type {  PeerId } from "@libp2p/interface/peer-id";
 import { Libp2p } from "libp2p";
-import { collect } from "streaming-iterables";
+import { collect, consume } from "streaming-iterables";
 import { newChannel } from "./utils";
-import { consume } from "streaming-iterables";
 import { runtimeError } from "./error";
 import { logger } from "./logger";
-import { Connection } from "@libp2p/interface-connection";
+import { Connection } from "@libp2p/interface/connection";
 import { defaultCodec } from "./codec";
 
 const ccs = new Map<string, Channel<ControlMsg>>();
@@ -137,6 +135,9 @@ const channel = async <I extends T, O extends T, T, S extends {}>(
 };
 
 export const client = async (node: Libp2p, peer: PeerAddr | PeerAddr[]) => {
+  const { isMultiaddr, multiaddr } = await import("@multiformats/multiaddr")
+  const { isPeerId } = await import("@libp2p/interface/peer-id")
+  const {peerIdFromString } = await import ("@libp2p/peer-id")
   let peerToDail: Multiaddr | PeerId;
   if (!(peer instanceof Array)) {
     peer = [peer];

@@ -38,7 +38,7 @@
 
 ## Intro
 
-More information at https://sovlookup.github.io/metapoint/
+More information at https://metapointtech.github.io/metapoint/
 
 ## Quickstart
 

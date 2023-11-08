@@ -5,15 +5,18 @@
   "license": "Apache-2.0",
   "type": "module",
   "scripts": {
-    "docs:build": "vuepress build src --clean-cache",
-    "docs:clean-dev": "vuepress dev src --clean-cache",
-    "docs:dev": "vuepress dev src",
-    "docs:update-package": "pnpm dlx vp-update"
+    "build": "vuepress-vite build src --clean-cache",
+    "clean-dev": "vuepress-vite dev src --clean-cache",
+    "dev": "vuepress-vite dev src",
+    "update-package": "pnpm dlx vp-update"
   },
   "devDependencies": {
-    "@vuepress/client": "2.0.0-beta.61",
-    "vue": "^3.2.47",
-    "vuepress": "next",
-    "vuepress-theme-hope": "2.0.0-beta.200"
+    "@vue/repl": "^2.6.3",
+    "@vuepress/cli": "2.0.0-beta.67",
+    "@vuepress/client": "2.0.0-beta.67",
+    "vue": "^3.3.8",
+    "vuepress": "2.0.0-beta.67",
+    "vuepress-theme-hope": "2.0.0-beta.246",
+    "vuepress-vite": "2.0.0-beta.67"
   }
 }

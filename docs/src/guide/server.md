@@ -22,8 +22,8 @@ First, you need to introduce metapoint and define an endpoint group
 ::: details Advanced about endpoint group
 
 Endpoints within the same endpoint group have shared
-[context](../../advance/channel.md) and
-[middleware](../../advance/middleware.md)
+[context](../advance/channel.md) and
+[middleware](../advance/middleware.md)
 
 :::
 

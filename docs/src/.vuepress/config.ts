@@ -3,7 +3,6 @@ import theme from "./theme.js";
 
 export default defineUserConfig({
   base: "/metapoint/",
-
   locales: {
     "/": {
       lang: "en-US",
@@ -16,6 +15,5 @@ export default defineUserConfig({
       description: "低代码点对点通讯框架",
     },
   },
-
   theme,
 });

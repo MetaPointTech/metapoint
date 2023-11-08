@@ -7,13 +7,13 @@
     "dev": "vite"
   },
   "devDependencies": {
-    "@sveltejs/vite-plugin-svelte": "^2.0.2",
-    "@tsconfig/svelte": "^3.0.0",
-    "svelte": "^3.55.1",
-    "svelte-check": "^3.0.0",
-    "tslib": "^2.5.0",
-    "typescript": "^4.9.3",
+    "@sveltejs/vite-plugin-svelte": "^2.4.6",
+    "@tsconfig/svelte": "^5.0.2",
     "metapoint": "workspace:*",
-    "vite": "^4.1.0"
+    "svelte": "^4.2.2",
+    "svelte-check": "^3.5.2",
+    "tslib": "^2.6.2",
+    "typescript": "^5.2.2",
+    "vite": "^4.5.0"
   }
 }

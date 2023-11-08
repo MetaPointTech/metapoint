@@ -1,13 +1,12 @@
 import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import './App.css'
-// @ts-ignore
 import type { Meta } from '../../example-basic/server'
 import { peer } from 'metapoint'
 
 const node = await peer()
 const channel = await node.connect<Meta>((window as any)['addr'].reverse())
-const plus = await channel("plus")
+const plus = await channel("add")
 
 function App() {
   const [count, setCount] = useState(0)

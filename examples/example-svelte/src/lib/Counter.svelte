@@ -1,12 +1,11 @@
 <script lang="ts">
   import { peer } from 'metapoint'
-  // @ts-ignore
-  import type { Meta } from '../../example-basic/server'
+  import type { Meta } from '../../../example-basic/server'
 
   const main = async () => {
     const node = await peer()
     const channel = await node.connect<Meta>(window['addr'])
-    return await channel("plus")
+    return await channel("add")
   }
 
   let count: number = 0

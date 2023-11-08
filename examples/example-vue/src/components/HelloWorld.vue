@@ -6,7 +6,7 @@ defineProps<{ msg: string }>()
 const node = await peer()
 const addr = (window as any).addr.reverse()
 const channel = await node.connect<Meta>(addr)
-const plus = await channel("plus")
+const plus = await channel("add")
 const count = ref(0)
 </script>
 

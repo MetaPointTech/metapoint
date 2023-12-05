@@ -4,7 +4,6 @@ import type {
   Codec,
   ControlMsg,
   Func,
-  InitOptions,
   IterableFunc,
   ServerInitOptions,
   Service,

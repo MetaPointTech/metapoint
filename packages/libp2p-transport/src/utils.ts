@@ -1,4 +1,4 @@
-import type { IncomingStreamData } from "@libp2p/interface/stream-handler";
+import type { IncomingStreamData } from "@libp2p/interface";
 import type { Channel } from "queueable";
 import { debug } from "./const";
 import { logger } from "./logger";
